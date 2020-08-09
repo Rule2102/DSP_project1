@@ -65,6 +65,9 @@ main.obj: C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/include
 main.obj: C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/include/F2837xD_SysCtrl_defines.h
 main.obj: C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/include/F2837xD_Upp_defines.h
 main.obj: C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/include/F2837xD_defaultisr.h
+main.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/include/math.h
+main.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/include/_defs.h
+main.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/include/machine/_limits.h
 main.obj: C:/ti/c2000/C2000Ware_3_02_00_00/libraries/math/FPUfastRTS/c28/include/C28x_FPU_FastRTS.h
 main.obj: C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/include/string.h
 
@@ -133,5 +136,8 @@ C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/include/F2837xD_D
 C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/include/F2837xD_SysCtrl_defines.h: 
 C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/include/F2837xD_Upp_defines.h: 
 C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/include/F2837xD_defaultisr.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/include/math.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/include/_defs.h: 
+C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/include/machine/_limits.h: 
 C:/ti/c2000/C2000Ware_3_02_00_00/libraries/math/FPUfastRTS/c28/include/C28x_FPU_FastRTS.h: 
 C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/include/string.h: 
