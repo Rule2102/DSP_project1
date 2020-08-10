@@ -356,6 +356,7 @@ __interrupt void adcb1_isr(void)
 
 }
 
+
 __interrupt void dmach1_isr(void)
 {
     int i_for;
@@ -402,7 +403,7 @@ __interrupt void dmach1_isr(void)
 #else
     Vmeas_a = (float32)(AvgMeas_a[0]);
 #endif
-    Vmeas_a = Vmeas_a*0.000757f;                                                // ADC scaling 3.1 --> 4095 (zero offset assumed)
+    Vmeas_a = Vmeas_a*0.0007326f; //757f;                                                // ADC scaling 3.1 --> 4095 (zero offset assumed)
     AvgMeas_a[1] = AvgMeas_a[0];
 
     AvgMeas_b[0] = Measurement_b>>((int)LOG2_NOS_UR);                           // Averaging on regulation period
@@ -411,7 +412,7 @@ __interrupt void dmach1_isr(void)
 #else
     Vmeas_b = (float32)(AvgMeas_b[0]);
 #endif
-    Vmeas_b = Vmeas_b*0.000757f;                                                // ADC scaling 3.1 --> 4095 (zero offset assumed)
+    Vmeas_b = Vmeas_b*0.0007326f; //757f;                                                // ADC scaling 3.1 --> 4095 (zero offset assumed)
     AvgMeas_b[1] = AvgMeas_b[0];
 
     // Regulation
@@ -420,6 +421,7 @@ __interrupt void dmach1_isr(void)
     err_a[0] = Vref_a - Vmeas_a;
     u_a[0] = u_a[1] + (kp_a + ki_a)*err_a[0] - kp_a*err_a[1];                   // Incremental PI regulator
     if(u_a[0] > E) u_a[0] = E;                                                  // Saturation to prevent wind-up
+    if(u_a[0] < 0) u_a[0] = 0;
 
     err_a[1] = err_a[0];
     u_a[1] = u_a[0];
@@ -430,6 +432,7 @@ __interrupt void dmach1_isr(void)
     err_b[0] = Vref_b - Vmeas_b;
     u_b[0] = u_b[1] + (kp_b + ki_b)*err_b[0] - kp_b*err_b[1];                   // Incremental PI regulator
     if(u_b[0] > E) u_b[0] = E;                                                  // Saturation to prevent wind-up
+    if(u_b[0] < 0) u_b[0] = 0;
 
     err_b[1] = err_b[0];
     u_b[1] = u_b[0];
