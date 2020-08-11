@@ -191,7 +191,7 @@ void Configure_ePWM(void)
     EPwm5Regs.TBCTL.bit.CTRMODE = 2;           // Up-down mode
 
     EPwm5Regs.TBPRD = ADC_TBPRD;               // Counter period
-    EPwm5Regs.ETSEL.bit.SOCASEL = 2;           // ADCSOCA on TBCTR=TBPRD
+    EPwm5Regs.ETSEL.bit.SOCASEL = 1;           // ADCSOCA on TBCTR=0
     EPwm5Regs.ETPS.bit.SOCAPRD = 1;            // Generate SOCA on 1st event
     EPwm5Regs.ETSEL.bit.SOCAEN = 1;            // Enable SOCA generation
 
@@ -309,8 +309,12 @@ void PrintData()
 {
     if(canPrint)
     {
-        Vref_a = 1.0f;
-        Vref_b = 1.0f;
+        if(data_count == 0)
+        {
+            Vref_a = 1.0f;
+            Vref_b = 1.0f;
+        }
+
         dataOut_a[data_count] = Vmeas_a;
         dataOut_b[data_count] = Vmeas_b;
         data_count++;
