@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v18.12.3                    
 ******************************************************************************
->> Linked Tue Aug 11 09:20:34 2020
+>> Linked Wed Aug 12 09:13:18 2020
 
 OUTPUT FILE NAME:   <project1.out>
 ENTRY POINT SYMBOL: "code_start"  address: 00000000
@@ -14,8 +14,8 @@ MEMORY CONFIGURATION
 PAGE 0:
   BEGIN                 00000000   00000002  00000002  00000000  RWIX
   RAMM0                 00000123   000002dd  00000249  00000094  RWIX
-  RAMLS0                00008000   00000800  000007fb  00000005  RWIX
-  RAMLS1                00008800   00000800  00000644  000001bc  RWIX
+  RAMLS0                00008000   00000800  00000800  00000000  RWIX
+  RAMLS1                00008800   00000800  00000625  000001db  RWIX
   RAMLS2                00009000   00000800  00000000  00000800  RWIX
   RAMLS3                00009800   00000800  00000000  00000800  RWIX
   RAMLS4                0000a000   00000800  00000000  00000800  RWIX
@@ -601,23 +601,23 @@ CpuSysRegsFile
 *          1    0005d300    00000082     UNINITIALIZED
                   0005d300    00000082     F2837xD_GlobalVariableDefs.obj (CpuSysRegsFile)
 
-.text.1    0    00008000    000007fb     
+.text.1    0    00008000    00000800     
                   00008000    000004aa     F2837xD_SysCtrl.obj (.text)
-                  000084aa    000001b1     main.obj (.text)
-                  0000865b    000000f0     F2837xD_Adc.obj (.text)
-                  0000874b    00000088     main.obj (.text:retain)
-                  000087d3    00000028     F2837xD_PieCtrl.obj (.text)
+                  000084aa    000001c1     main.obj (.text)
+                  0000866b    000000f0     F2837xD_Adc.obj (.text)
+                  0000875b    00000088     rts2800_fpu32.lib : fs_div28.asm.obj (.text)
+                  000087e3    0000001d                       : memcpy.c.obj (.text)
 
-.text.2    0    00008800    00000644     
+.text.2    0    00008800    00000625     
                   00008800    00000404     F2837xD_Dma.obj (.text)
                   00008c04    000000ca     rts2800_fpu32.lib : e_log2f.c.obj (.text)
-                  00008cce    00000088                       : fs_div28.asm.obj (.text)
-                  00008d56    00000056                       : boot28.asm.obj (.text)
-                  00008dac    00000026     F2837xD_PieVect.obj (.text)
-                  00008dd2    00000024     rts2800_fpu32.lib : cpy_tbl.c.obj (.text)
-                  00008df6    0000001d                       : memcpy.c.obj (.text)
-                  00008e13    00000019                       : args_main.c.obj (.text)
-                  00008e2c    00000018                       : ll_aox28.asm.obj (.text)
+                  00008cce    0000005e     main.obj (.text:retain)
+                  00008d2c    00000056     rts2800_fpu32.lib : boot28.asm.obj (.text)
+                  00008d82    00000028     F2837xD_PieCtrl.obj (.text)
+                  00008daa    00000026     F2837xD_PieVect.obj (.text)
+                  00008dd0    00000024     rts2800_fpu32.lib : cpy_tbl.c.obj (.text)
+                  00008df4    00000019                       : args_main.c.obj (.text)
+                  00008e0d    00000018                       : ll_aox28.asm.obj (.text)
 
 .text.3    0    0000b000    000007fe     
                   0000b000    00000585     F2837xD_DefaultISR.obj (.text:retain)
@@ -633,7 +633,7 @@ MODULE SUMMARY
        ------                           ----   ----------------   ------------------
     .\
        F2837xD_GlobalVariableDefs.obj   0      0                  8695              
-       main.obj                         1006   114                1106              
+       main.obj                         980    114                1106              
        F2837xD_DefaultISR.obj           1413   0                  0                 
        F2837xD_SysCtrl.obj              1194   0                  0                 
        F2837xD_Dma.obj                  1028   0                  0                 
@@ -645,7 +645,7 @@ MODULE SUMMARY
        F2837xD_usDelay.obj              4      0                  0                 
        F2837xD_CodeStartBranch.obj      2      0                  0                 
     +--+--------------------------------+------+------------------+--------------------+
-       Total:                           5545   562                9825              
+       Total:                           5519   562                9825              
                                                                                     
     C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/lib/rts2800_fpu32.lib
        e_log2f.c.obj                    202    16                 0                 
@@ -665,7 +665,7 @@ MODULE SUMMARY
                                                                                     
        Stack:                           0      0                  512               
     +--+--------------------------------+------+------------------+--------------------+
-       Grand Total:                     6136   606                10348             
+       Grand Total:                     6110   606                10348             
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
@@ -891,10 +891,10 @@ page  address   name
 ----  -------   ----                                  
 abs   ffffffff  .text                                 
 0     0000b7c9  C$$EXIT                               
-0     00008cce  FS$$DIV                               
-0     00008e2c  LL$$AND                               
-0     00008e34  LL$$OR                                
-0     00008e3c  LL$$XOR                               
+0     0000875b  FS$$DIV                               
+0     00008e0d  LL$$AND                               
+0     00008e15  LL$$OR                                
+0     00008e1d  LL$$XOR                               
 0     0000b0be  _ADCA1_ISR                            
 0     0000b33e  _ADCA2_ISR                            
 0     0000b348  _ADCA3_ISR                            
@@ -917,7 +917,7 @@ abs   ffffffff  .text
 0     0000b4ec  _ADCD_EVT_ISR                         
 0     0000b546  _AUX_PLL_SLIP_ISR                     
 1     0005f4c0  _AccessProtectionRegs                 
-0     0000865b  _AdcSetMode                           
+0     0000866b  _AdcSetMode                           
 1     00007400  _AdcaRegs                             
 1     00000b00  _AdcaResultRegs                       
 1     00007480  _AdcbRegs                             
@@ -946,12 +946,12 @@ abs   ffffffff  .text
 0     0000b3ca  _CLA1_8_ISR                           
 0     0000b550  _CLA_OVERFLOW_ISR                     
 0     0000b55a  _CLA_UNDERFLOW_ISR                    
-0     00008711  _CalAdcINL                            
+0     00008721  _CalAdcINL                            
 1     00048000  _CanaRegs                             
 1     0004a000  _CanbRegs                             
 1     00001400  _Cla1Regs                             
 0     00000ce0  _Cla1SoftIntRegs                      
-0     00008610  _Clear_DMAbuffer                      
+0     00008614  _Clear_DMAbuffer                      
 1     0005d200  _ClkCfgRegs                           
 1     00005c80  _Cmpss1Regs                           
 1     00005ca0  _Cmpss2Regs                           
@@ -962,10 +962,10 @@ abs   ffffffff  .text
 1     00005d40  _Cmpss7Regs                           
 1     00005d60  _Cmpss8Regs                           
 0     0000848d  _ConfigureTMXAnalogTrim               
-0     00008578  _Configure_ADC                        
-0     000085d6  _Configure_DMA                        
+0     0000857c  _Configure_ADC                        
+0     000085da  _Configure_DMA                        
 0     000084f0  _Configure_GPIO                       
-0     00008512  _Configure_ePWM                       
+0     00008516  _Configure_ePWM                       
 1     0005d300  _CpuSysRegs                           
 1     0000ac1e  _CpuTimer0                            
 1     00000c00  _CpuTimer0Regs                        
@@ -1095,7 +1095,7 @@ abs   ffffffff  .text
 1     00047800  _Emif2Regs                            
 1     00000d00  _EmuBMode                             
 1     00000d01  _EmuBootPins                          
-0     000087f2  _EnableInterrupts                     
+0     00008da1  _EnableInterrupts                     
 0     000002d8  _F28x_usDelay                         
 0     0000b528  _FLASH_CORRECTABLE_ERROR_ISR          
 0     0000b3fc  _FPU_OVERFLOW_ISR                     
@@ -1135,8 +1135,8 @@ abs   ffffffff  .text
 0     000082df  _InitAuxPll                           
 0     0000b585  _InitGpio                             
 0     00008020  _InitPeripheralClocks                 
-0     000087d3  _InitPieCtrl                          
-0     00008dac  _InitPieVectTable                     
+0     00008d82  _InitPieCtrl                          
+0     00008daa  _InitPieVectTable                     
 0     00008000  _InitSysCtrl                          
 0     000080f1  _InitSysPll                           
 1     00007900  _InputXbarRegs                        
@@ -1159,7 +1159,7 @@ abs   ffffffff  .text
 1     00000ce0  _PieCtrlRegs                          
 1     00000d00  _PieVectTable                         
 1     0000ac56  _PieVectTableInit                     
-0     0000862c  _PrintData                            
+0     00008630  _PrintData                            
 0     0000b532  _RAM_ACCESS_VIOLATION_ISR             
 0     0000b51e  _RAM_CORRECTABLE_ERROR_ISR            
 0     0000b01e  _RTOS_ISR                             
@@ -1251,7 +1251,7 @@ abs   ffffffff  ___c_args__
 abs   ffffffff  ___etext__                            
 abs   ffffffff  ___pinit__                            
 abs   ffffffff  ___text__                             
-0     00008e13  __args_main                           
+0     00008df4  __args_main                           
 1     0000ac50  __lock                                
 0     0000b7fa  __nop                                 
 0     0000b7f6  __register_lock                       
@@ -1263,11 +1263,11 @@ abs   ffffffff  ___text__
 0     0000b7c9  _abort                                
 1     0000ac1a  _adc_count_a                          
 1     0000ac1c  _adc_count_b                          
-0     0000874b  _adca1_isr                            
-0     0000878f  _adcb1_isr                            
-0     00008d56  _c_int00                              
+0     00008cce  _adca1_isr                            
+0     00008d12  _adcb1_isr                            
+0     00008d2c  _c_int00                              
 1     0000ac04  _canPrint                             
-0     00008dd2  _copy_in                              
+0     00008dd0  _copy_in                              
 1     0000ac01  _d_a                                  
 1     0000ac03  _d_b                                  
 1     0000a800  _dataOut_a                            
@@ -1286,7 +1286,7 @@ abs   ffffffff  ___text__
 0     00008c04  _log2                                 
 0     00008c04  _log2f                                
 0     000084aa  _main                                 
-0     00008df6  _memcpy                               
+0     000087e3  _memcpy                               
 1     0000ac44  _u_a                                  
 1     0000ac48  _u_b                                  
 abs   ffffffff  binit                                 
@@ -1329,17 +1329,15 @@ page  address   name
 0     0000848d  _ConfigureTMXAnalogTrim               
 0     000084aa  _main                                 
 0     000084f0  _Configure_GPIO                       
-0     00008512  _Configure_ePWM                       
-0     00008578  _Configure_ADC                        
-0     000085d6  _Configure_DMA                        
-0     00008610  _Clear_DMAbuffer                      
-0     0000862c  _PrintData                            
-0     0000865b  _AdcSetMode                           
-0     00008711  _CalAdcINL                            
-0     0000874b  _adca1_isr                            
-0     0000878f  _adcb1_isr                            
-0     000087d3  _InitPieCtrl                          
-0     000087f2  _EnableInterrupts                     
+0     00008516  _Configure_ePWM                       
+0     0000857c  _Configure_ADC                        
+0     000085da  _Configure_DMA                        
+0     00008614  _Clear_DMAbuffer                      
+0     00008630  _PrintData                            
+0     0000866b  _AdcSetMode                           
+0     00008721  _CalAdcINL                            
+0     0000875b  FS$$DIV                               
+0     000087e3  _memcpy                               
 0     00008800  _DMAInitialize                        
 0     0000880b  _DMACH1AddrConfig                     
 0     0000881b  _DMACH1BurstConfig                    
@@ -1385,15 +1383,17 @@ page  address   name
 0     00008bf4  _DMACH6AddrConfig32bit                
 0     00008c04  _log2                                 
 0     00008c04  _log2f                                
-0     00008cce  FS$$DIV                               
-0     00008d56  _c_int00                              
-0     00008dac  _InitPieVectTable                     
-0     00008dd2  _copy_in                              
-0     00008df6  _memcpy                               
-0     00008e13  __args_main                           
-0     00008e2c  LL$$AND                               
-0     00008e34  LL$$OR                                
-0     00008e3c  LL$$XOR                               
+0     00008cce  _adca1_isr                            
+0     00008d12  _adcb1_isr                            
+0     00008d2c  _c_int00                              
+0     00008d82  _InitPieCtrl                          
+0     00008da1  _EnableInterrupts                     
+0     00008daa  _InitPieVectTable                     
+0     00008dd0  _copy_in                              
+0     00008df4  __args_main                           
+0     00008e0d  LL$$AND                               
+0     00008e15  LL$$OR                                
+0     00008e1d  LL$$XOR                               
 0     0000b000  _TIMER1_ISR                           
 0     0000b00a  _TIMER2_ISR                           
 0     0000b014  _DATALOG_ISR                          

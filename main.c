@@ -151,7 +151,7 @@ void Configure_GPIO(void)
     // Configure as ordinary GPIO to notify ADCB EOC (JUST FOR DEBUGGING)
     GpioCtrlRegs.GPCDIR.bit.GPIO67 = 1;         // Configure as output
     GpioCtrlRegs.GPCMUX1.bit.GPIO67 = 0;        // Mux as ordinary GPIO
-
+    GpioDataRegs.GPCCLEAR.bit.GPIO67 = 1;         // ensure 0 before setting Vref in PrintData()
     EDIS;
 
 }
@@ -311,6 +311,7 @@ void PrintData()
     {
         if(data_count == 0)
         {
+            GpioDataRegs.GPCSET.bit.GPIO67 = 1;
             Vref_a = 1.0f;
             Vref_b = 1.0f;
         }
@@ -323,6 +324,7 @@ void PrintData()
         {
             data_count = 0;
             canPrint=0;
+            GpioDataRegs.GPCCLEAR.bit.GPIO67 = 1;
             Vref_a = 0.0f;
             Vref_b = 0.0f;
         }
@@ -352,9 +354,11 @@ __interrupt void adcb1_isr(void)
     AdcbRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;
 
     // Generate short pulse to notify EOC (JUST FOR DEBUGGING)
+    /*
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;
     DELAY_US(0.01);
     GpioDataRegs.GPCCLEAR.bit.GPIO67 = 1;
+    */
 
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;        // Clear acknowledge register
 
@@ -407,7 +411,7 @@ __interrupt void dmach1_isr(void)
 #else
     Vmeas_a = (float32)(AvgMeas_a[0]);
 #endif
-    Vmeas_a = Vmeas_a*0.0007326f; //757f;                                                // ADC scaling 3.1 --> 4095 (zero offset assumed)
+    Vmeas_a = Vmeas_a*0.0007326f;                                                // ADC scaling 3.1 --> 4095 (zero offset assumed)
     AvgMeas_a[1] = AvgMeas_a[0];
 
     AvgMeas_b[0] = Measurement_b>>((int)LOG2_NOS_UR);                           // Averaging on regulation period
@@ -416,7 +420,7 @@ __interrupt void dmach1_isr(void)
 #else
     Vmeas_b = (float32)(AvgMeas_b[0]);
 #endif
-    Vmeas_b = Vmeas_b*0.0007326f; //757f;                                                // ADC scaling 3.1 --> 4095 (zero offset assumed)
+    Vmeas_b = Vmeas_b*0.0007326f;                                                // ADC scaling 3.1 --> 4095 (zero offset assumed)
     AvgMeas_b[1] = AvgMeas_b[0];
 
     // Regulation
