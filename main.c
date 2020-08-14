@@ -3,21 +3,38 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define NOS 16                                       // Number of samples to be averaged on PWM period (over-sampling factor)
-#define UR 2                                        // Update rate (double or single)
+#define NOS 16                                      // Number of samples to be averaged on PWM period (over-sampling factor)
+#define UR 1                                        // Update rate (double or single)
 #define NOS_UR (NOS!=1 ? NOS/UR : 1)                // Ratio between NOS and UR (adjusted to include case without oversampling (NOS=1))
 #define LOG2_NOS_UR (log2(NOS_UR))                  // Used for averaging
 #define FTB 100e6                                   // FTB=EPWMCLK=SYSCLKOUT/2 (time base clock ratio to EPWM clock = 1 assumed)
 #define FPWM 10e3                                   // Switching frequency
+// Counter period for ePWM used for switching, up-down mode assumed; closest to (Uint16)(FTB/(2*FPWM)-1) so that PWM_TBPRD%16=0
+#define PWM_TBPRD 4992
+#define TPWM (2*PWM_TBPRD/FTB)                      // Switching period
 // Counter period for ePWM used for ADC triggering, up-down mode assumed (adjusted to include case without oversampling (NOS=1))
-#define ADC_TBPRD ((Uint16)(NOS!=1 ? FTB/(2*FPWM*NOS)-1 : FTB/(2*FPWM*UR)-1))
-// Counter period for ePWM used for switching, up-down mode assumed (adjusted to include case without oversampling (NOS=1))
-#define PWM_TBPRD (NOS!=1 ? ADC_TBPRD*NOS : ADC_TBPRD*UR)
+#define ADC_TBPRD (NOS!=1 ? PWM_TBPRD/NOS : PWM_TBPRD/UR)
+#define TS (TPWM/UR)                            // Regulation period
+#define LOAD_CMPA (UR==1 ? 0 : 2)
+#define LOAD_CMPB (UR==1 ? 0 : 2)
 #define E 3.3f                                      // Available DC voltage
 #define EINVERSE (1 / E)                            // Inverse of E
 #define DEADTIME 0                                  // Dead time in number of counts (see EPwmXRegs.TBPRD)
 #define DEADTIME_HALF (DEADTIME / 2)                // Half of the dead time (see dmach1_isr)
-#define MAX_data_count 256                          // Size of an array used for data storage
+#define MAX_data_count 180                          // Size of an array used for data storage
+
+// Defines for VREG ADCINA0
+#define inv_tau_a 775.4342f                         // 1/(R*C)
+#define alfa_a 0.2f                                 // gain for IMC based voltage regulator
+#define beta_a (exp(-TS*inv_tau_a))                 // parameter that describes system dynamics beta=exp(-Ts/(R*C))
+#define alfa_1beta_a (alfa_a/(1-beta_a))            // alfa/(1-beta)
+
+// Defines for VREG ADCINA0
+#define inv_tau_b 775.4342f                         // 1/(R*C)
+#define alfa_b 0.2f                                 // gain for IMC based voltage regulator
+#define beta_b (exp(-TS*inv_tau_b))               // parameter that describes system dynamics beta=exp(-Ts/(R*C))
+#define alfa_1beta_b (alfa_b/(1-beta_b))            // alfa/(1-beta)
+
 
 #pragma CODE_SECTION(dmach1_isr, ".TI.ramfunc");    // Allocate code (dmach1_isr) in RAM
 
@@ -40,6 +57,7 @@ __interrupt void adca1_isr(void);              // JUST FOR DEBIGGING to check AD
 __interrupt void adcb1_isr(void);              // JUST FOR DEBIGGING to check ADCB
 __interrupt void dmach1_isr(void);             // Regulation takes place in dmach1_isr
 
+// First RC filter (connected to ADCINA0)
 volatile Uint16 Measurement_a;                 // Measurements (take data from DMAbuffer)
 Uint16 AvgMeas_a[2] = {0.0f,0.0f};             // Averaged data from DMAbuffer; AvgMeas_a[1]=previous, AvgMeas_a[0]=current
 float32 Vmeas_a = 0.0f;                        // Measured voltage
@@ -47,8 +65,9 @@ float32 Vref_a = 0.0f;                         // Reference voltage
 float32 u_a[2] = {0.0f,0.0f};                  // Control signal
 float32 err_a[2] = {0.0f,0.0f};                // Error err[1]=previous, err[0]=current
 Uint16 d_a = 0;                                // Duty cycle
-float32 kp_a = 1.8f, ki_a = 0.2f/(float32)UR;  // PI voltage regulator
+//float32 kp_a = 1.8f, ki_a = 0.2f/(float32)UR;  // PI voltage regulator
 
+// Second RC filter (connected to ADCINB2)
 volatile Uint16 Measurement_b;                 // Measurements (take data from DMAbuffer)
 Uint16 AvgMeas_b[2] = {0.0f,0.0f};             // Averaged data from DMAbuffer; AvgMeas_a[1]=previous, AvgMeas_a[0]=current
 float32 Vmeas_b = 0.0f;                        // Measured voltage
@@ -56,7 +75,7 @@ float32 Vref_b = 0.0f;                         // Reference voltage
 float32 u_b[2] = {0.0f,0.0f};                  // Control signal
 float32 err_b[2] = {0.0f,0.0f};                // Error err[1]=previous, err[0]=current
 Uint16 d_b = 0;                                // Duty cycle
-float32 kp_b = 1.8f, ki_b = 0.2f/(float32)UR;  // PI voltage regulator
+//float32 kp_b = 1.8f, ki_b = 0.2f/(float32)UR;  // PI voltage regulator
 
 float32 dataOut_a[MAX_data_count] = {};        // Data storage
 float32 dataOut_b[MAX_data_count] = {};        // Data storage
@@ -67,6 +86,8 @@ long int dma_count = 0;                        // Counter to check dmach1_isr
 long int adc_count_a = 0;                      // Counter to check adca1_isr
 long int adc_count_b = 0;                      // Counter to check adcb1_isr
 
+float32 pom1,pom2,pom3;
+
 void main(void)
 {
     // To run from FLASH uncomment the following and include in Linker ...FLASH...cmd instead of ...RAM...cmd
@@ -75,6 +96,10 @@ void main(void)
     memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (uint32_t) &RamfuncsLoadSize);
     InitFlash();
     */
+
+    pom1 = alfa_b/(1-beta_b);
+    pom2 = beta_b;
+    pom3 = TS;
 
     InitSysCtrl();
     InitGpio();
@@ -172,8 +197,8 @@ void Configure_ePWM(void)
 
     EPwm1Regs.CMPCTL.bit.SHDWAMODE = 0;         // Shadow mode active for CMPA
     EPwm1Regs.CMPCTL.bit.SHDWBMODE = 0;         // Shadow mode active for CMPB
-    EPwm1Regs.CMPCTL.bit.LOADAMODE = 2;         // Load on either CTR = Zero or CTR=PRD for CMPA
-    EPwm1Regs.CMPCTL.bit.LOADBMODE = 2;         // Load on either CTR = Zero or CTR=PRD for CMPB
+    EPwm1Regs.CMPCTL.bit.LOADAMODE = LOAD_CMPA;         // Load on either CTR = Zero (or CTR=PRD for CMPA
+    EPwm1Regs.CMPCTL.bit.LOADBMODE = LOAD_CMPB;         // Load on either CTR = Zero or CTR=PRD for CMPB
 
 
     EPwm1Regs.CMPA.bit.CMPA = 0;                // Value of the CMPA at the beginning
@@ -312,12 +337,12 @@ void PrintData()
         if(data_count == 0)
         {
             GpioDataRegs.GPCSET.bit.GPIO67 = 1;
-            Vref_a = 1.0f;
-            Vref_b = 1.0f;
+            Vref_a = 0.5f;
+            Vref_b = 0.5f;
         }
 
-        dataOut_a[data_count] = Vmeas_a;
-        dataOut_b[data_count] = Vmeas_b;
+        dataOut_a[data_count] =  Vmeas_a; // u_a[0];
+        dataOut_b[data_count] =  Vmeas_b; // u_b[0];
         data_count++;
 
         if (data_count >= MAX_data_count)
@@ -427,7 +452,8 @@ __interrupt void dmach1_isr(void)
 
     // First RC filter
     err_a[0] = Vref_a - Vmeas_a;
-    u_a[0] = u_a[1] + (kp_a + ki_a)*err_a[0] - kp_a*err_a[1];                   // Incremental PI regulator
+    u_a[0] = u_a[1] + alfa_1beta_a*(err_a[0] - beta_a*err_a[1]);               // IMC based regulator
+    //u_a[0] = u_a[1] + (kp_a + ki_a)*err_a[0] - kp_a*err_a[1];                 // Incremental PI regulator
     if(u_a[0] > E) u_a[0] = E;                                                  // Saturation to prevent wind-up
     if(u_a[0] < 0) u_a[0] = 0;
 
@@ -438,7 +464,8 @@ __interrupt void dmach1_isr(void)
 
     // Second RC filter
     err_b[0] = Vref_b - Vmeas_b;
-    u_b[0] = u_b[1] + (kp_b + ki_b)*err_b[0] - kp_b*err_b[1];                   // Incremental PI regulator
+    u_b[0] = u_b[1] + alfa_1beta_b*(err_b[0] - beta_b*err_b[1]);               // IMC based regulator
+    //u_b[0] = u_b[1] + (kp_b + ki_b)*err_b[0] - kp_b*err_b[1];                 // Incremental PI regulator
     if(u_b[0] > E) u_b[0] = E;                                                  // Saturation to prevent wind-up
     if(u_b[0] < 0) u_b[0] = 0;
 
