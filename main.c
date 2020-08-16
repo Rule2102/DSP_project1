@@ -3,25 +3,26 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define NOS 16                                      // Number of samples to be averaged on PWM period (over-sampling factor)
 #define UR 1                                        // Update rate (double or single)
-#define NOS_UR (NOS!=1 ? NOS/UR : 1)                // Ratio between NOS and UR (adjusted to include case without oversampling (NOS=1))
-#define LOG2_NOS_UR (log2(NOS_UR))                  // Used for averaging
+#define OVERSAMPLING 0                              // Logic variable to differentiate between case with and without oversampling
+#define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
+#define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
+#define LOG2_NOS_UR (log2(NOS_UR))                  // Used for averaging if oversampling==1
 #define FTB 100e6                                   // FTB=EPWMCLK=SYSCLKOUT/2 (time base clock ratio to EPWM clock = 1 assumed)
 #define FPWM 10e3                                   // Switching frequency
 // Counter period for ePWM used for switching, up-down mode assumed; closest to (Uint16)(FTB/(2*FPWM)-1) so that PWM_TBPRD%16=0
 #define PWM_TBPRD 4992
 #define TPWM (2*PWM_TBPRD/FTB)                      // Switching period
-// Counter period for ePWM used for ADC triggering, up-down mode assumed (adjusted to include case without oversampling (NOS=1))
-#define ADC_TBPRD (NOS!=1 ? PWM_TBPRD/NOS : PWM_TBPRD/UR)
-#define TS (TPWM/UR)                            // Regulation period
-#define LOAD_CMPA (UR==1 ? 0 : 2)
-#define LOAD_CMPB (UR==1 ? 0 : 2)
+#define ADC_TBPRD  (PWM_TBPRD/NOS)                  // Counter period for ePWM used for ADC triggering, up-down mode assumed
+#define TS (TPWM/UR)                                // Regulation period
+#define LOAD_CMPA (UR==1 ? 0 : 2)                   // Load CMPA on TBCTR=0 if UR==1, otherwise on both TBCTR=0 and TBCTR=TBPRD
+#define LOAD_CMPB (UR==1 ? 0 : 2)                   // Load CMPB on TBCTR=0 if UR==1, otherwise on both TBCTR=0 and TBCTR=TBPRD
+
 #define E 3.3f                                      // Available DC voltage
 #define EINVERSE (1 / E)                            // Inverse of E
 #define DEADTIME 0                                  // Dead time in number of counts (see EPwmXRegs.TBPRD)
 #define DEADTIME_HALF (DEADTIME / 2)                // Half of the dead time (see dmach1_isr)
-#define MAX_data_count 180                          // Size of an array used for data storage
+#define MAX_data_count 100                          // Size of an array used for data storage
 
 // Defines for VREG ADCINA0
 #define inv_tau_a 775.4342f                         // 1/(R*C)
@@ -32,7 +33,7 @@
 // Defines for VREG ADCINA0
 #define inv_tau_b 775.4342f                         // 1/(R*C)
 #define alfa_b 0.2f                                 // gain for IMC based voltage regulator
-#define beta_b (exp(-TS*inv_tau_b))               // parameter that describes system dynamics beta=exp(-Ts/(R*C))
+#define beta_b (exp(-TS*inv_tau_b))                 // parameter that describes system dynamics beta=exp(-Ts/(R*C))
 #define alfa_1beta_b (alfa_b/(1-beta_b))            // alfa/(1-beta)
 
 
@@ -79,14 +80,15 @@ Uint16 d_b = 0;                                // Duty cycle
 
 float32 dataOut_a[MAX_data_count] = {};        // Data storage
 float32 dataOut_b[MAX_data_count] = {};        // Data storage
-Uint16 canPrint = 0;                           // Logic signal used to trigger data storage
+float32 dataOut_c[MAX_data_count] = {};        // Data storage
+Uint16 canPrint = 1;                           // Logic signal used to trigger data storage
 long int data_count = 0;                       // Counter for data storage
 
 long int dma_count = 0;                        // Counter to check dmach1_isr
 long int adc_count_a = 0;                      // Counter to check adca1_isr
 long int adc_count_b = 0;                      // Counter to check adcb1_isr
+int dma_sgn = 1;     // logic variable to indicate state of the ping pong algorithm
 
-float32 pom1,pom2,pom3;
 
 void main(void)
 {
@@ -96,10 +98,6 @@ void main(void)
     memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (uint32_t) &RamfuncsLoadSize);
     InitFlash();
     */
-
-    pom1 = alfa_b/(1-beta_b);
-    pom2 = beta_b;
-    pom3 = TS;
 
     InitSysCtrl();
     InitGpio();
@@ -176,7 +174,7 @@ void Configure_GPIO(void)
     // Configure as ordinary GPIO to notify ADCB EOC (JUST FOR DEBUGGING)
     GpioCtrlRegs.GPCDIR.bit.GPIO67 = 1;         // Configure as output
     GpioCtrlRegs.GPCMUX1.bit.GPIO67 = 0;        // Mux as ordinary GPIO
-    GpioDataRegs.GPCCLEAR.bit.GPIO67 = 1;         // ensure 0 before setting Vref in PrintData()
+    GpioDataRegs.GPCCLEAR.bit.GPIO67 = 1;       // ensure 0 before setting Vref in PrintData()
     EDIS;
 
 }
@@ -195,10 +193,10 @@ void Configure_ePWM(void)
 
     EPwm1Regs.TBPRD = PWM_TBPRD;                // Counter period
 
-    EPwm1Regs.CMPCTL.bit.SHDWAMODE = 0;         // Shadow mode active for CMPA
-    EPwm1Regs.CMPCTL.bit.SHDWBMODE = 0;         // Shadow mode active for CMPB
-    EPwm1Regs.CMPCTL.bit.LOADAMODE = LOAD_CMPA;         // Load on either CTR = Zero (or CTR=PRD for CMPA
-    EPwm1Regs.CMPCTL.bit.LOADBMODE = LOAD_CMPB;         // Load on either CTR = Zero or CTR=PRD for CMPB
+    EPwm1Regs.CMPCTL.bit.SHDWAMODE = 0;                 // Shadow mode active for CMPA
+    EPwm1Regs.CMPCTL.bit.SHDWBMODE = 0;                 // Shadow mode active for CMPB
+    EPwm1Regs.CMPCTL.bit.LOADAMODE = LOAD_CMPA;         // Load on TBCTR=0 if UR==1, otherwise on either TBCTR=0 or TBCTR=TBPRD
+    EPwm1Regs.CMPCTL.bit.LOADBMODE = LOAD_CMPB;         // Load on TBCTR=0 if UR==1, otherwise on either TBCTR=0 or TBCTR=TBPRD
 
 
     EPwm1Regs.CMPA.bit.CMPA = 0;                // Value of the CMPA at the beginning
@@ -334,15 +332,16 @@ void PrintData()
 {
     if(canPrint)
     {
-        if(data_count == 0)
+        dataOut_a[data_count] =  Vmeas_a; // u_a[0];
+        dataOut_b[data_count] =  d_a; //Vmeas_b; // u_b[0];
+        dataOut_c[data_count] =  dma_sgn;
+        if(data_count == 10)
         {
-            GpioDataRegs.GPCSET.bit.GPIO67 = 1;
-            Vref_a = 0.5f;
-            Vref_b = 0.5f;
+            d_a = 2000;
+            Vref_a = 0.0f;
+            Vref_b = 0.0f;
         }
 
-        dataOut_a[data_count] =  Vmeas_a; // u_a[0];
-        dataOut_b[data_count] =  Vmeas_b; // u_b[0];
         data_count++;
 
         if (data_count >= MAX_data_count)
@@ -350,6 +349,7 @@ void PrintData()
             data_count = 0;
             canPrint=0;
             GpioDataRegs.GPCCLEAR.bit.GPIO67 = 1;
+            d_a = 0;
             Vref_a = 0.0f;
             Vref_b = 0.0f;
         }
@@ -392,67 +392,91 @@ __interrupt void adcb1_isr(void)
 
 __interrupt void dmach1_isr(void)
 {
-    int i_for;
-    static int dma_sgn = 1;
+    //GpioDataRegs.GPCSET.bit.GPIO67 = (data_count == 1);
+
+    #if (OVERSAMPLING)
+        int i_for = 0;
+    #endif
+
+
 
     Measurement_a = 0;
     Measurement_b = 0;
 
     dma_count++;
 
-    // change sign of the pointer to indicate state of the ping pong algorithm
+    // change dma_sgn to indicate state of the ping pong algorithm
     if (dma_sgn==1)
     {
         EALLOW;
-        DmaRegs.CH1.DST_ADDR_SHADOW = (Uint32)&DMAbuffer2[0];  //PING
+        DmaRegs.CH1.DST_ADDR_SHADOW = (Uint32)&DMAbuffer1[0];  //PING
         EDIS;
-        dma_sgn=-1;
+        dma_sgn = -1;
 
-        for (i_for=0;i_for<NOS_UR;i_for++)
-        {
-            Measurement_a+=DMAbuffer2[i_for];
-            Measurement_b+=DMAbuffer2[i_for+NOS_UR];
-        }
+        #if (OVERSAMPLING)
+            // Collect data to be averaged
+            for (i_for=0;i_for<NOS_UR;i_for++)
+            {
+                Measurement_a+=DMAbuffer2[i_for];
+                Measurement_b+=DMAbuffer2[i_for+NOS_UR];
+            }
+        #else
+            // Take last measurement
+            Measurement_a = DMAbuffer2[NOS_UR-1];
+            Measurement_b = DMAbuffer2[NOS_UR-1+NOS_UR];
+        #endif
     }
     else if (dma_sgn==-1)
     {
         EALLOW;
-        DmaRegs.CH1.DST_ADDR_SHADOW =  (Uint32)&DMAbuffer1[0];  //PONG
+        DmaRegs.CH1.DST_ADDR_SHADOW =  (Uint32)&DMAbuffer2[0];  //PONG
         EDIS;
-
         dma_sgn=1;
 
-        for (i_for=0;i_for<NOS_UR;i_for++)
-        {
-            Measurement_a+=DMAbuffer1[i_for];
-            Measurement_b+=DMAbuffer1[i_for+NOS_UR];
-        }
-
+        #if (OVERSAMPLING)
+            // Collect data to be averaged
+            for (i_for=0;i_for<NOS_UR;i_for++)
+            {
+                Measurement_a+=DMAbuffer1[i_for];
+                Measurement_b+=DMAbuffer1[i_for+NOS_UR];
+            }
+        #else
+            // Take last measurement
+            Measurement_a = DMAbuffer2[NOS_UR-1];
+            Measurement_b = DMAbuffer2[NOS_UR-1+NOS_UR];
+        #endif
     }
 
-    AvgMeas_a[0] = Measurement_a>>((int)LOG2_NOS_UR);                           // Averaging on regulation period
-#if (UR==2 && NOS!=1)
-    Vmeas_a = (float32)((AvgMeas_a[0] + AvgMeas_a[1])>>1);                      // Additional averaging if UR==2
-#else
-    Vmeas_a = (float32)(AvgMeas_a[0]);
-#endif
-    Vmeas_a = Vmeas_a*0.0007326f;                                                // ADC scaling 3.1 --> 4095 (zero offset assumed)
-    AvgMeas_a[1] = AvgMeas_a[0];
+    #if (OVERSAMPLING)
+        // Averaging on regulation period
+        AvgMeas_a[0] = Measurement_a>>((int)LOG2_NOS_UR);
+        AvgMeas_b[0] = Measurement_b>>((int)LOG2_NOS_UR);
+        #if (UR==2)
+            // Additional averaging if UR==2 to achieve given averaging on switching period
+            Vmeas_a = (float32)((AvgMeas_a[0] + AvgMeas_a[1])>>1);
+            Vmeas_b = (float32)((AvgMeas_b[0] + AvgMeas_b[1])>>1);
+            // Save averaged measurements for next additional averaging
+            AvgMeas_a[1] = AvgMeas_a[0];
+            AvgMeas_b[1] = AvgMeas_b[0];
+        #else
+            Vmeas_a = (float32)(AvgMeas_a[0]);
+            Vmeas_b = (float32)(AvgMeas_b[0]);
+        #endif
+    #else
+        // Take last measurement stored in DMA buffer
+        Vmeas_a = (float32)Measurement_a;
+        Vmeas_b = (float32)Measurement_b;
+    #endif
 
-    AvgMeas_b[0] = Measurement_b>>((int)LOG2_NOS_UR);                           // Averaging on regulation period
-#if (UR==2 && NOS!=1)
-    Vmeas_b = (float32)((AvgMeas_b[0] + AvgMeas_b[1])>>1);                      // Additional averaging if UR==2
-#else
-    Vmeas_b = (float32)(AvgMeas_b[0]);
-#endif
-    Vmeas_b = Vmeas_b*0.0007326f;                                                // ADC scaling 3.1 --> 4095 (zero offset assumed)
-    AvgMeas_b[1] = AvgMeas_b[0];
+    // ADC scaling 3.0 --> 4095 (zero offset assumed)
+    Vmeas_a = Vmeas_a*0.0007326f;
+    Vmeas_b = Vmeas_b*0.0007326f;
 
     // Regulation
 
     // First RC filter
     err_a[0] = Vref_a - Vmeas_a;
-    u_a[0] = u_a[1] + alfa_1beta_a*(err_a[0] - beta_a*err_a[1]);               // IMC based regulator
+    u_a[0] = u_a[1] + alfa_1beta_a*(err_a[0] - beta_a*err_a[1]);                // IMC based regulator
     //u_a[0] = u_a[1] + (kp_a + ki_a)*err_a[0] - kp_a*err_a[1];                 // Incremental PI regulator
     if(u_a[0] > E) u_a[0] = E;                                                  // Saturation to prevent wind-up
     if(u_a[0] < 0) u_a[0] = 0;
@@ -460,11 +484,11 @@ __interrupt void dmach1_isr(void)
     err_a[1] = err_a[0];
     u_a[1] = u_a[0];
 
-    d_a = (Uint16)(PWM_TBPRD*u_a[0]*EINVERSE);                                  // Calculate duty cycle
+    //d_a = (Uint16)(PWM_TBPRD*u_a[0]*EINVERSE);                                  // Calculate duty cycle
 
     // Second RC filter
     err_b[0] = Vref_b - Vmeas_b;
-    u_b[0] = u_b[1] + alfa_1beta_b*(err_b[0] - beta_b*err_b[1]);               // IMC based regulator
+    u_b[0] = u_b[1] + alfa_1beta_b*(err_b[0] - beta_b*err_b[1]);                // IMC based regulator
     //u_b[0] = u_b[1] + (kp_b + ki_b)*err_b[0] - kp_b*err_b[1];                 // Incremental PI regulator
     if(u_b[0] > E) u_b[0] = E;                                                  // Saturation to prevent wind-up
     if(u_b[0] < 0) u_b[0] = 0;
