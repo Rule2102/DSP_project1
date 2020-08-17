@@ -2,30 +2,26 @@
 clear all
 clc
 
-Nos = 16;           % oversampling rate
-ur = 2;             % update rate
+ur = 1;             % update rate
+OVERSAMPLING = 0;   % logic variable to determine with/without oversampling
 
 % specify RC filter to be simulated
 ADCINA0 = 1;
 %}
 
+Nos = 16;           % number of samples to be averaged on switching period
+% if OVERSAMPLING then Nos is the oversampling rate
+
 fcpu = 200e6;       % CPU clock
-ftbclk = fcpu/2;    % EPWM time base clock
-Ttbclk = 1/ftbclk;
+ftbclk = fcpu/2;    % EPWM time base clock frequency
+Ttbclk = 1/ftbclk;  % EPWM time base clock period
 fpwm = 10e3;        % desierd switching frequency
 
 % PWM_TBPRD period of switching counter = floor(ftbclk/(2*fpwm) - 1) 
-PWM_TBPRD = 4992; %!!!!! ADJUSTED FOR Nos=16 (4992 instead of 4998)
+PWM_TBPRD = 4992; % !!!!! ADJUSTED FOR Nos=16 (4992 instead of 4998)
 Tpwm = 2*PWM_TBPRD/ftbclk;      % resulting switching period
 Ts = Tpwm/ur;                   % regulation period
-
-% ADC_TBPRD period of faster counter used for ADC triggering
-if(Nos~=1)
-    ADC_TBPRD = PWM_TBPRD/Nos;
-else
-    ADC_TBPRD = PWM_TBPRD/ur;
-end
-Tadc = 2*ADC_TBPRD/ftbclk;     % ADC period
+Tadc = Tpwm/Nos;
 
 % simulation step size
 Tsim = gcd(gcd(Ttbclk*1e9,Tadc*1e9),Ts*1e9)/1e9; 
