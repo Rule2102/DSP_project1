@@ -25,13 +25,13 @@
 #define MAX_data_count 180                          // Size of an array used for data storage
 
 // Defines for VREG ADCINA0
-#define inv_tau_a 775.4342f                         // 1/(R*C)
+#define inv_tau_a 916.4223f                         // 1/(R*C)
 #define alfa_a 0.2f                                 // gain for IMC based voltage regulator
 #define beta_a (exp(-TS*inv_tau_a))                 // parameter that describes system dynamics beta=exp(-Ts/(R*C))
 #define alfa_1beta_a (alfa_a/(1-beta_a))            // alfa/(1-beta)
 
 // Defines for VREG ADCINA0
-#define inv_tau_b 775.4342f                         // 1/(R*C)
+#define inv_tau_b 916.4223f                         // 1/(R*C)
 #define alfa_b 0.2f                                 // gain for IMC based voltage regulator
 #define beta_b (exp(-TS*inv_tau_b))                 // parameter that describes system dynamics beta=exp(-Ts/(R*C))
 #define alfa_1beta_b (alfa_b/(1-beta_b))            // alfa/(1-beta)
@@ -79,9 +79,8 @@ float32 err_b[2] = {0.0f,0.0f};                // Error err[1]=previous, err[0]=
 Uint16 d_b = 0;                                // Duty cycle
 //float32 kp_b = 1.8f, ki_b = 0.2f/(float32)UR;  // PI voltage regulator
 
-float32 dataOut_a[MAX_data_count] = {};        // Data storage
-float32 dataOut_b[MAX_data_count] = {};        // Data storage
-float32 dataOut_c[MAX_data_count] = {};        // Data storage
+float32 dataOut_1[MAX_data_count] = {};        // Data storage
+float32 dataOut_2[MAX_data_count] = {};        // Data storage
 Uint16 canPrint = 1;                           // Logic signal used to trigger data storage
 long int data_count = 0;                       // Counter for data storage
 
@@ -138,9 +137,9 @@ void main(void)
     ERTM;                           // Enable Global real time interrupt DBG
 
     // Enable interrupt on PIE level
-   PieCtrlRegs.PIEIER1.bit.INTx1 = 1;          // ADCA
-   //PieCtrlRegs.PIEIER1.bit.INTx2 = 1;        // ADCB
-   PieCtrlRegs.PIEIER7.bit.INTx1 = 1;          // DMA
+    PieCtrlRegs.PIEIER1.bit.INTx1 = 1;          // ADCA
+    //PieCtrlRegs.PIEIER1.bit.INTx2 = 1;        // ADCB
+    PieCtrlRegs.PIEIER7.bit.INTx1 = 1;          // DMA
 
     EALLOW;
     CpuSysRegs.PCLKCR13.bit.ADC_A = 1;          // Enable SYSCLK to ADCA
@@ -149,8 +148,8 @@ void main(void)
     CpuSysRegs.PCLKCR0.bit.TBCLKSYNC = 1;      // Sync TBCLK with CPU clock
     EDIS;
 
-    Vref_a = 0.5f;
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
+    Vref_b = 0.5f;
 
     while(1)
         {
@@ -178,6 +177,7 @@ void Configure_GPIO(void)
     // Configure as ordinary GPIO to measure isr duration (JUST FOR DEBUGGING)
     GpioCtrlRegs.GPCDIR.bit.GPIO66 = 1;         // Configure as output
     GpioCtrlRegs.GPCMUX1.bit.GPIO66 = 0;        // Mux as ordinary GPIO
+    GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;       // ensure 0 before first interrupt occurs
 
     // Configure as ordinary GPIO to notify setting of the reference voltage (FOR OSCILOSCOPE MEASUREMENTS)
     GpioCtrlRegs.GPCDIR.bit.GPIO67 = 1;         // Configure as output
@@ -190,7 +190,6 @@ void Configure_GPIO(void)
 void Configure_ePWM(void)
 {
 
-
     // EPWM1 for switching
 
     EPwm1Regs.TBCTL.bit.CLKDIV =  0;            // CLKDIV=1 TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
@@ -199,7 +198,7 @@ void Configure_ePWM(void)
     EPwm1Regs.TBCTR = 0x0000;                   // Clear counter
     EPwm1Regs.TBCTL.bit.PHSEN = 0;              // Phasing disabled
 
-    EPwm1Regs.TBPRD = PWM_TBPRD;                 // Counter period
+    EPwm1Regs.TBPRD = PWM_TBPRD;                        // Counter period
 
     EPwm1Regs.CMPCTL.bit.SHDWAMODE = 0;                 // Shadow mode active for CMPA
     EPwm1Regs.CMPCTL.bit.SHDWBMODE = 0;                 // Shadow mode active for CMPB
@@ -340,20 +339,16 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_a[data_count] =  Vmeas_a; // u_a[0];
-        dataOut_b[data_count] =  u_a[0]; //Vmeas_b; // u_b[0];
-        if(data_count == 0)
-        {
-            Vref_a = 0.5f;
-        }
+        dataOut_1[data_count] =  Vmeas_b;
+        dataOut_2[data_count] =  u_b[0];
 
         data_count++;
 
         if (data_count >= MAX_data_count)
         {
             data_count = 0;
-            canPrint=0;
-            Vref_a = 0.0f;
+            Vref_b = 0;
+            canPrint = 0;
         }
 
     }
@@ -362,13 +357,13 @@ void PrintData()
 
 __interrupt void adca1_isr(void)
 {
-    GpioDataRegs.GPCSET.bit.GPIO66 = 1;             // notify adca1_isr start
+    GpioDataRegs.GPCSET.bit.GPIO66 = 1;             // Notify adca1_isr start
 
     adc_count_a++;
 
-    AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;
+    AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;          // Clear interrupt flag
 
-    if(adc_count_a==NOS_UR)
+    if(adc_count_a==NOS)
             StartDMACH1();                          // Peripheral interrupt enabled (here instead of in main to achieve synchronization)
 
     GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;           // notify adca1_isr end
@@ -382,7 +377,7 @@ __interrupt void adcb1_isr(void)
 {
     adc_count_b++;
 
-    AdcbRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;
+    AdcbRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;         // Clear interrupt flag
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;        // Clear acknowledge register
 
 }
@@ -390,13 +385,13 @@ __interrupt void adcb1_isr(void)
 
 __interrupt void dmach1_isr(void)
 {
-    GpioDataRegs.GPCSET.bit.GPIO66 = 1;             // notify dmach1_isr start
+    GpioDataRegs.GPCSET.bit.GPIO66 = 1;             // Notify dmach1_isr start
 
     #if (OVERSAMPLING)
         int i_for = 0;
     #endif
 
-    static int dma_sgn = 1;     // logic variable to indicate state of the ping pong algorithm
+    static int dma_sgn = 1;     // Logic variable to indicate state of the ping pong algorithm
 
     Measurement_a = 0;
     Measurement_b = 0;
@@ -407,7 +402,8 @@ __interrupt void dmach1_isr(void)
     if (dma_sgn==1)
     {
         EALLOW;
-        DmaRegs.CH1.DST_ADDR_SHADOW = (Uint32)&DMAbuffer2[0];  //PING DST ADRESA ZA SLEDECI PUT - ti trenutno pises u DMAbuffer1, a ja treba da citam iz proslog!!!
+        // DST ADDRESS FOR NEXT DMA CYCLE (currently reading from previously active buffer)
+        DmaRegs.CH1.DST_ADDR_SHADOW = (Uint32)&DMAbuffer2[0];  //PING
         EDIS;
         dma_sgn = -1;
 
@@ -427,6 +423,7 @@ __interrupt void dmach1_isr(void)
     else if (dma_sgn==-1)
     {
         EALLOW;
+        // DST ADDRESS FOR NEXT DMA CYCLE (currently reading from previously active buffer)
         DmaRegs.CH1.DST_ADDR_SHADOW =  (Uint32)&DMAbuffer1[0];  //PONG
         EDIS;
         dma_sgn=1;
@@ -503,7 +500,7 @@ __interrupt void dmach1_isr(void)
 
     PrintData();                                      // Data storage (JUST FOR DEBUGGING)
 
-    GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;             // notify dmach1_isr end
+    GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;             // Notify dmach1_isr end
 
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP7;           // Clear acknowledge register
 

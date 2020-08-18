@@ -31,8 +31,8 @@ E=3.3;                  % available voltage
 % RC connected to ADCINA0
 if(ADCINA0)
     R=9.92e3;            % resistance 
-    C=130e-9;            % capacitance 130e-9
-    Rp=51e3;             % capacitor lekeage
+    C=110e-9;            % capacitance 130e-9
+    Rp=50e3;             % capacitor lekeage
 else
     % RC connected to ADCINB2
     R=9.92e3;        % resistance
