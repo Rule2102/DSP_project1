@@ -3,8 +3,8 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 2                                        // Update rate (double or single)
-#define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
+#define UR 1                                        // Update rate (double or single)
+#define OVERSAMPLING 0                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
 #define LOG2_NOS_UR (log2(NOS_UR))                  // Used for averaging if oversampling==1
@@ -23,6 +23,7 @@
 #define DEADTIME 0                                  // Dead time in number of counts (see EPwmXRegs.TBPRD)
 #define DEADTIME_HALF (DEADTIME / 2)                // Half of the dead time (see dmach1_isr)
 #define MAX_data_count 180                          // Size of an array used for data storage
+#define MAX_buf_count 0
 
 // Defines for VREG ADCINA0
 #define inv_tau_a 916.4223f                         // 1/(R*C)
@@ -55,7 +56,7 @@ void Clear_DMAbuffer(void);                    // Clear DMA buffers
 void Configure_GPIO(void);                     // Configure GPIO
 void PrintData(void);                          // Data storage used to export monitored variables to .dat file
 
-__interrupt void adca1_isr(void);              // JUST FOR DEBIGGING to check ADCA
+__interrupt void adca1_isr(void);              // Important for synchronization (StartDMACH1() after NOS adca1_isr counts)
 //__interrupt void adcb1_isr(void);              // JUST FOR DEBIGGING to check ADCB
 __interrupt void dmach1_isr(void);             // Regulation takes place in dmach1_isr
 
@@ -81,8 +82,11 @@ Uint16 d_b = 0;                                // Duty cycle
 
 float32 dataOut_1[MAX_data_count] = {};        // Data storage
 float32 dataOut_2[MAX_data_count] = {};        // Data storage
+float32 dataOut_buf[MAX_buf_count*NOS_UR] = {};        // Data storage
 Uint16 canPrint = 1;                           // Logic signal used to trigger data storage
+Uint16 BUF = 0;
 long int data_count = 0;                       // Counter for data storage
+long int buf_count = 0;                       // Counter for data storage
 
 long int dma_count = 0;                        // Counter to check dmach1_isr
 long int adc_count_a = 0;                      // Counter to check adca1_isr
@@ -119,7 +123,7 @@ void main(void)
     DMAInitialize();
     Configure_DMA();
 
-    //StartDMA() moved to adca1_isr so that DMA starts after NOS_UR-th adca1 count in order to achieve synchronization
+    //StartDMA() moved to adca1_isr so that DMA starts after NOS-th adca1 count in order to achieve synchronization
     // (for some reason SOC is not sent on the very first TBCTR=0 event (after turning on TB clock))
 
     // Write the ISR vector for each interrupt to the appropriate location in the PIE vector table
@@ -142,14 +146,15 @@ void main(void)
     PieCtrlRegs.PIEIER7.bit.INTx1 = 1;          // DMA
 
     EALLOW;
-    CpuSysRegs.PCLKCR13.bit.ADC_A = 1;          // Enable SYSCLK to ADCA
-    CpuSysRegs.PCLKCR13.bit.ADC_B = 1;          // Enable SYSCLK to ADCB
-    CpuSysRegs.PCLKCR0.bit.DMA = 1;             // Enable SYSCLK to DMA
+    CpuSysRegs.PCLKCR13.bit.ADC_A = 1;          // Enable SYSCLK to ADCA !!! not needed already exists in InitPeripheralClocks();
+    CpuSysRegs.PCLKCR13.bit.ADC_B = 1;          // Enable SYSCLK to ADCB !!! not needed already exists in InitPeripheralClocks();
+    CpuSysRegs.PCLKCR0.bit.DMA = 1;             // Enable SYSCLK to DMA !!! not needed already exists in InitPeripheralClocks();
     CpuSysRegs.PCLKCR0.bit.TBCLKSYNC = 1;      // Sync TBCLK with CPU clock
     EDIS;
 
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
     Vref_b = 0.5f;
+    //u_b[0] = 1.5f;
 
     while(1)
         {
@@ -250,6 +255,7 @@ void Configure_ADC(void)
     AdcaRegs.ADCSOC0CTL.bit.TRIGSEL = 13;       // Trigger on ePWM5 SOC0
 
     AdcaRegs.ADCINTSEL1N2.bit.INT1SEL = 0;      // EOC A0 will set ADCINT1 flag
+    AdcaRegs.ADCINTSEL1N2.bit.INT1CONT = 1;     // ADCINT1 pulses are generated whenever an EOC pulse is generated irrespective of whether the flag bit is cleared or not
     AdcaRegs.ADCINTSEL1N2.bit.INT1E = 1;        // Enable ADCINT1
     AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;      // Make sure INT1 flag is cleared
 
@@ -364,7 +370,10 @@ __interrupt void adca1_isr(void)
     AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;          // Clear interrupt flag
 
     if(adc_count_a==NOS)
-            StartDMACH1();                          // Peripheral interrupt enabled (here instead of in main to achieve synchronization)
+    {
+        StartDMACH1();                          // Peripheral interrupt enabled (here instead of in main to achieve synchronization)
+        PieCtrlRegs.PIEIER1.bit.INTx1 = 0;
+    }
 
     GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;           // notify adca1_isr end
 
@@ -391,6 +400,7 @@ __interrupt void dmach1_isr(void)
         int i_for = 0;
     #endif
 
+    int i_for = 0;
     static int dma_sgn = 1;     // Logic variable to indicate state of the ping pong algorithm
 
     Measurement_a = 0;
@@ -413,11 +423,18 @@ __interrupt void dmach1_isr(void)
             {
                 Measurement_a+=DMAbuffer2[i_for];
                 Measurement_b+=DMAbuffer2[i_for+NOS_UR];
+                if(BUF)
+                    dataOut_buf[i_for+buf_count*NOS_UR]=DMAbuffer2[i_for+NOS_UR];
+
             }
         #else
             // Take last measurement
             Measurement_a = DMAbuffer2[NOS_UR-1];
             Measurement_b = DMAbuffer2[NOS_UR-1+NOS_UR];
+            if(BUF)
+                for (i_for=0;i_for<NOS_UR;i_for++)
+                    dataOut_buf[i_for+buf_count*NOS_UR]=DMAbuffer2[i_for+NOS_UR];
+
         #endif
     }
     else if (dma_sgn==-1)
@@ -434,13 +451,27 @@ __interrupt void dmach1_isr(void)
             {
                 Measurement_a+=DMAbuffer1[i_for];
                 Measurement_b+=DMAbuffer1[i_for+NOS_UR];
+                if(BUF)
+                    dataOut_buf[i_for+buf_count*NOS_UR]=DMAbuffer1[i_for+NOS_UR];
+
             }
         #else
             // Take last measurement
             Measurement_a = DMAbuffer1[NOS_UR-1];
             Measurement_b = DMAbuffer1[NOS_UR-1+NOS_UR];
+            if(BUF)
+                for (i_for=0;i_for<NOS_UR;i_for++)
+                    dataOut_buf[i_for+buf_count*NOS_UR]=DMAbuffer1[i_for+NOS_UR];
+
         #endif
     }
+
+    buf_count++;
+    if (buf_count >= MAX_buf_count)
+            {
+                buf_count = 0;
+                BUF = 0;
+            }
 
     #if (OVERSAMPLING)
         // Averaging on regulation period
@@ -493,12 +524,13 @@ __interrupt void dmach1_isr(void)
 
     d_b = (Uint16)(PWM_TBPRD*u_b[0]*EINVERSE);                                  // Calculate duty cycle
 
-    EALLOW;
     EPwm1Regs.CMPA.bit.CMPA = d_a + DEADTIME_HALF;    // Set CMPA
     EPwm1Regs.CMPB.bit.CMPB = d_b + DEADTIME_HALF;    // Set CMPB
-    EDIS;
 
     PrintData();                                      // Data storage (JUST FOR DEBUGGING)
+
+    d_b = (Uint16)(PWM_TBPRD*u_b[0]*EINVERSE);
+    EPwm1Regs.CMPB.bit.CMPB = d_b + DEADTIME_HALF;    // Set CMPB
 
     GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;             // Notify dmach1_isr end
 
