@@ -22,7 +22,7 @@
 #define EINVERSE (1 / E)                            // Inverse of E
 #define DEADTIME 0                                  // Dead time in number of counts (see EPwmXRegs.TBPRD)
 #define DEADTIME_HALF (DEADTIME / 2)                // Half of the dead time (see dmach1_isr)
-#define MAX_data_count 180                          // Size of an array used for data storage
+#define MAX_data_count 0                          // Size of an array used for data storage
 #define MAX_buf_count 0
 
 // Defines for VREG ADCINA0
@@ -82,9 +82,9 @@ Uint16 d_b = 0;                                // Duty cycle
 
 float32 dataOut_1[MAX_data_count] = {};        // Data storage
 float32 dataOut_2[MAX_data_count] = {};        // Data storage
-float32 dataOut_buf[MAX_buf_count*NOS_UR] = {};        // Data storage
+Uint16 dataOut_buf[MAX_buf_count*NOS_UR] = {};        // Data storage
 Uint16 canPrint = 1;                           // Logic signal used to trigger data storage
-Uint16 BUF = 0;
+Uint16 BUF = 1;
 long int data_count = 0;                       // Counter for data storage
 long int buf_count = 0;                       // Counter for data storage
 
@@ -159,6 +159,7 @@ void main(void)
     while(1)
         {
         }
+
 
 }
 
@@ -396,10 +397,6 @@ __interrupt void dmach1_isr(void)
 {
     GpioDataRegs.GPCSET.bit.GPIO66 = 1;             // Notify dmach1_isr start
 
-    #if (OVERSAMPLING)
-        int i_for = 0;
-    #endif
-
     int i_for = 0;
     static int dma_sgn = 1;     // Logic variable to indicate state of the ping pong algorithm
 
@@ -527,10 +524,7 @@ __interrupt void dmach1_isr(void)
     EPwm1Regs.CMPA.bit.CMPA = d_a + DEADTIME_HALF;    // Set CMPA
     EPwm1Regs.CMPB.bit.CMPB = d_b + DEADTIME_HALF;    // Set CMPB
 
-    PrintData();                                      // Data storage (JUST FOR DEBUGGING)
-
-    d_b = (Uint16)(PWM_TBPRD*u_b[0]*EINVERSE);
-    EPwm1Regs.CMPB.bit.CMPB = d_b + DEADTIME_HALF;    // Set CMPB
+    //PrintData();                                      // Data storage (JUST FOR DEBUGGING)
 
     GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;             // Notify dmach1_isr end
 
