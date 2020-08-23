@@ -24,10 +24,10 @@ ORDERED_OBJS += \
 "./F2837xD_SysCtrl.obj" \
 "./F2837xD_usDelay.obj" \
 "./main.obj" \
+"../cmd/2837xD_RAM_lnk_cpu1.cmd" \
 $(GEN_CMDS__FLAG) \
 -l"C:/ti/c2000/C2000Ware_3_02_00_00/libraries/math/FPUfastRTS/c28/lib/rts2800_fpu32_fast_supplement.lib" \
 -lrts2800_fpu32.lib \
--l"C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/cmd/2837xD_RAM_lnk_cpu1.cmd" \
 -l"C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/headers/cmd/F2837xD_Headers_nonBIOS_cpu1.cmd" \
 
 -include ../makefile.init
@@ -38,7 +38,9 @@ RMDIR := RMDIR /S/Q
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include subdir_vars.mk
+-include cmd/subdir_vars.mk
 -include subdir_rules.mk
+-include cmd/subdir_rules.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -148,11 +150,11 @@ BIN_OUTPUTS__QUOTED += \
 
 
 # All Target
-all: $(OBJS) $(GEN_CMDS)
+all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@$(MAKE) --no-print-directory -Onone "project1.out"
 
 # Tool invocations
-project1.out: $(OBJS) $(GEN_CMDS)
+project1.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: C2000 Linker'
 	"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/bin/cl2000" -v28 -ml -mt --cla_support=cla1 --float_support=fpu32 --tmu_support=tmu0 --vcu_support=vcu2 -Ooff --fp_mode=relaxed --define=CPU1 --define=_LAUNCHXL_F28379D -g --diag_warning=225 --diag_wrap=off --display_error_number --abi=coffabi -z -m"project1.map" --stack_size=0x200 --warn_sections -i"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/lib" -i"C:/ti/c2000/C2000Ware_3_02_00_00/libraries/math/FPUfastRTS/c28/lib" -i"C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/cmd" -i"C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/headers/cmd" -i"C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/include" --reread_libs --diag_wrap=off --display_error_number --xml_link_info="project1_linkInfo.xml" --entry_point=code_start --rom_model -o "project1.out" $(ORDERED_OBJS)
