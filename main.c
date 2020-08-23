@@ -170,6 +170,10 @@ void Configure_GPIO(void)
     GpioCtrlRegs.GPADIR.bit.GPIO1 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;         // Mux to ePWM1B
 
+    // Configure as EPWM2A output (to notify EPWM1_TBCTR=0 & EPWM1_TBCTR=TBPRD)
+    GpioCtrlRegs.GPADIR.bit.GPIO2 = 1;          // Configure as output
+    GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 1;         // Mux to ePWM2A
+
     // Configure as EPWM5A output (JUST FOR DEBUGGING)
     GpioCtrlRegs.GPADIR.bit.GPIO8 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO8 = 1;         // Mux to ePWM5A
@@ -192,11 +196,11 @@ void Configure_ePWM(void)
 
     // EPWM1 for switching
 
-    EPwm1Regs.TBCTL.bit.CLKDIV =  0;            // CLKDIV=1 TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
-    EPwm1Regs.TBCTL.bit.HSPCLKDIV = 0;          // HSPCLKDIV=1
-    EPwm1Regs.TBCTL.bit.CTRMODE = 2;            // Up-down mode
-    EPwm1Regs.TBCTR = 0x0000;                   // Clear counter
-    EPwm1Regs.TBCTL.bit.PHSEN = 0;              // Phasing disabled
+    EPwm1Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1 TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
+    EPwm1Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
+    EPwm1Regs.TBCTL.bit.CTRMODE = 2;           // Up-down mode
+    EPwm1Regs.TBCTR = 0x0000;                  // Clear counter
+    EPwm1Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
 
     EPwm1Regs.TBPRD = PWM_TBPRD;                        // Counter period
 
@@ -205,13 +209,26 @@ void Configure_ePWM(void)
     EPwm1Regs.CMPCTL.bit.LOADAMODE = LOAD_CMPA;         // Load on TBCTR=0 if UR==1, otherwise on either TBCTR=0 or TBCTR=TBPRD
     EPwm1Regs.CMPCTL.bit.LOADBMODE = LOAD_CMPB;         // Load on TBCTR=0 if UR==1, otherwise on either TBCTR=0 or TBCTR=TBPRD
 
-    EPwm1Regs.CMPA.bit.CMPA = 0;                // Value of the CMPA at the beginning
-    EPwm1Regs.AQCTLA.bit.CAU = 1;               // Set EPWMA low on TBCTR=CMPA during up count
-    EPwm1Regs.AQCTLA.bit.CAD = 2;               // Set EPWMA high on TBCTR=CMPA during down count
+    EPwm1Regs.CMPA.bit.CMPA = 0;               // Value of the CMPA at the beginning
+    EPwm1Regs.AQCTLA.bit.CAU = 1;              // Set EPWMA low on TBCTR=CMPA during up count
+    EPwm1Regs.AQCTLA.bit.CAD = 2;              // Set EPWMA high on TBCTR=CMPA during down count
 
-    EPwm1Regs.CMPB.bit.CMPB = 0;                // Value of the CMPB at the beginning
-    EPwm1Regs.AQCTLB.bit.CBU = 1;               // Set EPWMB low on TBCTR=CMPB during up count
-    EPwm1Regs.AQCTLB.bit.CBD = 2;               // Set EPWMB high on TBCTR=CMPB during down count
+    EPwm1Regs.CMPB.bit.CMPB = 0;               // Value of the CMPB at the beginning
+    EPwm1Regs.AQCTLB.bit.CBU = 1;              // Set EPWMB low on TBCTR=CMPB during up count
+    EPwm1Regs.AQCTLB.bit.CBD = 2;              // Set EPWMB high on TBCTR=CMPB during down count
+
+    // EPWM2 for notifying EPWM1_TBCTR=0 & EPWM1_TBCTR=TBPRD
+
+    EPwm2Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1     TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
+    EPwm2Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
+    EPwm2Regs.TBCTL.bit.CTRMODE = 2;           // Up-down mode
+    EPwm2Regs.TBCTR = 0x0000;                  // Clear counter
+    EPwm2Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
+
+    EPwm2Regs.TBPRD = PWM_TBPRD;               // Counter period
+
+    EPwm2Regs.AQCTLA.bit.ZRO = 2;              // Set PWM A high on TBCTR=0
+    EPwm2Regs.AQCTLA.bit.PRD = 1;              // Set PWM A low on TBCTR=TBPRD
 
     // EPWM5 for ADC triggering
 
@@ -219,7 +236,7 @@ void Configure_ePWM(void)
     EPwm5Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
     EPwm5Regs.TBCTL.bit.CTRMODE = 2;           // Up-down mode
     EPwm5Regs.TBCTR = 0x0000;                  // Clear counter
-    EPwm1Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
+    EPwm5Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
 
     EPwm5Regs.TBPRD = ADC_TBPRD;               // Counter period
     EPwm5Regs.ETSEL.bit.SOCASEL = 1;           // ADCSOCA on TBCTR=0
@@ -250,6 +267,7 @@ void Configure_ADC(void)
     AdcaRegs.ADCSOC0CTL.bit.TRIGSEL = 13;       // Trigger on ePWM5 SOC0
 
     AdcaRegs.ADCINTSEL1N2.bit.INT1SEL = 0;      // EOC A0 will set ADCINT1 flag
+    AdcaRegs.ADCINTSEL1N2.bit.INT1CONT = 1;     // ADCINT1 on each EOC pulse regardless of the flag bit (to avoid adca1_isr)
     AdcaRegs.ADCINTSEL1N2.bit.INT1E = 1;        // Enable ADCINT1
     AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;      // Make sure INT1 flag is cleared
 
@@ -347,7 +365,7 @@ void PrintData()
         if (data_count >= MAX_data_count)
         {
             data_count = 0;
-            Vref_b = 0;
+            Vref_b = 0.0f;
             canPrint = 0;
         }
 
@@ -364,7 +382,11 @@ __interrupt void adca1_isr(void)
     AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;          // Clear interrupt flag
 
     if(adc_count_a==NOS)
-            StartDMACH1();                          // Peripheral interrupt enabled (here instead of in main to achieve synchronization)
+        {
+            StartDMACH1();                          // Run DMA (here instead of in main to achieve synchronization)
+            PieCtrlRegs.PIEIER1.bit.INTx1 = 0;      // Disable this interrupt from happening again
+        }
+
 
     GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;           // notify adca1_isr end
 
