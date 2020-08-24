@@ -3,8 +3,8 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 2                                        // Update rate (double or single)
-#define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
+#define UR 1                                        // Update rate (double or single)
+#define OVERSAMPLING 0                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
 #define LOG2_NOS_UR (log2(NOS_UR))                  // Used for averaging if oversampling==1
@@ -137,7 +137,7 @@ void main(void)
     ERTM;                           // Enable Global real time interrupt DBG
 
     // Enable interrupt on PIE level
-    PieCtrlRegs.PIEIER1.bit.INTx1 = 1;          // ADCA
+    PieCtrlRegs.PIEIER1.bit.INTx1 = 0;          // ADCA
     //PieCtrlRegs.PIEIER1.bit.INTx2 = 1;        // ADCB
     PieCtrlRegs.PIEIER7.bit.INTx1 = 1;          // DMA
 
@@ -150,6 +150,8 @@ void main(void)
 
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
     Vref_b = 0.5f;
+
+    StartDMACH1();
 
     while(1)
         {
@@ -305,7 +307,7 @@ void Configure_DMA(void)
     DmaRegs.CH1.MODE.bit.ONESHOT = 0;               // 1 burst per SW interrupt
     DmaRegs.CH1.MODE.bit.CONTINUOUS = 1;            // Do not stop after each transfer
     DmaRegs.CH1.MODE.bit.DATASIZE = 0;              // 16-bit data size transfers
-    DmaRegs.CH1.MODE.bit.CHINTMODE = 0;             // Generate ePIE interrupt at the beginning of transfer
+    DmaRegs.CH1.MODE.bit.CHINTMODE = 1;             // Generate ePIE interrupt at the beginning of transfer 0
     DmaRegs.CH1.MODE.bit.CHINTE = 1;                // Channel Interrupt to CPU enabled
 
     // Set up BURST registers
@@ -433,13 +435,13 @@ __interrupt void dmach1_isr(void)
             // Collect data to be averaged
             for (i_for=0;i_for<NOS_UR;i_for++)
             {
-                Measurement_a+=DMAbuffer2[i_for];
-                Measurement_b+=DMAbuffer2[i_for+NOS_UR];
+                Measurement_a+=DMAbuffer1[i_for];
+                Measurement_b+=DMAbuffer1[i_for+NOS_UR];
             }
         #else
             // Take last measurement
-            Measurement_a = DMAbuffer2[NOS_UR-1];
-            Measurement_b = DMAbuffer2[NOS_UR-1+NOS_UR];
+            Measurement_a = DMAbuffer1[NOS_UR-1];
+            Measurement_b = DMAbuffer1[NOS_UR-1+NOS_UR];
         #endif
     }
     else if (dma_sgn==-1)
@@ -454,13 +456,13 @@ __interrupt void dmach1_isr(void)
             // Collect data to be averaged
             for (i_for=0;i_for<NOS_UR;i_for++)
             {
-                Measurement_a+=DMAbuffer1[i_for];
-                Measurement_b+=DMAbuffer1[i_for+NOS_UR];
+                Measurement_a+=DMAbuffer2[i_for];
+                Measurement_b+=DMAbuffer2[i_for+NOS_UR];
             }
         #else
             // Take last measurement
-            Measurement_a = DMAbuffer1[NOS_UR-1];
-            Measurement_b = DMAbuffer1[NOS_UR-1+NOS_UR];
+            Measurement_a = DMAbuffer2[NOS_UR-1];
+            Measurement_b = DMAbuffer2[NOS_UR-1+NOS_UR];
         #endif
     }
 

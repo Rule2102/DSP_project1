@@ -26,18 +26,18 @@ Tadc = Tpwm/Nos;
 % simulation step size
 Tsim = gcd(gcd(Ttbclk*1e9,Tadc*1e9),Ts*1e9)/1e9; 
 
-E=3.3;                  % available voltage
+E = 3.3;                  % available voltage
 
 % RC connected to ADCINA0
 if(ADCINA0)
-    R=9.92e3;            % resistance 
-    C=110e-9;            % capacitance 130e-9
-    Rp=50e3;             % capacitor lekeage
+    R = 9.92e3;            % resistance 
+    C = 110e-9;            % capacitance 130e-9
+    Rp = 50e3;             % capacitor lekeage
 else
     % RC connected to ADCINB2
-    R=9.92e3;        % resistance
-    C=110e-9;        % capacitance
-    Rp=1000e3;       % capacitor lekeage
+    R = 9.92e3;        % resistance
+    C = 110e-9;        % capacitance
+    Rp = 1000e3;       % capacitor lekeage
 end
 
 beta = exp(-Ts/(R*C));      % parametar that describes the system 
@@ -45,12 +45,12 @@ alfa = 0.2;                 % gain for IMC based regulator
 
 % !!! use switch in Simulink regulator block to set PI ot IMC regulator
 % parameters for PI regulator 
-Kp= 1.8;              % proportional gain
-Ki= 0.2/ur;           % integral gain
+Kp = 1.8;              % proportional gain
+Ki = 0.2/ur;           % integral gain
 
 % step change of reference coltage
-Vref1=0;
-Vref2=0.5;
+Vref1 = 0;
+Vref2 = 0.5;
 
 % defines simulation length (synchronized with DSP memory storage)
 MAX_data_count = 180;
