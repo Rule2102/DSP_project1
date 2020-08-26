@@ -55,8 +55,7 @@ void Clear_DMAbuffer(void);                    // Clear DMA buffers
 void Configure_GPIO(void);                     // Configure GPIO
 void PrintData(void);                          // Data storage used to export monitored variables to .dat file
 
-__interrupt void adca1_isr(void);              // JUST FOR DEBIGGING to check ADCA
-//__interrupt void adcb1_isr(void);              // JUST FOR DEBIGGING to check ADCB
+__interrupt void adca1_isr(void);              // JUST FOR DEBIGGING to check sampling process
 __interrupt void dmach1_isr(void);             // Regulation takes place in dmach1_isr
 
 // First RC filter (connected to ADCINA0)
@@ -89,10 +88,11 @@ long int adc_count_a = 0;                      // Counter to check adca1_isr
 long int adc_count_b = 0;                      // Counter to check adcb1_isr
 
 /*
-#define MAX_buf_count 8
-Uint16 dataOut_buf[MAX_buf_count*NOS_UR] = {};        // Data storage
-long int buf_count = 0;
-Uint16 canBuf = 0;
+// Defines & Variables for DMA buffer storage
+#define MAX_buf_count 8                                 // Size of an array used for buffer storage
+Uint16 dataOut_buf[MAX_buf_count*NOS_UR] = {};          // Array for buffer storage
+long int buf_count = 0;                                 // Counter for buffer storage
+Uint16 canBuf = 0;                                      // Logic signal used to trigger buffer storage
 */
 
 void main(void)
@@ -126,13 +126,9 @@ void main(void)
     DMAInitialize();
     Configure_DMA();
 
-    //StartDMA() moved to adca1_isr so that DMA starts after NOS_UR-th adca1 count in order to achieve synchronization
-    // (for some reason SOC is not sent on the very first TBCTR=0 event (after turning on TB clock))
-
     // Write the ISR vector for each interrupt to the appropriate location in the PIE vector table
     EALLOW;
     PieVectTable.ADCA1_INT = &adca1_isr;
-    //PieVectTable.ADCB1_INT = &adcb1_isr;
     PieVectTable.DMA_CH1_INT = &dmach1_isr;
     EDIS;
 
@@ -145,13 +141,9 @@ void main(void)
 
     // Enable interrupt on PIE level
     PieCtrlRegs.PIEIER1.bit.INTx1 = 0;          // ADCA
-    //PieCtrlRegs.PIEIER1.bit.INTx2 = 1;        // ADCB
     PieCtrlRegs.PIEIER7.bit.INTx1 = 1;          // DMA
 
     EALLOW;
-    CpuSysRegs.PCLKCR13.bit.ADC_A = 1;          // Enable SYSCLK to ADCA
-    CpuSysRegs.PCLKCR13.bit.ADC_B = 1;          // Enable SYSCLK to ADCB
-    CpuSysRegs.PCLKCR0.bit.DMA = 1;             // Enable SYSCLK to DMA
     CpuSysRegs.PCLKCR0.bit.TBCLKSYNC = 1;      // Sync TBCLK with CPU clock
     EDIS;
 
@@ -387,32 +379,12 @@ __interrupt void adca1_isr(void)
     adc_count_a++;
 
     AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;          // Clear interrupt flag
-    /*
-    if(adc_count_a==NOS)
-        {
-            StartDMACH1();                          // Run DMA (here instead of in main to achieve synchronization)
-            PieCtrlRegs.PIEIER1.bit.INTx1 = 0;      // Disable this interrupt from happening again
-        }
-     */
 
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;         // Clear acknowledge register
 
-    GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;           // notify adca1_isr end
-
-
+    GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;           // Notify adca1_isr end
 
 }
-
-/*
-__interrupt void adcb1_isr(void)
-{
-    adc_count_b++;
-
-    AdcbRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;         // Clear interrupt flag
-    PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;        // Clear acknowledge register
-
-}
-    */
 
 __interrupt void dmach1_isr(void)
 {
@@ -506,7 +478,8 @@ __interrupt void dmach1_isr(void)
 
     if(canBuf)
     {
-        if(dma_sgn==-1) //vec si obrnula dma_sgn gore
+        // dma_sgn has already been toggled !!!
+        if(dma_sgn==-1)
             for (i_for=0;i_for<NOS_UR;i_for++)
                {
                    dataOut_buf[i_for+NOS_UR*buf_count] = DMAbuffer1[i_for+NOS_UR];
