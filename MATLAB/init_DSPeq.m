@@ -33,11 +33,13 @@ if(ADCINA0)
     R = 9.92e3;            % resistance 
     C = 110e-9;            % capacitance 130e-9
     Rp = 50e3;             % capacitor lekeage
+    Rs = 10;               % capacitor esr
 else
     % RC connected to ADCINB2
     R = 9.92e3;        % resistance
     C = 110e-9;        % capacitance
     Rp = 1000e3;       % capacitor lekeage
+    Rs = 10;           % capacitor esr
 end
 
 beta = exp(-Ts/(R*C));      % parametar that describes the system 

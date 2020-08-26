@@ -3,8 +3,8 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 1                                        // Update rate (double or single)
-#define OVERSAMPLING 0                              // Logic variable to differentiate between case with and without oversampling
+#define UR 2                                        // Update rate (double or single)
+#define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
 #define LOG2_NOS_UR (log2(NOS_UR))                  // Used for averaging if oversampling==1
@@ -87,6 +87,13 @@ long int data_count = 0;                       // Counter for data storage
 long int dma_count = 0;                        // Counter to check dmach1_isr
 long int adc_count_a = 0;                      // Counter to check adca1_isr
 long int adc_count_b = 0;                      // Counter to check adcb1_isr
+
+/*
+#define MAX_buf_count 8
+Uint16 dataOut_buf[MAX_buf_count*NOS_UR] = {};        // Data storage
+long int buf_count = 0;
+Uint16 canBuf = 0;
+*/
 
 void main(void)
 {
@@ -248,8 +255,6 @@ void Configure_ePWM(void)
     // set PWM output to notify SOCA (JUST FOR DEBUGGING)
     EPwm5Regs.AQCTLA.bit.ZRO = 2;              // Set PWM A high on TBCTR=0
     EPwm5Regs.AQCTLA.bit.PRD = 1;              // Set PWM A low on TBCTR=TBPRD
-
-
 }
 
 void Configure_ADC(void)
@@ -307,7 +312,7 @@ void Configure_DMA(void)
     DmaRegs.CH1.MODE.bit.ONESHOT = 0;               // 1 burst per SW interrupt
     DmaRegs.CH1.MODE.bit.CONTINUOUS = 1;            // Do not stop after each transfer
     DmaRegs.CH1.MODE.bit.DATASIZE = 0;              // 16-bit data size transfers
-    DmaRegs.CH1.MODE.bit.CHINTMODE = 1;             // Generate ePIE interrupt at the beginning of transfer 0
+    DmaRegs.CH1.MODE.bit.CHINTMODE = 1;             // Generate ePIE interrupt at the end of transfer
     DmaRegs.CH1.MODE.bit.CHINTE = 1;                // Channel Interrupt to CPU enabled
 
     // Set up BURST registers
@@ -382,17 +387,19 @@ __interrupt void adca1_isr(void)
     adc_count_a++;
 
     AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;          // Clear interrupt flag
-
+    /*
     if(adc_count_a==NOS)
         {
             StartDMACH1();                          // Run DMA (here instead of in main to achieve synchronization)
             PieCtrlRegs.PIEIER1.bit.INTx1 = 0;      // Disable this interrupt from happening again
         }
+     */
 
+    PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;         // Clear acknowledge register
 
     GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;           // notify adca1_isr end
 
-    PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;         // Clear acknowledge register
+
 
 }
 
@@ -466,6 +473,7 @@ __interrupt void dmach1_isr(void)
         #endif
     }
 
+
     #if (OVERSAMPLING)
         // Averaging on regulation period
         AvgMeas_a[0] = Measurement_a>>((int)LOG2_NOS_UR);
@@ -490,6 +498,34 @@ __interrupt void dmach1_isr(void)
     // ADC scaling 3.0 --> 4095 (zero offset assumed)
     Vmeas_a = Vmeas_a*0.0007326f;
     Vmeas_b = Vmeas_b*0.0007326f;
+
+    /*
+    #if (!OVERSAMPLING)
+        int i_for = 0;
+    #endif
+
+    if(canBuf)
+    {
+        if(dma_sgn==-1) //vec si obrnula dma_sgn gore
+            for (i_for=0;i_for<NOS_UR;i_for++)
+               {
+                   dataOut_buf[i_for+NOS_UR*buf_count] = DMAbuffer1[i_for+NOS_UR];
+               }
+        else if (dma_sgn==1)
+            for (i_for=0;i_for<NOS_UR;i_for++)
+               {
+                   dataOut_buf[i_for+NOS_UR*buf_count] = DMAbuffer2[i_for+NOS_UR];
+               }
+
+        buf_count++;
+
+        if(buf_count>=MAX_buf_count)
+            {
+            canBuf = 0;
+            buf_count = 0;
+            }
+    }
+*/
 
     // Regulation
 
@@ -517,10 +553,8 @@ __interrupt void dmach1_isr(void)
 
     d_b = (Uint16)(PWM_TBPRD*u_b[0]*EINVERSE);                                  // Calculate duty cycle
 
-    EALLOW;
     EPwm1Regs.CMPA.bit.CMPA = d_a + DEADTIME_HALF;    // Set CMPA
     EPwm1Regs.CMPB.bit.CMPB = d_b + DEADTIME_HALF;    // Set CMPB
-    EDIS;
 
     PrintData();                                      // Data storage (JUST FOR DEBUGGING)
 
