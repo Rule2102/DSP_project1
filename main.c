@@ -3,26 +3,26 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 2                                        // Update rate (double or single)
+#define UR 2                                        // Update rate (UR>2 -> multisampling algorithm)
 #define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
-#define LOG2_NOS_UR (log2(NOS_UR))                  // Used for averaging if oversampling==1
+#define LOG2_NOS_UR (log2(NOS_UR))                  // Used for averaging on regulation period (if OVERSAMPLING==1)
+#define LOG2_UR (log2(UR))                          // Used for averaging on switching period (if OVERSAMPLING==1)
 #define FTB 100e6                                   // FTB=EPWMCLK=SYSCLKOUT/2 (time base clock ratio to EPWM clock = 1 assumed)
 #define FPWM 10e3                                   // Switching frequency
-// Counter period for ePWM used for switching, up-down mode assumed; closest to (Uint16)(FTB/(2*FPWM)-1) so that PWM_TBPRD%16=0
+// Period of virtual switching counter, up-down mode assumed; closest to (Uint16)(FTB/(2*FPWM)-1) so that PWM_TBPRD%16=0
 #define PWM_TBPRD 4992
 #define TPWM (2*PWM_TBPRD/FTB)                      // Switching period
 #define ADC_TBPRD  (PWM_TBPRD/NOS)                  // Counter period for ePWM used for ADC triggering, up-down mode assumed
+#define MS_TBPRD (2*PWM_TBPRD/UR - 1)             // Counter period of ePWM used to implement multisampling algorithm, up mode;
 #define TS (TPWM/UR)                                // Regulation period
-#define LOAD_CMPA (UR==1 ? 0 : 2)                   // Load CMPA on TBCTR=0 if UR==1, otherwise on both TBCTR=0 and TBCTR=TBPRD
-#define LOAD_CMPB (UR==1 ? 0 : 2)                   // Load CMPB on TBCTR=0 if UR==1, otherwise on both TBCTR=0 and TBCTR=TBPRD
 
 #define E 3.3f                                      // Available DC voltage
 #define EINVERSE (1 / E)                            // Inverse of E
 #define DEADTIME 0                                  // Dead time in number of counts (see EPwmXRegs.TBPRD)
 #define DEADTIME_HALF (DEADTIME / 2)                // Half of the dead time (see dmach1_isr)
-#define MAX_data_count 180                          // Size of an array used for data storage
+#define MAX_data_count 0                          // Size of an array used for data storage
 
 // Defines for VREG ADCINA0
 #define inv_tau_a 916.4223f                         // 1/(R*C)
@@ -58,34 +58,47 @@ void PrintData(void);                          // Data storage used to export mo
 __interrupt void adca1_isr(void);              // JUST FOR DEBIGGING to check sampling process
 __interrupt void dmach1_isr(void);             // Regulation takes place in dmach1_isr
 
+// Variables for multisampling handling
+Uint16 n_seg = 1;                              // Indicates a current segment of the virtual carrier
+Uint16 PWM_dir;                            // Direction of the virtual carrier (1 -> up, 2-> down)
+Uint16 PWM_nextSeg_max;                        // Maximum value of the virtual carrier in the following control period (n_seg + 1)
+Uint16 PWM_nextSeg_min;                        // Minimum value of the virtual carrier in the following control period (n_seg + 1)
+Uint16 cross_margin = 7;                       // Cross margin to avoid glitches in EPWM output (experimentally determined)
+
 // First RC filter (connected to ADCINA0)
 volatile Uint16 Measurement_a;                 // Measurements (take data from DMAbuffer)
-Uint16 AvgMeas_a[2] = {0.0f,0.0f};             // Averaged data from DMAbuffer; AvgMeas_a[1]=previous, AvgMeas_a[0]=current
-float32 Vmeas_a = 0.0f;                        // Measured voltage
+Uint16 AvgMeas_a[UR] = {0};                    // Averaged data from DMAbuffer; AvgMeas_a[1]=previous, AvgMeas_a[0]=current
+Uint16 Sum_AvgMeas_a;                      // Sum averaged data (to perform averaging on switching period)
+float32 Vmeas_a;                        // Measured voltage
 float32 Vref_a = 0.0f;                         // Reference voltage
 float32 u_a[2] = {0.0f,0.0f};                  // Control signal
 float32 err_a[2] = {0.0f,0.0f};                // Error err[1]=previous, err[0]=current
-Uint16 d_a = 0;                                // Duty cycle
+Uint16 PWM_CMP_a;             // CMP value for the virtual carrier (duty cycle)
+Uint16 MS_CMPA_a;               // CMPA value for the multisampling counter (EPWM1)
+Uint16 MS_CMPB_a;               // CMPB value for the multisampling counter (EPWM1)
 //float32 kp_a = 1.8f, ki_a = 0.2f/(float32)UR;  // PI voltage regulator
 
 // Second RC filter (connected to ADCINB2)
 volatile Uint16 Measurement_b;                 // Measurements (take data from DMAbuffer)
-Uint16 AvgMeas_b[2] = {0.0f,0.0f};             // Averaged data from DMAbuffer; AvgMeas_a[1]=previous, AvgMeas_a[0]=current
-float32 Vmeas_b = 0.0f;                        // Measured voltage
+Uint16 AvgMeas_b[UR] = {0};                    // Averaged data from DMAbuffer; AvgMeas_a[1]=previous, AvgMeas_a[0]=current
+Uint16 Sum_AvgMeas_b;                      // Sum averaged data (to perform averaging on switching period)
+float32 Vmeas_b;                        // Measured voltage
 float32 Vref_b = 0.0f;                         // Reference voltage
 float32 u_b[2] = {0.0f,0.0f};                  // Control signal
 float32 err_b[2] = {0.0f,0.0f};                // Error err[1]=previous, err[0]=current
-Uint16 d_b = 0;                                // Duty cycle
+Uint16 PWM_CMP_b;             // CMP value for the virtual carrier (duty cycle)
+Uint16 MS_CMPA_b;               // CMPA value for the  multisampling counter (EPWM2)
+Uint16 MS_CMPB_b;               // CMPB value for the multisampling counter (EPWM2)
 //float32 kp_b = 1.8f, ki_b = 0.2f/(float32)UR;  // PI voltage regulator
 
 float32 dataOut_1[MAX_data_count] = {};        // Data storage
 float32 dataOut_2[MAX_data_count] = {};        // Data storage
+
 Uint16 canPrint = 1;                           // Logic signal used to trigger data storage
 long int data_count = 0;                       // Counter for data storage
 
-long int dma_count = 0;                        // Counter to check dmach1_isr
-long int adc_count_a = 0;                      // Counter to check adca1_isr
-long int adc_count_b = 0;                      // Counter to check adcb1_isr
+//long int dma_count = 0;                        // Counter to check dmach1_isr
+//long int adc_count_a = 0;                      // Counter to check adca1_isr
 
 /*
 // Defines & Variables for DMA buffer storage
@@ -99,10 +112,10 @@ void main(void)
 {
     // To run from FLASH uncomment the following and include in Linker ...FLASH...cmd instead of ...RAM...cmd
 
-    /*
+/*
     memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (uint32_t) &RamfuncsLoadSize);
     InitFlash();
-    */
+*/
 
     InitSysCtrl();
     InitGpio();
@@ -148,7 +161,7 @@ void main(void)
     EDIS;
 
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
-    Vref_b = 0.5f;
+    Vref_b = 0.0f;
 
     StartDMACH1();
 
@@ -167,13 +180,13 @@ void Configure_GPIO(void)
     GpioCtrlRegs.GPADIR.bit.GPIO0 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO0 = 1;         // Mux to ePWM1A
 
-    // Configure as EPWM1B output (to drive second RC filter)
-    GpioCtrlRegs.GPADIR.bit.GPIO1 = 1;          // Configure as output
-    GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;         // Mux to ePWM1B
-
-    // Configure as EPWM2A output (to notify EPWM1_TBCTR=0 & EPWM1_TBCTR=TBPRD)
+    // Configure as EPWM2A output (to drive second RC filter)
     GpioCtrlRegs.GPADIR.bit.GPIO2 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 1;         // Mux to ePWM2A
+
+    // Configure as EPWM1B output (to notify EPWM1/2_TBCTR=0)
+    GpioCtrlRegs.GPADIR.bit.GPIO1 = 1;          // Configure as output
+    GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;         // Mux to ePWM1B
 
     // Configure as EPWM5A output (JUST FOR DEBUGGING)
     GpioCtrlRegs.GPADIR.bit.GPIO8 = 1;          // Configure as output
@@ -199,37 +212,45 @@ void Configure_ePWM(void)
 
     EPwm1Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1 TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
     EPwm1Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
-    EPwm1Regs.TBCTL.bit.CTRMODE = 2;           // Up-down mode
+    EPwm1Regs.TBCTL.bit.CTRMODE = 0;           // Up mode
     EPwm1Regs.TBCTR = 0x0000;                  // Clear counter
     EPwm1Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
 
-    EPwm1Regs.TBPRD = PWM_TBPRD;                        // Counter period
+    EPwm1Regs.TBPRD = MS_TBPRD;                 // Counter period
 
-    EPwm1Regs.CMPCTL.bit.SHDWAMODE = 0;                 // Shadow mode active for CMPA
-    EPwm1Regs.CMPCTL.bit.SHDWBMODE = 0;                 // Shadow mode active for CMPB
-    EPwm1Regs.CMPCTL.bit.LOADAMODE = LOAD_CMPA;         // Load on TBCTR=0 if UR==1, otherwise on either TBCTR=0 or TBCTR=TBPRD
-    EPwm1Regs.CMPCTL.bit.LOADBMODE = LOAD_CMPB;         // Load on TBCTR=0 if UR==1, otherwise on either TBCTR=0 or TBCTR=TBPRD
+    EPwm1Regs.CMPCTL.bit.SHDWAMODE = 0;         // Shadow mode active for CMPA
+    EPwm1Regs.CMPCTL.bit.SHDWBMODE = 0;         // Shadow mode active for CMPB
+    EPwm1Regs.CMPCTL.bit.LOADAMODE = 0;         // Load on TBCTR=0
+    EPwm1Regs.CMPCTL.bit.LOADBMODE = 0;         // Load on TBCTR=0
 
-    EPwm1Regs.CMPA.bit.CMPA = 0;               // Value of the CMPA at the beginning
+    EPwm1Regs.CMPA.bit.CMPA = MS_TBPRD + 1;               // Value of the CMPA at the beginning (action never happens)
+    EPwm1Regs.CMPB.bit.CMPB = MS_TBPRD + 1;               // Value of the CMPB at the beginning (action never happens)
+
     EPwm1Regs.AQCTLA.bit.CAU = 1;              // Set EPWMA low on TBCTR=CMPA during up count
-    EPwm1Regs.AQCTLA.bit.CAD = 2;              // Set EPWMA high on TBCTR=CMPA during down count
+    EPwm1Regs.AQCTLA.bit.CBU = 2;              // Set EPWMA high on TBCTR=CMPB during up count
 
-    EPwm1Regs.CMPB.bit.CMPB = 0;               // Value of the CMPB at the beginning
-    EPwm1Regs.AQCTLB.bit.CBU = 1;              // Set EPWMB low on TBCTR=CMPB during up count
-    EPwm1Regs.AQCTLB.bit.CBD = 2;              // Set EPWMB high on TBCTR=CMPB during down count
+    EPwm1Regs.AQCTLB.bit.ZRO = 3;              // Toggle EPWMB each time TBCTR = 0 (JUST FOR DEBUGGING)
 
-    // EPWM2 for notifying EPWM1_TBCTR=0 & EPWM1_TBCTR=TBPRD
+    // EPWM2 as a multisampling carrier for the second RC filter
 
     EPwm2Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1     TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
     EPwm2Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
-    EPwm2Regs.TBCTL.bit.CTRMODE = 2;           // Up-down mode
+    EPwm2Regs.TBCTL.bit.CTRMODE = 0;           // Up mode
     EPwm2Regs.TBCTR = 0x0000;                  // Clear counter
     EPwm2Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
 
-    EPwm2Regs.TBPRD = PWM_TBPRD;               // Counter period
+    EPwm2Regs.TBPRD = MS_TBPRD;                // Counter period
 
-    EPwm2Regs.AQCTLA.bit.ZRO = 2;              // Set PWM A high on TBCTR=0
-    EPwm2Regs.AQCTLA.bit.PRD = 1;              // Set PWM A low on TBCTR=TBPRD
+    EPwm2Regs.CMPCTL.bit.SHDWAMODE = 0;         // Shadow mode active for CMPA
+    EPwm2Regs.CMPCTL.bit.SHDWBMODE = 0;         // Shadow mode active for CMPB
+    EPwm2Regs.CMPCTL.bit.LOADAMODE = 0;         // Load on TBCTR=0
+    EPwm2Regs.CMPCTL.bit.LOADBMODE = 0;         // Load on TBCTR=0
+
+    EPwm2Regs.CMPA.bit.CMPA = MS_TBPRD + 1;               // Value of the CMPA at the beginning (action never happens)
+    EPwm2Regs.CMPB.bit.CMPB = MS_TBPRD + 1;               // Value of the CMPB at the beginning (action never happens)
+
+    EPwm2Regs.AQCTLA.bit.CAU = 1;              // Set EPWMA low on TBCTR=CMPA during up count
+    EPwm2Regs.AQCTLA.bit.CBU = 2;              // Set EPWMA high on TBCTR=CMPB during up count
 
     // EPWM5 for ADC triggering
 
@@ -244,7 +265,7 @@ void Configure_ePWM(void)
     EPwm5Regs.ETPS.bit.SOCAPRD = 1;            // Generate SOCA on 1st event
     EPwm5Regs.ETSEL.bit.SOCAEN = 1;            // Enable SOCA generation
 
-    // set PWM output to notify SOCA (JUST FOR DEBUGGING)
+    // Set PWM output to notify SOCA (JUST FOR DEBUGGING)
     EPwm5Regs.AQCTLA.bit.ZRO = 2;              // Set PWM A high on TBCTR=0
     EPwm5Regs.AQCTLA.bit.PRD = 1;              // Set PWM A low on TBCTR=TBPRD
 }
@@ -350,6 +371,9 @@ void Clear_DMAbuffer(void)
     Measurement_a=0;
     Measurement_b=0;
 
+    Sum_AvgMeas_a = 0;
+    Sum_AvgMeas_b = 0;
+
 }
 
 void PrintData()
@@ -376,7 +400,7 @@ __interrupt void adca1_isr(void)
 {
     GpioDataRegs.GPCSET.bit.GPIO66 = 1;             // Notify adca1_isr start
 
-    adc_count_a++;
+    //adc_count_a++;
 
     AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;          // Clear interrupt flag
 
@@ -399,7 +423,10 @@ __interrupt void dmach1_isr(void)
     Measurement_a = 0;
     Measurement_b = 0;
 
-    dma_count++;
+    Sum_AvgMeas_a = 0;
+    Sum_AvgMeas_b = 0;
+
+    //dma_count++;
 
     // change dma_sgn to indicate state of the ping pong algorithm
     if (dma_sgn==1)
@@ -445,27 +472,32 @@ __interrupt void dmach1_isr(void)
         #endif
     }
 
-
     #if (OVERSAMPLING)
         // Averaging on regulation period
         AvgMeas_a[0] = Measurement_a>>((int)LOG2_NOS_UR);
         AvgMeas_b[0] = Measurement_b>>((int)LOG2_NOS_UR);
-        #if (UR==2)
-            // Additional averaging if UR==2 to achieve given averaging on switching period
-            Vmeas_a = (float32)((AvgMeas_a[0] + AvgMeas_a[1])>>1);
-            Vmeas_b = (float32)((AvgMeas_b[0] + AvgMeas_b[1])>>1);
-            // Save averaged measurements for next additional averaging
-            AvgMeas_a[1] = AvgMeas_a[0];
-            AvgMeas_b[1] = AvgMeas_b[0];
-        #else
-            Vmeas_a = (float32)(AvgMeas_a[0]);
-            Vmeas_b = (float32)(AvgMeas_b[0]);
-        #endif
+
+        for (i_for=0;i_for<UR;i_for++)
+            {
+                Sum_AvgMeas_a+= AvgMeas_a[i_for];
+                Sum_AvgMeas_b+= AvgMeas_b[i_for];
+            }
+
+        for (i_for=1;i_for<UR;i_for++)
+            {
+                AvgMeas_a[i_for]= AvgMeas_a[i_for-1];
+                AvgMeas_b[i_for]= AvgMeas_b[i_for-1];
+            }
+
+        // Averaging on switching period
+        Vmeas_a = (float32)(Sum_AvgMeas_a>>((int)LOG2_UR));
+        Vmeas_b = (float32)(Sum_AvgMeas_b>>((int)LOG2_UR));
     #else
         // Take last measurement stored in DMA buffer
         Vmeas_a = (float32)Measurement_a;
         Vmeas_b = (float32)Measurement_b;
     #endif
+
 
     // ADC scaling 3.0 --> 4095 (zero offset assumed)
     Vmeas_a = Vmeas_a*0.0007326f;
@@ -512,7 +544,7 @@ __interrupt void dmach1_isr(void)
     err_a[1] = err_a[0];
     u_a[1] = u_a[0];
 
-    d_a = (Uint16)(PWM_TBPRD*u_a[0]*EINVERSE);                                  // Calculate duty cycle
+    PWM_CMP_a = (Uint16)(PWM_TBPRD*u_a[0]*EINVERSE);                                  // Calculate duty cycle
 
     // Second RC filter
     err_b[0] = Vref_b - Vmeas_b;
@@ -524,10 +556,116 @@ __interrupt void dmach1_isr(void)
     err_b[1] = err_b[0];
     u_b[1] = u_b[0];
 
-    d_b = (Uint16)(PWM_TBPRD*u_b[0]*EINVERSE);                                  // Calculate duty cycle
+    PWM_CMP_b = (Uint16)(PWM_TBPRD*u_b[0]*EINVERSE);                                  // Calculate duty cycle
 
-    EPwm1Regs.CMPA.bit.CMPA = d_a + DEADTIME_HALF;    // Set CMPA
-    EPwm1Regs.CMPB.bit.CMPB = d_b + DEADTIME_HALF;    // Set CMPB
+    #if (UR!=1)
+
+         n_seg++; // Indicates a current segment of the virtual carrier
+
+         if(n_seg>UR)
+             n_seg=1;
+
+         if(n_seg>UR/2)
+             PWM_dir=2;
+         else
+             PWM_dir=1;
+
+         if(PWM_dir==1) // Virtual carrier up count (during this time set EPWM low)
+             {
+                 // Never set EPWM high on up count (except for the last interrupt during virtual carrier up count);
+                 MS_CMPB_a=MS_TBPRD+1; // First RC filter
+                 MS_CMPB_b=MS_TBPRD+1; // Second RC filter
+
+                 if (n_seg!=UR/2)  // Not the last interrupt during virtual carrier up count
+                 {
+                     // Maximum value of the virtual carrier in the following control period (n_seg + 1)
+                     PWM_nextSeg_max=(n_seg)*(MS_TBPRD+1)+MS_TBPRD;
+                     // Minimum value of the virtual carrier in the following control period (n_seg + 1)
+                     PWM_nextSeg_min=(n_seg)*(MS_TBPRD+1);
+
+                     // First RC filter
+                     if((PWM_CMP_a>=PWM_nextSeg_min+cross_margin))
+                         // Horizontal crossing (set EPWM low) or crossing occurs later (no action because MS_CMPA_a>MS_TBPRD)
+                         MS_CMPA_a=PWM_CMP_a-PWM_nextSeg_min;
+                     else
+                         // Vertical crossing (set EPWM low immediately) or crossing already happened (no action)
+                         MS_CMPA_a=cross_margin; // Cross margin to ensure CMP loading before compare event
+
+                     // Second RC filter
+                     if((PWM_CMP_b>=PWM_nextSeg_min+cross_margin))
+                         // Horizontal crossing (set EPWM low) or crossing occurs later (no action because MS_CMPA_a>MS_TBPRD)
+                         MS_CMPA_b=PWM_CMP_b-PWM_nextSeg_min;
+                     else
+                         // Vertical crossing (set EPWM low immediately) or crossing already happened (no action)
+                         MS_CMPA_b=cross_margin; // Cross margin to ensure CMP loading before compare event
+                 }
+                 else // The last interrupt during virtual carrier up count
+                 {
+                      // First RC filter
+                      MS_CMPA_a=MS_TBPRD+1; // Do not set EPWM low (in the next interrupt virtual carrier will be in down count mode)
+                      MS_CMPB_a=PWM_TBPRD-PWM_CMP_a; // There can be no vertical crossing here, due to the duty cycle upper limitation
+
+                      // Second RC filter
+                      MS_CMPA_b=MS_TBPRD+1; // Do not set EPWM low (in the next interrupt virtual carrier will be in down count mode)
+                      MS_CMPB_b=PWM_TBPRD-PWM_CMP_b; // There can be no vertical crossing here, due to the duty cycle upper limitation
+                 }
+             }
+        else // Virtual carrier down count (during this time set EPWM high)
+         {
+             MS_CMPA_a=MS_TBPRD+1; // Never set EPWM low on down count (except for the last interrupt during virtual carrier down count);
+             MS_CMPA_b=MS_TBPRD+1; // Never set EPWM low on down count (except for the last interrupt during virtual carrier down count);
+
+             if (n_seg!=UR) // Not the last interrupt during virtual carrier down count
+                 {
+                     // Maximum value of the virtual carrier in the following control period (n_seg + 1)
+                     PWM_nextSeg_max=PWM_TBPRD-(n_seg-UR/2)*(MS_TBPRD+1);
+                     // Minimum value of the virtual carrier in the following control period (n_seg + 1)
+                     PWM_nextSeg_min=PWM_TBPRD-(n_seg-UR/2)*(MS_TBPRD+1)-MS_TBPRD;
+
+                     // First RC filter
+                     if((PWM_CMP_a<=PWM_nextSeg_max-cross_margin))
+                         // Horizontal crossing (set EPWM high) or crossing occurs later (no action because MS_CMPB_a>MS_TBPRD)
+                         MS_CMPB_a=PWM_nextSeg_max-PWM_CMP_a;
+                     else
+                         // Vertical crossing (set EPWM high immediately) or crossing already happened (no action)
+                         MS_CMPB_a=cross_margin;
+
+                     // Second RC filter
+                     if((PWM_CMP_b<=PWM_nextSeg_max-cross_margin))
+                         // Horizontal crossing (set EPWM high) or crossing occurs later (no action because MS_CMPB_a>MS_TBPRD)
+                         MS_CMPB_b=PWM_nextSeg_max-PWM_CMP_b;
+                     else
+                         // Vertical crossing (set EPWM high immediately) or crossing already happened (no action)
+                         MS_CMPB_b=cross_margin;
+                 }
+             else // The last interrupt during virtual carrier down count
+                 {
+                     // First RC filter
+                     MS_CMPB_a=MS_TBPRD+1; // Do not set EPWM high (in the next interrupt virtual carrier will be in up count mode)
+                     MS_CMPA_a=PWM_CMP_a; // There can be no vertical crossing here, due to the duty cycle lower limitation
+
+                     // Second RC filter
+                     MS_CMPB_b=MS_TBPRD+1; // Do not set EPWM high (in the next interrupt virtual carrier will be in up count mode)
+                     MS_CMPA_b=PWM_CMP_b; // There can be no vertical crossing here, due to the duty cycle lower limitation
+                 }
+         }
+    #else
+        // First RC filter
+        MS_CMPA_a = PWM_CMP_a;
+        MS_CMPB_a = PWM_TBPRD + 1 - PWM_CMP_a;
+
+        // Second RC filter
+        MS_CMPA_b = PWM_CMP_b;
+        MS_CMPB_b = PWM_TBPRD + 1 - PWM_CMP_b;
+    #endif
+
+    // First RC filter
+    EPwm1Regs.CMPA.bit.CMPA = MS_CMPA_a;    // Set CMPA
+    EPwm1Regs.CMPB.bit.CMPB = MS_CMPB_a;    // Set CMPB
+
+    // Second RC filter
+    EPwm2Regs.CMPA.bit.CMPA = MS_CMPA_b;    // Set CMPA
+    EPwm2Regs.CMPB.bit.CMPB = MS_CMPB_b;    // Set CMP
 
     PrintData();                                      // Data storage (JUST FOR DEBUGGING)
 
@@ -536,4 +674,5 @@ __interrupt void dmach1_isr(void)
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP7;           // Clear acknowledge register
 
 }
+
 
