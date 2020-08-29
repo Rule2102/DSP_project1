@@ -14,7 +14,7 @@
 // Period of virtual switching counter, up-down mode assumed; closest to (Uint16)(FTB/(2*FPWM)-1) so that PWM_TBPRD%16=0
 #define PWM_TBPRD 4992
 #define TPWM (2*PWM_TBPRD/FTB)                      // Switching period
-#define ADC_TBPRD  (PWM_TBPRD/NOS)                  // Counter period for ePWM used for ADC triggering, up-down mode assumed
+#define ADC_TBPRD (PWM_TBPRD/NOS)                  // Counter period for ePWM used for ADC triggering, up-down mode assumed
 #define MS_TBPRD (2*PWM_TBPRD/UR - 1)             // Counter period of ePWM used to implement multisampling algorithm, up mode;
 #define TS (TPWM/UR)                                // Regulation period
 
@@ -35,7 +35,6 @@
 #define alfa_b 0.2f                                 // gain for IMC based voltage regulator
 #define beta_b (exp(-TS*inv_tau_b))                 // parameter that describes system dynamics beta=exp(-Ts/(R*C))
 #define alfa_1beta_b (alfa_b/(1-beta_b))            // alfa/(1-beta)
-
 
 #pragma CODE_SECTION(dmach1_isr, ".TI.ramfunc");    // Allocate code (dmach1_isr) in RAM
 #pragma CODE_SECTION(adca1_isr, ".TI.ramfunc");    // Allocate code (adca1_isr) in RAM
@@ -161,9 +160,9 @@ void main(void)
     EDIS;
 
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
-    Vref_b = 0.0f;
 
     StartDMACH1();
+
 
     while(1)
         {
@@ -667,9 +666,10 @@ __interrupt void dmach1_isr(void)
     EPwm2Regs.CMPA.bit.CMPA = MS_CMPA_b;    // Set CMPA
     EPwm2Regs.CMPB.bit.CMPB = MS_CMPB_b;    // Set CMP
 
-    PrintData();                                      // Data storage (JUST FOR DEBUGGING)
+    //PrintData();                                      // Data storage (JUST FOR DEBUGGING)
 
     GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;             // Notify dmach1_isr end
+
 
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP7;           // Clear acknowledge register
 

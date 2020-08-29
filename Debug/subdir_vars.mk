@@ -5,6 +5,9 @@
 SHELL = cmd.exe
 
 # Add inputs and outputs from these tool invocations to the build variables 
+CMD_SRCS += \
+../2837xD_RAM_lnk_cpu1.cmd 
+
 ASM_SRCS += \
 C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/source/F2837xD_CodeStartBranch.asm \
 C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/source/F2837xD_usDelay.asm 

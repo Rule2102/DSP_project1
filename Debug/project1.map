@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v18.12.3                    
 ******************************************************************************
->> Linked Thu Aug 27 19:40:42 2020
+>> Linked Sat Aug 29 17:22:58 2020
 
 OUTPUT FILE NAME:   <project1.out>
 ENTRY POINT SYMBOL: "code_start"  address: 00000000
@@ -13,18 +13,18 @@ MEMORY CONFIGURATION
 ----------------------  --------  ---------  --------  --------  ----  --------
 PAGE 0:
   BEGIN                 00000000   00000002  00000002  00000000  RWIX
-  RAMM0                 00000123   000002dd  000002d0  0000000d  RWIX
+  RAMM0                 00000123   000002dd  000002ce  0000000f  RWIX
   RAMLS0                00008000   00000800  000007f5  0000000b  RWIX
   RAMLS1                00008800   00000800  00000606  000001fa  RWIX
   RAMLS2                00009000   00000800  00000000  00000800  RWIX
   RAMLS3                00009800   00000800  00000000  00000800  RWIX
   RAMLS4                0000a000   00000f00  00000000  00000f00  RWIX
-  RAMD0                 0000b000   00000800  00000800  00000000  RWIX
+  RAMD0                 0000b000   00000800  000007fb  00000005  RWIX
   RESET                 003fffc0   00000002  00000000  00000002  RWIX
 
 PAGE 1:
   BOOT_RSVD             00000002   00000121  00000000  00000121  RWIX
-  RAMM1                 00000400   000003f8  00000300  000000f8  RWIX
+  RAMM1                 00000400   000003f8  00000200  000001f8  RWIX
   ADCA_RESULT           00000b00   00000020  00000018  00000008  RWIX
   ADCB_RESULT           00000b20   00000020  00000018  00000008  RWIX
   ADCC_RESULT           00000b40   00000020  00000018  00000008  RWIX
@@ -153,25 +153,25 @@ codestart
 *          0    00000000    00000002     
                   00000000    00000002     F2837xD_CodeStartBranch.obj (codestart)
 
-.cinit     0    00000392    00000061     
-                  00000392    0000001f     main.obj (.cinit)
-                  000003b1    0000000e     rts2800_fpu32.lib : exit.c.obj (.cinit)
-                  000003bf    00000007     main.obj (.cinit:_err_a)
-                  000003c6    00000007     main.obj (.cinit:_err_b)
-                  000003cd    00000007     main.obj (.cinit:_u_a)
-                  000003d4    00000007     main.obj (.cinit:_u_b)
-                  000003db    00000005     <whole-program> (.cinit:__lock)
-                  000003e0    00000005     <whole-program> (.cinit:__unlock)
-                  000003e5    00000004     main.obj (.cinit:_AvgMeas_a)
-                  000003e9    00000004     main.obj (.cinit:_AvgMeas_b)
-                  000003ed    00000004     <whole-program> (.cinit)
-                  000003f1    00000002     --HOLE-- [fill = 0]
+.cinit     0    00000390    00000061     
+                  00000390    0000001f     main.obj (.cinit)
+                  000003af    0000000e     rts2800_fpu32.lib : exit.c.obj (.cinit)
+                  000003bd    00000007     main.obj (.cinit:_err_a)
+                  000003c4    00000007     main.obj (.cinit:_err_b)
+                  000003cb    00000007     main.obj (.cinit:_u_a)
+                  000003d2    00000007     main.obj (.cinit:_u_b)
+                  000003d9    00000005     <whole-program> (.cinit:__lock)
+                  000003de    00000005     <whole-program> (.cinit:__unlock)
+                  000003e3    00000004     main.obj (.cinit:_AvgMeas_a)
+                  000003e7    00000004     main.obj (.cinit:_AvgMeas_b)
+                  000003eb    00000004     <whole-program> (.cinit)
+                  000003ef    00000002     --HOLE-- [fill = 0]
 
 .reset     0    003fffc0    00000002     DSECT
                   003fffc0    00000002     rts2800_fpu32.lib : boot28.asm.obj (.reset)
 
-.stack     1    00000400    00000300     UNINITIALIZED
-                  00000400    00000300     --HOLE--
+.stack     1    00000400    00000200     UNINITIALIZED
+                  00000400    00000200     --HOLE--
 
 .pinit     0    00000123    00000000     UNINITIALIZED
 
@@ -216,9 +216,9 @@ ramgs0     1    0000c000    00000020     UNINITIALIZED
                   0000c000    00000020     main.obj (ramgs0)
 
 .TI.ramfunc 
-*          0    00000123    0000026f     
-                  00000123    0000026b     main.obj (.TI.ramfunc:retain)
-                  0000038e    00000004     F2837xD_usDelay.obj (.TI.ramfunc)
+*          0    00000123    0000026d     
+                  00000123    00000269     main.obj (.TI.ramfunc:retain)
+                  0000038c    00000004     F2837xD_usDelay.obj (.TI.ramfunc)
 
 GETBUFFER 
 *          0    0003f800    00000000     DSECT
@@ -615,13 +615,13 @@ CpuSysRegsFile
                   00008ddd    00000018                       : ll_aox28.asm.obj (.text)
                   00008df5    00000011     F2837xD_PieVect.obj (.text)
 
-.text.3    0    0000b000    00000800     
+.text.3    0    0000b000    000007fb     
                   0000b000    00000585     F2837xD_DefaultISR.obj (.text:retain)
-                  0000b585    00000221     main.obj (.text)
-                  0000b7a6    00000056     rts2800_fpu32.lib : boot28.asm.obj (.text)
-                  0000b7fc    00000002                       : pre_init.c.obj (.text)
-                  0000b7fe    00000001                       : _lock.c.obj (.text)
-                  0000b7ff    00000001                       : startup.c.obj (.text)
+                  0000b585    0000021c     main.obj (.text)
+                  0000b7a1    00000056     rts2800_fpu32.lib : boot28.asm.obj (.text)
+                  0000b7f7    00000002                       : pre_init.c.obj (.text)
+                  0000b7f9    00000001                       : _lock.c.obj (.text)
+                  0000b7fa    00000001                       : startup.c.obj (.text)
 
 FPUmathTables 
 *          1    00016000    000000be     
@@ -634,7 +634,7 @@ MODULE SUMMARY
     .\
        F2837xD_GlobalVariableDefs.obj           0      0                  8695              
        F2837xD_DefaultISR.obj                   1413   0                  0                 
-       main.obj                                 1164   67                 80                
+       main.obj                                 1157   67                 80                
        F2837xD_SysCtrl.obj                      1294   0                  0                 
        F2837xD_Dma.obj                          866    0                  0                 
        F2837xD_Gpio.obj                         536    0                  0                 
@@ -645,10 +645,10 @@ MODULE SUMMARY
        F2837xD_usDelay.obj                      4      0                  0                 
        F2837xD_CodeStartBranch.obj              2      0                  0                 
     +--+----------------------------------------+------+------------------+--------------------+
-       Total:                                   5569   515                8799              
+       Total:                                   5562   515                8799              
                                                                                             
     C:\Users\ruzic\AppData\Local\Temp\
-       {651931BC-91B5-4CC7-9D06-884DD248C268}   0      14                 0                 
+       {EB178FC3-6FA9-4F78-99E5-5AE085187950}   0      14                 0                 
     +--+----------------------------------------+------+------------------+--------------------+
        Total:                                   0      14                 0                 
                                                                                             
@@ -674,9 +674,9 @@ MODULE SUMMARY
     +--+----------------------------------------+------+------------------+--------------------+
        Total:                                   96     190                0                 
                                                                                             
-       Stack:                                   0      0                  768               
+       Stack:                                   0      0                  512               
     +--+----------------------------------------+------+------------------+--------------------+
-       Grand Total:                             6252   733                9578              
+       Grand Total:                             6245   733                9322              
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
@@ -1115,7 +1115,7 @@ abs   ffffffff  .text
 1     00000d00  _EmuBMode                             
 1     00000d01  _EmuBootPins                          
 0     00008d7b  _EnableInterrupts                     
-0     0000038e  _F28x_usDelay                         
+0     0000038c  _F28x_usDelay                         
 0     0000b26c  _FLASH_CORRECTABLE_ERROR_ISR          
 1     0001600c  _FPU32expTable                        
 1     00016000  _FPU32expTableCoeff                   
@@ -1191,7 +1191,7 @@ abs   ffffffff  .text
 1     00000ce0  _PieCtrlRegs                          
 1     00000d00  _PieVectTable                         
 1     0000d000  _PieVectTableInit                     
-0     0000b785  _PrintData                            
+0     0000b780  _PrintData                            
 0     0000b1ae  _RAM_ACCESS_VIOLATION_ISR             
 0     0000b1a4  _RAM_CORRECTABLE_ERROR_ISR            
 0     0000b19a  _RTOS_ISR                             
@@ -1271,8 +1271,8 @@ abs   ffffffff  .text
 0     0000b000  _XINT5_ISR                            
 1     00007920  _XbarRegs                             
 1     00007070  _XintRegs                             
-1     00000700  __STACK_END                           
-abs   00000300  __STACK_SIZE                          
+1     00000600  __STACK_END                           
+abs   00000200  __STACK_SIZE                          
 1     0000d1f6  ___TI_cleanup_ptr                     
 1     0000d1f8  ___TI_dtors_ptr                       
 1     0000d1f4  ___TI_enable_exit_profile_output      
@@ -1281,20 +1281,20 @@ abs   ffffffff  ___TI_prof_data_size
 abs   ffffffff  ___TI_prof_data_start                 
 abs   ffffffff  ___binit__                            
 abs   ffffffff  ___c_args__                           
-0     00000392  ___cinit__                            
+0     00000390  ___cinit__                            
 abs   ffffffff  ___etext__                            
 abs   ffffffff  ___pinit__                            
 abs   ffffffff  ___text__                             
 0     00008dc4  __args_main                           
 1     0000d20e  __lock                                
-0     0000b7fe  __nop                                 
+0     0000b7f9  __nop                                 
 1     00000400  __stack                               
-0     0000b7ff  __system_post_cinit                   
-0     0000b7fc  __system_pre_init                     
+0     0000b7fa  __system_post_cinit                   
+0     0000b7f7  __system_pre_init                     
 1     0000d210  __unlock                              
 0     00008d33  _abort                                
-0     00000356  _adca1_isr                            
-0     0000b7a6  _c_int00                              
+0     00000354  _adca1_isr                            
+0     0000b7a1  _c_int00                              
 1     0000d1cf  _canPrint                             
 0     00008d84  _copy_in                              
 1     0000d1c4  _cross_margin                         
@@ -1316,7 +1316,7 @@ abs   ffffffff  ___text__
 1     0000d204  _u_a                                  
 1     0000d208  _u_b                                  
 abs   ffffffff  binit                                 
-0     00000392  cinit                                 
+0     00000390  cinit                                 
 0     00000000  code_start                            
 abs   ffffffff  etext                                 
 abs   ffffffff  pinit                                 
@@ -1328,10 +1328,10 @@ page  address   name
 ----  -------   ----                                  
 0     00000000  code_start                            
 0     00000123  _dmach1_isr                           
-0     00000356  _adca1_isr                            
-0     0000038e  _F28x_usDelay                         
-0     00000392  ___cinit__                            
-0     00000392  cinit                                 
+0     00000354  _adca1_isr                            
+0     0000038c  _F28x_usDelay                         
+0     00000390  ___cinit__                            
+0     00000390  cinit                                 
 0     00000ce0  _Cla1SoftIntRegs                      
 0     00008000  _SysXtalOscSel                        
 0     00008010  _SysIntOsc2Sel                        
@@ -1576,13 +1576,13 @@ page  address   name
 0     0000b6bb  _Clear_DMAbuffer                      
 0     0000b6f8  _Configure_DMA                        
 0     0000b736  _main                                 
-0     0000b785  _PrintData                            
-0     0000b7a6  _c_int00                              
-0     0000b7fc  __system_pre_init                     
-0     0000b7fe  __nop                                 
-0     0000b7ff  __system_post_cinit                   
+0     0000b780  _PrintData                            
+0     0000b7a1  _c_int00                              
+0     0000b7f7  __system_pre_init                     
+0     0000b7f9  __nop                                 
+0     0000b7fa  __system_post_cinit                   
 1     00000400  __stack                               
-1     00000700  __STACK_END                           
+1     00000600  __STACK_END                           
 1     00000b00  _AdcaResultRegs                       
 1     00000b20  _AdcbResultRegs                       
 1     00000b40  _AdccResultRegs                       
@@ -1724,7 +1724,7 @@ page  address   name
 1     0005f540  _RomWaitStateRegs                     
 1     0005f800  _Flash0CtrlRegs                       
 1     0005fb00  _Flash0EccRegs                        
-abs   00000300  __STACK_SIZE                          
+abs   00000200  __STACK_SIZE                          
 abs   ffffffff  .text                                 
 abs   ffffffff  ___TI_pprof_out_hndl                  
 abs   ffffffff  ___TI_prof_data_size                  
