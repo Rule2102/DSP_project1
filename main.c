@@ -3,7 +3,7 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 8                                        // Update rate (UR>2 -> multisampling algorithm)
+#define UR 1                                        // Update rate (UR>2 -> multisampling algorithm)
 #define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
@@ -15,14 +15,14 @@
 #define PWM_TBPRD 4992
 #define TPWM (2*PWM_TBPRD/FTB)                      // Switching period
 #define ADC_TBPRD (PWM_TBPRD/NOS)                  // Counter period for ePWM used for ADC triggering, up-down mode assumed
-#define MS_TBPRD (UR!=1 ? (2*PWM_TBPRD/UR - 1) : PWM_TBPRD)             // Counter period of ePWM used to implement multisampling algorithm, up mode;
+#define MS_TBPRD (2*PWM_TBPRD/UR - 1) //(UR!=1 ? (2*PWM_TBPRD/UR - 1) : PWM_TBPRD)             // Counter period of ePWM used to implement multisampling algorithm, up mode;
 #define TS (TPWM/UR)                                // Regulation period
 
 #define E 3.3f                                      // Available DC voltage
 #define EINVERSE (1 / E)                            // Inverse of E
 #define DEADTIME 0                                  // Dead time in number of counts (see EPwmXRegs.TBPRD)
 #define DEADTIME_HALF (DEADTIME / 2)                // Half of the dead time (see dmach1_isr)
-#define MAX_data_count 0                          // Size of an array used for data storage
+#define MAX_data_count 180                          // Size of an array used for data storage
 
 // Defines for VREG ADCINA0
 #define inv_tau_a 916.4223f                         // 1/(R*C)
@@ -160,9 +160,9 @@ void main(void)
     EDIS;
 
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
+    Vref_b = 0.5f;
 
     StartDMACH1();
-
 
     while(1)
         {
@@ -651,11 +651,11 @@ __interrupt void dmach1_isr(void)
     #else
         // First RC filter
         MS_CMPA_a = PWM_CMP_a;
-        MS_CMPB_a = PWM_TBPRD + 1 - PWM_CMP_a;
+        MS_CMPB_a = MS_TBPRD + 1 - PWM_CMP_a;
 
         // Second RC filter
         MS_CMPA_b = PWM_CMP_b;
-        MS_CMPB_b = PWM_TBPRD + 1 - PWM_CMP_b;
+        MS_CMPB_b = MS_TBPRD + 1 - PWM_CMP_b;
     #endif
 
     // First RC filter
@@ -666,7 +666,7 @@ __interrupt void dmach1_isr(void)
     EPwm2Regs.CMPA.bit.CMPA = MS_CMPA_b;    // Set CMPA
     EPwm2Regs.CMPB.bit.CMPB = MS_CMPB_b;    // Set CMP
 
-    //PrintData();                                      // Data storage (JUST FOR DEBUGGING)
+    PrintData();                                      // Data storage (JUST FOR DEBUGGING)
 
     GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;             // Notify dmach1_isr end
 
