@@ -2,8 +2,8 @@
 clear all
 clc
 
-ur = 1;             % update rate
-OVERSAMPLING = 0;   % logic variable to determine with/without oversampling
+ur = 4;             % update rate
+OVERSAMPLING = 1;   % logic variable to determine with/without oversampling
 
 % specify RC filter to be simulated
 ADCINA0 = 1;
