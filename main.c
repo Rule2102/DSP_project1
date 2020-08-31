@@ -3,7 +3,7 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 1                                        // Update rate (UR>2 -> multisampling algorithm)
+#define UR 8                                        // Update rate (UR>2 -> multisampling algorithm)
 #define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
@@ -14,8 +14,8 @@
 // Period of virtual switching counter, up-down mode assumed; closest to (Uint16)(FTB/(2*FPWM)-1) so that PWM_TBPRD%16=0
 #define PWM_TBPRD 4992
 #define TPWM (2*PWM_TBPRD/FTB)                      // Switching period
-#define ADC_TBPRD (PWM_TBPRD/NOS)                  // Counter period for ePWM used for ADC triggering, up-down mode assumed
-#define MS_TBPRD (2*PWM_TBPRD/UR - 1) //(UR!=1 ? (2*PWM_TBPRD/UR - 1) : PWM_TBPRD)             // Counter period of ePWM used to implement multisampling algorithm, up mode;
+#define ADC_TBPRD (PWM_TBPRD/NOS)                   // Counter period for ePWM used for ADC triggering, up-down mode assumed
+#define MS_TBPRD (2*PWM_TBPRD/UR - 1)               // Counter period of ePWM used to implement multisampling algorithm, up mode;
 #define TS (TPWM/UR)                                // Regulation period
 
 #define E 3.3f                                      // Available DC voltage
@@ -26,13 +26,13 @@
 
 // Defines for VREG ADCINA0
 #define inv_tau_a 916.4223f                         // 1/(R*C)
-#define alfa_a 0.2f                                 // gain for IMC based voltage regulator
+#define alfa_a 0.17f                                 // gain for IMC based voltage regulator
 #define beta_a (exp(-TS*inv_tau_a))                 // parameter that describes system dynamics beta=exp(-Ts/(R*C))
 #define alfa_1beta_a (alfa_a/(1-beta_a))            // alfa/(1-beta)
 
 // Defines for VREG ADCINA0
 #define inv_tau_b 916.4223f                         // 1/(R*C)
-#define alfa_b 0.2f                                 // gain for IMC based voltage regulator
+#define alfa_b 0.17f                                 // gain for IMC based voltage regulator
 #define beta_b (exp(-TS*inv_tau_b))                 // parameter that describes system dynamics beta=exp(-Ts/(R*C))
 #define alfa_1beta_b (alfa_b/(1-beta_b))            // alfa/(1-beta)
 
@@ -387,7 +387,7 @@ void PrintData()
         if (data_count >= MAX_data_count)
         {
             data_count = 0;
-            Vref_b = 0.0f;
+            //Vref_b = 0.0f;
             canPrint = 0;
         }
 

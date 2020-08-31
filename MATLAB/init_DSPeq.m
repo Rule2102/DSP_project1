@@ -43,7 +43,7 @@ else
 end
 
 beta = exp(-Ts/(R*C));      % parametar that describes the system 
-alfa = 0.2;                 % gain for IMC based regulator
+alfa = 0.17;                 % gain for IMC based regulator
 
 % !!! use switch in Simulink regulator block to set PI ot IMC regulator
 % parameters for PI regulator 
