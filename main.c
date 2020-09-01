@@ -183,7 +183,7 @@ void Configure_GPIO(void)
     GpioCtrlRegs.GPADIR.bit.GPIO2 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 1;         // Mux to ePWM2A
 
-    // Configure as EPWM1B output (to notify EPWM1/2_TBCTR=0)
+    // Configure as EPWM1B output to notify EPWM1/2_TBCTR=0 (JUST FOR DEBUGGING)
     GpioCtrlRegs.GPADIR.bit.GPIO1 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;         // Mux to ePWM1B
 
