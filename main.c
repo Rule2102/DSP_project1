@@ -22,7 +22,7 @@
 #define EINVERSE (1 / E)                            // Inverse of E
 #define DEADTIME 0                                  // Dead time in number of counts (see EPwmXRegs.TBPRD)
 #define DEADTIME_HALF (DEADTIME / 2)                // Half of the dead time (see dmach1_isr)
-#define MAX_data_count 180                          // Size of an array used for data storage
+#define MAX_data_count 720                          // Size of an array used for data storage
 
 // Defines for VREG ADCINA0
 #define inv_tau_a 916.4223f                         // 1/(R*C)
@@ -482,7 +482,7 @@ __interrupt void dmach1_isr(void)
                 Sum_AvgMeas_b+= AvgMeas_b[i_for];
             }
 
-        for (i_for=1;i_for<UR;i_for++)
+        for (i_for=UR-1;i_for>0;i_for--)
             {
                 AvgMeas_a[i_for]= AvgMeas_a[i_for-1];
                 AvgMeas_b[i_for]= AvgMeas_b[i_for-1];

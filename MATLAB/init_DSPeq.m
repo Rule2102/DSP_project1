@@ -55,7 +55,7 @@ Vref1 = 0;
 Vref2 = 0.5;
 
 % defines simulation length (synchronized with DSP memory storage)
-MAX_data_count = 180;
+MAX_data_count = 720;
 
 
 
