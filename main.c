@@ -3,7 +3,7 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 8                                        // Update rate (UR>2 -> multisampling algorithm)
+#define UR 2                                        // Update rate (UR>2 -> multisampling algorithm)
 #define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
@@ -52,6 +52,7 @@ void Configure_ADC(void);                      // Configure ADC
 void Configure_DMA(void);                      // Configure DMA
 void Clear_DMAbuffer(void);                    // Clear DMA buffers
 void Configure_GPIO(void);                     // Configure GPIO
+void Configure_eQEP(void);                     // Configure EQEP
 void PrintData(void);                          // Data storage used to export monitored variables to .dat file
 
 __interrupt void adca1_isr(void);              // JUST FOR DEBIGGING to check sampling process
@@ -96,6 +97,8 @@ float32 dataOut_2[MAX_data_count] = {};        // Data storage
 Uint16 canPrint = 1;                           // Logic signal used to trigger data storage
 long int data_count = 0;                       // Counter for data storage
 
+Uint16 theta = 0;
+
 //long int dma_count = 0;                        // Counter to check dmach1_isr
 //long int adc_count_a = 0;                      // Counter to check adca1_isr
 
@@ -137,6 +140,7 @@ void main(void)
     Clear_DMAbuffer();
     DMAInitialize();
     Configure_DMA();
+    Configure_eQEP();
 
     // Write the ISR vector for each interrupt to the appropriate location in the PIE vector table
     EALLOW;
@@ -200,6 +204,34 @@ void Configure_GPIO(void)
     GpioCtrlRegs.GPCDIR.bit.GPIO67 = 1;         // Configure as output
     GpioCtrlRegs.GPCMUX1.bit.GPIO67 = 0;        // Mux as ordinary GPIO
     GpioDataRegs.GPCCLEAR.bit.GPIO67 = 1;       // ensure 0 before setting Vref
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //GPIOs for encoder
+
+    // Configure as EPWM6A output (to emulate encoder output A)
+    GpioCtrlRegs.GPADIR.bit.GPIO10 = 1;          // Configure as output
+    GpioCtrlRegs.GPAMUX1.bit.GPIO10 = 1;         // Mux to ePWM6A
+
+    // Configure as EPWM6B output (to emulate encoder output B)
+    GpioCtrlRegs.GPADIR.bit.GPIO11 = 1;          // Configure as output
+    GpioCtrlRegs.GPAMUX1.bit.GPIO11 = 1;         // Mux to ePWM6B
+
+    // Configure as EPWM3A output (to emulate encoder output I)
+    GpioCtrlRegs.GPADIR.bit.GPIO4 = 1;          // Configure as output
+    GpioCtrlRegs.GPAMUX1.bit.GPIO4 = 1;         // Mux to ePWM3A
+
+    // Configure as EQEP2A input
+    GpioCtrlRegs.GPADIR.bit.GPIO24 = 0;          // Configure as input
+    GpioCtrlRegs.GPAMUX2.bit.GPIO24 = 2;         // Mux to eQEP2A
+
+    // Configure as EQEP2B input
+    GpioCtrlRegs.GPADIR.bit.GPIO25 = 0;          // Configure as input
+    GpioCtrlRegs.GPAMUX2.bit.GPIO25 = 2;         // Mux to eQEP2B
+
+    // Configure as EQEP2I input
+    GpioCtrlRegs.GPADIR.bit.GPIO26 = 0;          // Configure as input
+    GpioCtrlRegs.GPAMUX2.bit.GPIO26 = 2;         // Mux to eQEP2I
+
     EDIS;
 
 }
@@ -267,6 +299,39 @@ void Configure_ePWM(void)
     // Set PWM output to notify SOCA (JUST FOR DEBUGGING)
     EPwm5Regs.AQCTLA.bit.ZRO = 2;              // Set PWM A high on TBCTR=0
     EPwm5Regs.AQCTLA.bit.PRD = 1;              // Set PWM A low on TBCTR=TBPRD
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //EPWMs for emulating encoder
+
+    // EPWM6 for emulating encoder output A & B
+
+      EPwm6Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1 TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
+      EPwm6Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
+      EPwm6Regs.TBCTL.bit.CTRMODE = 2;           // Up-down mode
+      EPwm6Regs.TBCTR = 0x0000;                  // Clear counter
+      EPwm6Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
+
+      EPwm6Regs.TBPRD = 650;               // Counter period
+
+      // Set PWM output to emulate encoder outputs A & B (JUST FOR DEBUGGING)
+      EPwm6Regs.AQCTLA.bit.ZRO = 3;              // Toggle PWM A on TBCTR=0
+      EPwm6Regs.AQCTLB.bit.PRD = 3;              // Toggle PWM B on  TBCTR=TBPRD
+
+      // EPWM3 for emulating encoder output I
+
+      EPwm3Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1 TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
+      EPwm3Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
+      EPwm3Regs.TBCTL.bit.CTRMODE = 2;           // Up-down mode
+      EPwm3Regs.TBCTR = 0x0000;                  // Clear counter
+      EPwm3Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
+
+      EPwm3Regs.TBPRD = 65000;               // Counter period
+
+      EPwm3Regs.CMPA.bit.CMPA = 650;
+
+      // Set PWM output to emulate encoder output I (JUST FOR DEBUGGING)
+      EPwm3Regs.AQCTLA.bit.ZRO = 2;              // Set PWM A high on TBCTR=0
+      EPwm3Regs.AQCTLA.bit.CAU = 1;              // Set PWM A low on TBCTR=CMPA during up count
 }
 
 void Configure_ADC(void)
@@ -358,6 +423,17 @@ void Configure_DMA(void)
     EDIS;
 }
 
+void Configure_eQEP(void)
+{
+
+    EQep2Regs.QDECCTL.bit.QSRC = 0;         // Quadrature count mode
+    EQep2Regs.QEPCTL.bit.PCRM = 0;          // QPOSCNT reset on index event
+    EQep2Regs.QEPCTL.bit.QPEN = 1;          // QEP enable
+    EQep2Regs.QCAPCTL.bit.CEN = 1;          // QEP capture Enable
+    EQep2Regs.QPOSMAX = 0xffffffff;         // QPOSCNT max (without this QEP does not count)
+
+}
+
 void Clear_DMAbuffer(void)
 {
     int i;
@@ -379,7 +455,7 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_1[data_count] =  Vmeas_b;
+        dataOut_1[data_count] =  theta; //Vmeas_b;
         dataOut_2[data_count] =  u_b[0];
 
         data_count++;
@@ -412,6 +488,8 @@ __interrupt void adca1_isr(void)
 __interrupt void dmach1_isr(void)
 {
     GpioDataRegs.GPCSET.bit.GPIO66 = 1;             // Notify dmach1_isr start
+
+    theta = EQep2Regs.QPOSCNT;                      // Capture position
 
     #if (OVERSAMPLING)
         int i_for = 0;
