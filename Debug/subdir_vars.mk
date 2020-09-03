@@ -24,7 +24,7 @@ C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/source/F2837xD_Ip
 C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/source/F2837xD_PieCtrl.c \
 C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/source/F2837xD_PieVect.c \
 C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/source/F2837xD_SysCtrl.c \
-../main.c 
+../main_FOC.c 
 
 C_DEPS += \
 ./F2837xD_Adc.d \
@@ -38,7 +38,7 @@ C_DEPS += \
 ./F2837xD_PieCtrl.d \
 ./F2837xD_PieVect.d \
 ./F2837xD_SysCtrl.d \
-./main.d 
+./main_FOC.d 
 
 OBJS += \
 ./F2837xD_Adc.obj \
@@ -54,7 +54,7 @@ OBJS += \
 ./F2837xD_PieVect.obj \
 ./F2837xD_SysCtrl.obj \
 ./F2837xD_usDelay.obj \
-./main.obj 
+./main_FOC.obj 
 
 ASM_DEPS += \
 ./F2837xD_CodeStartBranch.d \
@@ -74,7 +74,7 @@ OBJS__QUOTED += \
 "F2837xD_PieVect.obj" \
 "F2837xD_SysCtrl.obj" \
 "F2837xD_usDelay.obj" \
-"main.obj" 
+"main_FOC.obj" 
 
 C_DEPS__QUOTED += \
 "F2837xD_Adc.d" \
@@ -88,7 +88,7 @@ C_DEPS__QUOTED += \
 "F2837xD_PieCtrl.d" \
 "F2837xD_PieVect.d" \
 "F2837xD_SysCtrl.d" \
-"main.d" 
+"main_FOC.d" 
 
 ASM_DEPS__QUOTED += \
 "F2837xD_CodeStartBranch.d" \
@@ -106,7 +106,7 @@ C_SRCS__QUOTED += \
 "C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/source/F2837xD_PieCtrl.c" \
 "C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/source/F2837xD_PieVect.c" \
 "C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/source/F2837xD_SysCtrl.c" \
-"../main.c" 
+"../main_FOC.c" 
 
 ASM_SRCS__QUOTED += \
 "C:/ti/c2000/C2000Ware_3_02_00_00/device_support/f2837xd/common/source/F2837xD_CodeStartBranch.asm" \

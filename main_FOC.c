@@ -20,8 +20,7 @@
 
 #define E 3.3f                                      // Available DC voltage
 #define EINVERSE (1 / E)                            // Inverse of E
-#define DEADTIME 0                                  // Dead time in number of counts (see EPwmXRegs.TBPRD)
-#define DEADTIME_HALF (DEADTIME / 2)                // Half of the dead time (see dmach1_isr)
+#define DEADTIME 100                                // Dead time in number of EPWM clocks (see EPwmXRegs.TBPRD)
 #define MAX_data_count 720                          // Size of an array used for data storage
 
 // Defines for VREG ADCINA0
@@ -73,10 +72,7 @@ float32 Vmeas_a;                               // Measured voltage
 float32 Vref_a = 0.0f;                         // Reference voltage
 float32 u_a[2] = {0.0f,0.0f};                  // Control signal
 float32 err_a[2] = {0.0f,0.0f};                // Error err[1]=previous, err[0]=current
-Uint16 PWM_CMP_a;                              // CMP value for the virtual carrier (duty cycle)
-Uint16 MS_CMPA_a;                              // CMPA value for the multisampling counter (EPWM1)
-Uint16 MS_CMPB_a;                              // CMPB value for the multisampling counter (EPWM1)
-//float32 kp_a = 1.8f, ki_a = 0.2f/(float32)UR;  // PI voltage regulator
+
 
 // Second RC filter (connected to ADCINB2)
 volatile Uint16 Measurement_b;                 // Measurements (take data from DMAbuffer)
@@ -86,10 +82,20 @@ float32 Vmeas_b;                               // Measured voltage
 float32 Vref_b = 0.0f;                         // Reference voltage
 float32 u_b[2] = {0.0f,0.0f};                  // Control signal
 float32 err_b[2] = {0.0f,0.0f};                // Error err[1]=previous, err[0]=current
+
+// Variables for CMP registers
+// Phase A
+Uint16 PWM_CMP_a;                              // CMP value for the virtual carrier (duty cycle)
+Uint16 MS_CMPA_a;                              // CMPA value for the multisampling counter (EPWM1)
+Uint16 MS_CMPB_a;                              // CMPB value for the multisampling counter (EPWM1)
+// Phase B
 Uint16 PWM_CMP_b;                              // CMP value for the virtual carrier (duty cycle)
 Uint16 MS_CMPA_b;                              // CMPA value for the  multisampling counter (EPWM2)
 Uint16 MS_CMPB_b;                              // CMPB value for the multisampling counter (EPWM2)
-//float32 kp_b = 1.8f, ki_b = 0.2f/(float32)UR;  // PI voltage regulator
+// Phase C
+Uint16 PWM_CMP_c;                              // CMP value for the virtual carrier (duty cycle)
+Uint16 MS_CMPA_c;                              // CMPA value for the  multisampling counter (EPWM3)
+Uint16 MS_CMPB_c;                              // CMPB value for the multisampling counter (EPWM3)
 
 float32 dataOut_1[MAX_data_count] = {};        // Data storage
 float32 dataOut_2[MAX_data_count] = {};        // Data storage
@@ -97,7 +103,15 @@ float32 dataOut_2[MAX_data_count] = {};        // Data storage
 Uint16 canPrint = 1;                           // Logic signal used to trigger data storage
 long int data_count = 0;                       // Counter for data storage
 
-Uint16 theta = 0;
+// Variables for motor control
+#define ENC_LINE 2000                            // Number of encoder lines
+#define ANG_CNV (2*3.14/(float32)(ENC_LINE))     // Constant for angle calculation (conversion from QEP counter)
+#define INV_UR_1 (1/(UR+1))                     // Used for angle averaging on switching period
+float32 theta[UR+1] = {};                        // Measured angle - theta[0]=current, theta[1]=previous, etc.
+float32 theta_dir;                               // Angle used for direct dq transform
+float32 theta_inv;                               // Angle used for inverse dq transform
+float32 dtheta;                                  // Angle difference (w*Ts) used in IREG
+
 
 //long int dma_count = 0;                        // Counter to check dmach1_isr
 //long int adc_count_a = 0;                      // Counter to check adca1_isr
@@ -239,7 +253,7 @@ void Configure_GPIO(void)
 void Configure_ePWM(void)
 {
 
-    // EPWM1 for switching
+    // EPWM1 as a multisampling carrier for phase A
 
     EPwm1Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1 TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
     EPwm1Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
@@ -254,15 +268,18 @@ void Configure_ePWM(void)
     EPwm1Regs.CMPCTL.bit.LOADAMODE = 0;         // Load on TBCTR=0
     EPwm1Regs.CMPCTL.bit.LOADBMODE = 0;         // Load on TBCTR=0
 
-    EPwm1Regs.CMPA.bit.CMPA = MS_TBPRD + 1;               // Value of the CMPA at the beginning (action never happens)
-    EPwm1Regs.CMPB.bit.CMPB = MS_TBPRD + 1;               // Value of the CMPB at the beginning (action never happens)
+    EPwm1Regs.CMPA.bit.CMPA = MS_TBPRD + 1;     // Value of the CMPA at the beginning (action never happens)
+    EPwm1Regs.CMPB.bit.CMPB = MS_TBPRD + 1;     // Value of the CMPB at the beginning (action never happens)
 
-    EPwm1Regs.AQCTLA.bit.CAU = 1;              // Set EPWMA low on TBCTR=CMPA during up count
-    EPwm1Regs.AQCTLA.bit.CBU = 2;              // Set EPWMA high on TBCTR=CMPB during up count
+    EPwm1Regs.AQCTLA.bit.CAU = 1;               // Set EPWMA low on TBCTR=CMPA during up count
+    EPwm1Regs.AQCTLA.bit.CBU = 2;               // Set EPWMA high on TBCTR=CMPB during up count
 
-    EPwm1Regs.AQCTLB.bit.ZRO = 3;              // Toggle EPWMB each time TBCTR = 0 (JUST FOR DEBUGGING)
+    EPwm1Regs.DBCTL.bit.POLSEL = 2;             // Active high complementary - EPWMxB is inverted.
+    EPwm1Regs.DBCTL.bit.OUT_MODE = 3;           // DBM is fully enabled
+    EPwm1Regs.DBFED.bit.DBFED = DEADTIME;       // Set delay for rising edge (DBRED)
+    EPwm1Regs.DBRED.bit.DBRED = DEADTIME;       // Set delay for falling edge (DBFED)
 
-    // EPWM2 as a multisampling carrier for the second RC filter
+    // EPWM2 as a multisampling carrier for phase B
 
     EPwm2Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1     TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
     EPwm2Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
@@ -283,6 +300,50 @@ void Configure_ePWM(void)
     EPwm2Regs.AQCTLA.bit.CAU = 1;              // Set EPWMA low on TBCTR=CMPA during up count
     EPwm2Regs.AQCTLA.bit.CBU = 2;              // Set EPWMA high on TBCTR=CMPB during up count
 
+    EPwm2Regs.DBCTL.bit.POLSEL = 2;             // Active high complementary - EPWMxB is inverted.
+    EPwm2Regs.DBCTL.bit.OUT_MODE = 3;           // DBM is fully enabled
+    EPwm2Regs.DBFED.bit.DBFED = DEADTIME;       // Set delay for rising edge (DBRED)
+    EPwm2Regs.DBRED.bit.DBRED = DEADTIME;       // Set delay for falling edge (DBFED)
+
+    // EPWM3 as a multisampling carrier for phase C
+
+    EPwm3Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1     TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
+    EPwm3Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
+    EPwm3Regs.TBCTL.bit.CTRMODE = 0;           // Up mode
+    EPwm3Regs.TBCTR = 0x0000;                  // Clear counter
+    EPwm3Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
+
+    EPwm3Regs.TBPRD = MS_TBPRD;                // Counter period
+
+    EPwm3Regs.CMPCTL.bit.SHDWAMODE = 0;         // Shadow mode active for CMPA
+    EPwm3Regs.CMPCTL.bit.SHDWBMODE = 0;         // Shadow mode active for CMPB
+    EPwm3Regs.CMPCTL.bit.LOADAMODE = 0;         // Load on TBCTR=0
+    EPwm3Regs.CMPCTL.bit.LOADBMODE = 0;         // Load on TBCTR=0
+
+    EPwm3Regs.CMPA.bit.CMPA = MS_TBPRD + 1;               // Value of the CMPA at the beginning (action never happens)
+    EPwm3Regs.CMPB.bit.CMPB = MS_TBPRD + 1;               // Value of the CMPB at the beginning (action never happens)
+
+    EPwm3Regs.AQCTLA.bit.CAU = 1;              // Set EPWMA low on TBCTR=CMPA during up count
+    EPwm3Regs.AQCTLA.bit.CBU = 2;              // Set EPWMA high on TBCTR=CMPB during up count
+
+    EPwm3Regs.DBCTL.bit.POLSEL = 2;             // Active high complementary - EPWMxB is inverted.
+    EPwm3Regs.DBCTL.bit.OUT_MODE = 3;           // DBM is fully enabled
+    EPwm3Regs.DBFED.bit.DBFED = DEADTIME;       // Set delay for rising edge (DBRED)
+    EPwm3Regs.DBRED.bit.DBRED = DEADTIME;       // Set delay for falling edge (DBFED)
+
+    // EPWM4 to notify multisampling carrier TBCTR=0 (JUST FOR DEBUGGING)
+
+    EPwm4Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1 TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
+    EPwm4Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
+    EPwm4Regs.TBCTL.bit.CTRMODE = 2;           // Up-down mode
+    EPwm4Regs.TBCTR = 0x0000;                  // Clear counter
+    EPwm4Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
+
+    EPwm4Regs.TBPRD = MS_TBPRD;                // Counter period
+
+    EPwm4Regs.AQCTLA.bit.ZRO = 3;              // Toggle EPWMA each time TBCTR = 0
+
+
     // EPWM5 for ADC triggering
 
     EPwm5Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1 TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
@@ -300,6 +361,7 @@ void Configure_ePWM(void)
     EPwm5Regs.AQCTLA.bit.ZRO = 2;              // Set PWM A high on TBCTR=0
     EPwm5Regs.AQCTLA.bit.PRD = 1;              // Set PWM A low on TBCTR=TBPRD
 
+    /*
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //EPWMs for emulating encoder
 
@@ -332,6 +394,7 @@ void Configure_ePWM(void)
       // Set PWM output to emulate encoder output I (JUST FOR DEBUGGING)
       EPwm3Regs.AQCTLA.bit.ZRO = 2;              // Set PWM A high on TBCTR=0
       EPwm3Regs.AQCTLA.bit.CAU = 1;              // Set PWM A low on TBCTR=CMPA during up count
+      */
 }
 
 void Configure_ADC(void)
@@ -455,7 +518,7 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_1[data_count] =  theta; //Vmeas_b;
+        dataOut_1[data_count] =  Vmeas_b;
         dataOut_2[data_count] =  u_b[0];
 
         data_count++;
@@ -489,7 +552,7 @@ __interrupt void dmach1_isr(void)
 {
     GpioDataRegs.GPCSET.bit.GPIO66 = 1;             // Notify dmach1_isr start
 
-    theta = EQep2Regs.QPOSCNT;                      // Capture position
+    theta[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;          // Capture position
 
     #if (OVERSAMPLING)
         int i_for = 0;
@@ -580,6 +643,18 @@ __interrupt void dmach1_isr(void)
     Vmeas_a = Vmeas_a*0.0007326f;
     Vmeas_b = Vmeas_b*0.0007326f;
 
+    dtheta = theta[0] - theta[1];
+    theta_dir = (theta[0] + theta[1])*0.5f;
+    theta_inv = theta[0];
+
+    for (i_for=UR;i_for>0;i_for--)
+        {
+            theta_inv+=theta[i_for];
+            theta[i_for]= theta[i_for-1];
+        }
+    theta_inv = theta_inv*INV_UR_1;
+
+
     /*
     #if (!OVERSAMPLING)
         int i_for = 0;
@@ -608,7 +683,7 @@ __interrupt void dmach1_isr(void)
             }
     }
 */
-
+/*
     // Regulation
 
     // First RC filter
@@ -634,6 +709,11 @@ __interrupt void dmach1_isr(void)
     u_b[1] = u_b[0];
 
     PWM_CMP_b = (Uint16)(PWM_TBPRD*u_b[0]*EINVERSE);                                  // Calculate duty cycle
+*/
+    PWM_CMP_a = (Uint16)(PWM_TBPRD*0.5*EINVERSE);
+    PWM_CMP_b = (Uint16)(PWM_TBPRD*0.5*EINVERSE);
+    PWM_CMP_c = (Uint16)(PWM_TBPRD*0.5*EINVERSE);
+
 
     #if (UR!=1)
 
@@ -736,13 +816,18 @@ __interrupt void dmach1_isr(void)
         MS_CMPB_b = MS_TBPRD + 1 - PWM_CMP_b;
     #endif
 
-    // First RC filter
+
+    // Phase A
     EPwm1Regs.CMPA.bit.CMPA = MS_CMPA_a;    // Set CMPA
     EPwm1Regs.CMPB.bit.CMPB = MS_CMPB_a;    // Set CMPB
 
-    // Second RC filter
+    // Phase B
     EPwm2Regs.CMPA.bit.CMPA = MS_CMPA_b;    // Set CMPA
-    EPwm2Regs.CMPB.bit.CMPB = MS_CMPB_b;    // Set CMP
+    EPwm2Regs.CMPB.bit.CMPB = MS_CMPB_b;    // Set CMPB
+
+    // Phase C
+    EPwm3Regs.CMPA.bit.CMPA = MS_CMPA_c;    // Set CMPA
+    EPwm3Regs.CMPB.bit.CMPB = MS_CMPB_c;    // Set CMPB
 
     PrintData();                                      // Data storage (JUST FOR DEBUGGING)
 
