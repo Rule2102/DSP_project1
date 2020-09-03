@@ -311,7 +311,7 @@ void Configure_ePWM(void)
       EPwm6Regs.TBCTR = 0x0000;                  // Clear counter
       EPwm6Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
 
-      EPwm6Regs.TBPRD = 650;               // Counter period
+      EPwm6Regs.TBPRD = 4992;               // Counter period
 
       // Set PWM output to emulate encoder outputs A & B (JUST FOR DEBUGGING)
       EPwm6Regs.AQCTLA.bit.ZRO = 3;              // Toggle PWM A on TBCTR=0
@@ -325,9 +325,9 @@ void Configure_ePWM(void)
       EPwm3Regs.TBCTR = 0x0000;                  // Clear counter
       EPwm3Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
 
-      EPwm3Regs.TBPRD = 65000;               // Counter period
+      EPwm3Regs.TBPRD = 49920;               // Counter period
 
-      EPwm3Regs.CMPA.bit.CMPA = 650;
+      EPwm3Regs.CMPA.bit.CMPA = 4992;
 
       // Set PWM output to emulate encoder output I (JUST FOR DEBUGGING)
       EPwm3Regs.AQCTLA.bit.ZRO = 2;              // Set PWM A high on TBCTR=0
