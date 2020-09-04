@@ -21,10 +21,11 @@
 
 #define E 3.3f                                      // Available DC voltage
 #define EINVERSE (1/E)                              // Inverse of E
-#define UD_MAX 3.3f                                 // Maximum available voltage in d axis
-#define UD_MIN 0.0f                                 // Minimum available voltage in d axis
-#define UQ_MAX 3.3f                                 // Maximum available voltage in q axis
-#define UQ_MIN 0.0f                                 // Minimum available voltage in q axis
+#define UDQ_MAX (E/2)                               // Maximum available voltage
+#define UD_MAX UDQ_MAX                              // Maximum available voltage in d axis
+#define UD_MIN (-UDQ_MAX)                           // Minimum available voltage in d axis
+#define UQ_MAX UDQ_MAX                              // Maximum available voltage in q axis
+#define UQ_MIN (-UDQ_MAX)                           // Minimum available voltage in q axis
 #define D_MAX (PWM_TBPRD - 5)                       // Maximum duty cycle (to avoid unnecessary switching)
 #define D_MIN 5                                     // Minimum duty cycle (to avoid unnecessary switching)
 
@@ -193,19 +194,39 @@ void Configure_GPIO(void)
 
     EALLOW;
 
-    // Configure as EPWM1A output (to drive first RC filter)
+    // GPIOs for EPWM
+
+    // Configure as EPWM1A output (phase A high side)
     GpioCtrlRegs.GPADIR.bit.GPIO0 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO0 = 1;         // Mux to ePWM1A
 
-    // Configure as EPWM2A output (to drive second RC filter)
-    GpioCtrlRegs.GPADIR.bit.GPIO2 = 1;          // Configure as output
-    GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 1;         // Mux to ePWM2A
-
-    // Configure as EPWM1B output to notify EPWM1/2_TBCTR=0 (JUST FOR DEBUGGING)
+    // Configure as EPWM1B output (phase A low side)
     GpioCtrlRegs.GPADIR.bit.GPIO1 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;         // Mux to ePWM1B
 
-    // Configure as EPWM5A output (JUST FOR DEBUGGING)
+    // Configure as EPWM2A output (phase B high side)
+    GpioCtrlRegs.GPADIR.bit.GPIO2 = 1;          // Configure as output
+    GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 1;         // Mux to ePWM2A
+
+    // Configure as EPWM2B output (phase B low side)
+    GpioCtrlRegs.GPADIR.bit.GPIO3 = 1;          // Configure as output
+    GpioCtrlRegs.GPAMUX1.bit.GPIO3 = 1;         // Mux to ePWM2B
+
+    // Configure as EPWM3A output (phase C high side)
+    GpioCtrlRegs.GPADIR.bit.GPIO4 = 1;          // Configure as output
+    GpioCtrlRegs.GPAMUX1.bit.GPIO4 = 1;         // Mux to ePWM3A
+
+    // Configure as EPWM3B output (phase C low side)
+    GpioCtrlRegs.GPADIR.bit.GPIO5 = 1;          // Configure as output
+    GpioCtrlRegs.GPAMUX1.bit.GPIO5 = 1;         // Mux to ePWM3B
+
+    // GPIOs for debugging/measurements
+
+    // Configure as EPWM4A output to notify MS_TBCTR=0 (JUST FOR DEBUGGING)
+    GpioCtrlRegs.GPADIR.bit.GPIO6 = 1;          // Configure as output
+    GpioCtrlRegs.GPAMUX1.bit.GPIO6 = 1;         // Mux to ePWM3A
+
+    // Configure as EPWM5A output to notify ADC_TBCTR=0 & ADC_TBCTR=TBPRD (JUST FOR DEBUGGING)
     GpioCtrlRegs.GPADIR.bit.GPIO8 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO8 = 1;         // Mux to ePWM5A
 
@@ -219,20 +240,7 @@ void Configure_GPIO(void)
     GpioCtrlRegs.GPCMUX1.bit.GPIO67 = 0;        // Mux as ordinary GPIO
     GpioDataRegs.GPCCLEAR.bit.GPIO67 = 1;       // ensure 0 before setting Vref
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //GPIOs for encoder
-
-    // Configure as EPWM6A output (to emulate encoder output A)
-    GpioCtrlRegs.GPADIR.bit.GPIO10 = 1;          // Configure as output
-    GpioCtrlRegs.GPAMUX1.bit.GPIO10 = 1;         // Mux to ePWM6A
-
-    // Configure as EPWM6B output (to emulate encoder output B)
-    GpioCtrlRegs.GPADIR.bit.GPIO11 = 1;          // Configure as output
-    GpioCtrlRegs.GPAMUX1.bit.GPIO11 = 1;         // Mux to ePWM6B
-
-    // Configure as EPWM3A output (to emulate encoder output I)
-    GpioCtrlRegs.GPADIR.bit.GPIO4 = 1;          // Configure as output
-    GpioCtrlRegs.GPAMUX1.bit.GPIO4 = 1;         // Mux to ePWM3A
+    //GPIOs for QEP
 
     // Configure as EQEP2A input
     GpioCtrlRegs.GPADIR.bit.GPIO24 = 0;          // Configure as input
@@ -245,6 +253,22 @@ void Configure_GPIO(void)
     // Configure as EQEP2I input
     GpioCtrlRegs.GPADIR.bit.GPIO26 = 0;          // Configure as input
     GpioCtrlRegs.GPAMUX2.bit.GPIO26 = 2;         // Mux to eQEP2I
+
+    /*
+    // Configure as EPWM6A output (to emulate encoder output A)
+    GpioCtrlRegs.GPADIR.bit.GPIO10 = 1;          // Configure as output
+    GpioCtrlRegs.GPAMUX1.bit.GPIO10 = 1;         // Mux to ePWM6A
+
+    // Configure as EPWM6B output (to emulate encoder output B)
+    GpioCtrlRegs.GPADIR.bit.GPIO11 = 1;          // Configure as output
+    GpioCtrlRegs.GPAMUX1.bit.GPIO11 = 1;         // Mux to ePWM6B
+
+    // Configure as EPWM3A output (to emulate encoder output I)
+    GpioCtrlRegs.GPADIR.bit.GPIO4 = 1;          // Configure as output
+    GpioCtrlRegs.GPAMUX1.bit.GPIO4 = 1;         // Mux to ePWM3A
+    */
+
+
 
     EDIS;
 
