@@ -3,7 +3,7 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 8                                        // Update rate (UR>2 -> multisampling algorithm)
+#define UR 2                                        // Update rate (UR>2 -> multisampling algorithm)
 #define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
@@ -17,9 +17,9 @@
 #define ADC_TBPRD (PWM_TBPRD/NOS)                   // Counter period for ePWM used for ADC triggering, up-down mode assumed
 #define MS_TBPRD (2*PWM_TBPRD/UR - 1)               // Counter period of ePWM used to implement multisampling algorithm, up mode;
 #define TS (TPWM/UR)                                // Regulation period
-#define DEADTIME 100                                // Dead time in number of EPWM clocks (see EPwmXRegs.TBPRD)
+#define DEADTIME 100                                // Dead time in number of EPWM clocks (see EPwmXRegs.TBPRD) 100 --> 1us
 
-#define E 3.3f                                      // Available DC voltage
+#define E 48.0f                                     // Available DC voltage
 #define EINVERSE (1/E)                              // Inverse of E
 #define UDQ_MAX (E/2)                               // Maximum available voltage
 #define UD_MAX UDQ_MAX                              // Maximum available voltage in d axis
@@ -29,17 +29,21 @@
 #define D_MAX (PWM_TBPRD - 5)                       // Maximum duty cycle (to avoid unnecessary switching)
 #define D_MIN 5                                     // Minimum duty cycle (to avoid unnecessary switching)
 
-#define ENC_LINE 2000                               // Number of encoder lines
+// Defines for measurements (position & current)
+#define ENC_LINE 1024                               // Number of encoder lines
 #define ANG_CNV (2*3.14/(float32)(ENC_LINE))        // Constant for angle calculation (conversion from QEP counter)
 #define INV_UR_1 (1/(UR+1))                         // Used for angle averaging on switching period
+#define ADC_SCALE 0.0007326f                        // ADC scaling: 3.0 --> 4095 (zero ADC offset assumed)
+#define ISENSE_SCALE 10                             // [A] --> [V] (ISENSE_SCALE)A=1V
+#define ISENSE_OFFSET 1.5                           // 0A --> 1.5V
 
 #define MAX_data_count 720                          // Size of an array used for data storage
 
 // Defines for IREG
-#define R 0.001f                                    // Motor resistance
-#define L 0.130f                                    // Motor inductance
+#define R 0.0307f                                   // Motor resistance
+#define L 0.00012f                                  // Motor inductance
 #define INV_TAU (R/L)                               // 1/(L/R)
-#define ALPHA 0.17f                                 // Gain for IREG
+#define ALPHA 0.2f                                  // Gain for IREG
 #define K1 (ALPHA*L/TS)                             // Constant used for IREG
 #define K2 (exp(-TS*INV_TAU))                       // Parameter that describes system dynamics exp(-R*Ts/L) - constant used for IREG
 
@@ -111,8 +115,8 @@ Uint16 MS_CMPB_a, MS_CMPB_b, MS_CMPB_c;         // CMPB value for the multisampl
 // Data storage
 float32 dataOut_1[MAX_data_count] = {};
 float32 dataOut_2[MAX_data_count] = {};
-Uint16 canPrint = 1;                           // Logic signal used to trigger data storage
-long int data_count = 0;                       // Counter for data storage
+Uint16 canPrint = 1;                            // Logic signal used to trigger data storage
+long int data_count = 0;                        // Counter for data storage
 
 //long int dma_count = 0;                        // Counter to check dmach1_isr
 //long int adc_count_a = 0;                      // Counter to check adca1_isr
@@ -179,7 +183,7 @@ void main(void)
     EDIS;
 
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
-    //Vref_b = 0.5f;
+    Iq_ref = 5.0f;
 
     StartDMACH1();
 
@@ -267,8 +271,6 @@ void Configure_GPIO(void)
     GpioCtrlRegs.GPADIR.bit.GPIO4 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO4 = 1;         // Mux to ePWM3A
     */
-
-
 
     EDIS;
 
@@ -542,15 +544,15 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_1[data_count] =  0.0f; //Vmeas_b;
-        dataOut_2[data_count] =  0.0f; //u_b[0];
+        dataOut_1[data_count] =  Iq;
+        dataOut_2[data_count] =  Id;
 
         data_count++;
 
         if (data_count >= MAX_data_count)
         {
             data_count = 0;
-            //Vref_b = 0.0f;
+            //Iq_ref = 0.0f;
             canPrint = 0;
         }
 
@@ -637,33 +639,33 @@ __interrupt void dmach1_isr(void)
     }
 
     #if (OVERSAMPLING)
-        // Averaging on regulation period & ADC scaling: 3.0 --> 4095 (zero offset assumed)
-        Ia_avg_Ts = (float32)(Ia_sum_Ts>>((int)LOG2_NOS_UR))*0.0007326f;
-        Ib_avg_Ts = (float32)(Ib_sum_Ts>>((int)LOG2_NOS_UR))*0.0007326f;
+        // Averaging on regulation period & scaling ([dig] --> [A])
+        Ia_avg_Ts = ((float32)(Ia_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET)*ISENSE_SCALE;
+        Ib_avg_Ts = ((float32)(Ib_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET)*ISENSE_SCALE;
     #else
         // Take last measurement stored in DMA buffer
-        Ia_avg_Ts = (float32)(Ia_sum_Ts)*0.0007326f;
-        Ib_avg_Ts = float32)(Ib_sum_Ts)*0.0007326f;
+        Ia_avg_Ts = ((float32)(Ia_sum_Ts)*ADC_SCALE - ISENSE_OFFSET)*ISENSE_SCALE;
+        Ib_avg_Ts = ((float32)(Ib_sum_Ts)*ADC_SCALE - ISENSE_OFFSET)*ISENSE_SCALE;
     #endif
 
     Ic_avg_Ts = - Ia_avg_Ts - Ib_avg_Ts;        // Calculate current in phase C
 
     // Direct Clarke transform  (abc -> alpha/beta)
-    Ialpha_avg_Ts = Ia_avg_Ts;
-    Ibeta_avg_Ts =  0.57735f * Ia_avg_Ts + 1.1547f * Ib_avg_Ts;
+    Ialpha_avg_Ts = Ia_avg_Ts;                                          // Ialpha=Ia
+    Ibeta_avg_Ts =  0.57735f * Ia_avg_Ts + 1.1547f * Ib_avg_Ts;         // Ibeta=1/sqrt(3)*Ia+2/sqrt(3)*Ib
 
     // Angles used for dq transform & IREG
     theta_avg_Ts = (theta[0] + theta[1])*0.5f;     // Average measured angle on regulation period
     dtheta = theta[0] - theta[1];
-    theta_avg_Tpwm = theta[0];
 
+    // Average measured angle on switching period
+    theta_avg_Tpwm = theta[0];
     for (i_for=UR;i_for>0;i_for--)
         {
             theta_avg_Tpwm+=theta[i_for];
             theta[i_for]= theta[i_for-1];
         }
-
-    theta_avg_Tpwm = theta_avg_Tpwm*INV_UR_1;             // Average measured angle on switching period
+    theta_avg_Tpwm = theta_avg_Tpwm*INV_UR_1;
 
     // Trigonometry
     sincos(theta_avg_Ts, &_sin[0], &_cos[0]);
@@ -772,11 +774,11 @@ __interrupt void dmach1_isr(void)
             buf_count = 0;
             }
     }
-*/
 
     PWM_CMP_a = (Uint16)(PWM_TBPRD*0.5f);
     PWM_CMP_b = (Uint16)(PWM_TBPRD*0.5f);
     PWM_CMP_c = (Uint16)(PWM_TBPRD*0.5f);
+*/
 
 
     #if (UR!=1)
@@ -926,7 +928,7 @@ __interrupt void dmach1_isr(void)
     EPwm3Regs.CMPA.bit.CMPA = MS_CMPA_c;    // Set CMPA
     EPwm3Regs.CMPB.bit.CMPB = MS_CMPB_c;    // Set CMPB
 
-    //PrintData();                                      // Data storage (JUST FOR DEBUGGING)
+    PrintData();                                      // Data storage (JUST FOR DEBUGGING)
 
     GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;             // Notify dmach1_isr end
 
