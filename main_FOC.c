@@ -8,7 +8,7 @@
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
 #define LOG2_NOS_UR (log2(NOS_UR))                  // Used for averaging on regulation period (if OVERSAMPLING==1)
-#define INV_UR (1/UR)                               // Used for averaging on switching period (if OVERSAMPLING==1)
+#define INV_UR (1/(float32)UR)                      // Used for averaging on switching period (if OVERSAMPLING==1)
 #define FTB 100e6                                   // FTB=EPWMCLK=SYSCLKOUT/2 (time base clock ratio to EPWM clock = 1 assumed)
 #define FPWM 10e3                                   // Switching frequency
 // Period of virtual switching counter, up-down mode assumed; closest to (Uint16)(FTB/(2*FPWM)-1) so that PWM_TBPRD%16=0
@@ -21,7 +21,7 @@
 
 #define E 48.0f                                     // Available DC voltage
 #define EINVERSE (1/E)                              // Inverse of E
-#define UDQ_MAX (E/2)                               // Maximum available voltage
+#define UDQ_MAX (E/(2*1.412f))                               // Maximum available voltage
 #define UD_MAX UDQ_MAX                              // Maximum available voltage in d axis
 #define UD_MIN (-UDQ_MAX)                           // Minimum available voltage in d axis
 #define UQ_MAX UDQ_MAX                              // Maximum available voltage in q axis
@@ -30,20 +30,21 @@
 #define D_MIN 5                                     // Minimum duty cycle (to avoid unnecessary switching)
 
 // Defines for measurements (position & current)
+#define P 6                                         // Machine's number of pole pairs
 #define ENC_LINE 1024                               // Number of encoder lines
-#define ANG_CNV (2*3.14/(float32)(ENC_LINE))        // Constant for angle calculation (conversion from QEP counter)
-#define INV_UR_1 (1/(UR+1))                         // Used for angle averaging on switching period
+#define ANG_CNV (2*3.14f/(float32)(ENC_LINE))       // Constant for angle calculation (conversion from QEP counter)
+#define INV_UR_1 (1/(float32)(UR+1))                // Used for angle averaging on switching period
 #define ADC_SCALE 0.0007326f                        // ADC scaling: 3.0 --> 4095 (zero ADC offset assumed)
 #define ISENSE_SCALE 10                             // [A] --> [V] (ISENSE_SCALE)A=1V
-#define ISENSE_OFFSET 1.5                           // 0A --> 1.5V
+#define ISENSE_OFFSET 1.5f                          // 0A --> 1.5V
 
-#define MAX_data_count 720                          // Size of an array used for data storage
+#define MAX_data_count 200                          // Size of an array used for data storage
 
 // Defines for IREG
 #define R 0.0307f                                   // Motor resistance
 #define L 0.00012f                                  // Motor inductance
 #define INV_TAU (R/L)                               // 1/(L/R)
-#define ALPHA 0.2f                                  // Gain for IREG
+#define ALPHA 0.1f                                  // Gain for IREG
 #define K1 (ALPHA*L/TS)                             // Constant used for IREG
 #define K2 (exp(-TS*INV_TAU))                       // Parameter that describes system dynamics exp(-R*Ts/L) - constant used for IREG
 
@@ -115,10 +116,19 @@ Uint16 MS_CMPB_a, MS_CMPB_b, MS_CMPB_c;         // CMPB value for the multisampl
 // Data storage
 float32 dataOut_1[MAX_data_count] = {};
 float32 dataOut_2[MAX_data_count] = {};
+float32 dataOut_3[MAX_data_count] = {};
+float32 dataOut_4[MAX_data_count] = {};
+float32 dataOut_5[MAX_data_count] = {};
+float32 dataOut_6[MAX_data_count] = {};
 Uint16 canPrint = 1;                            // Logic signal used to trigger data storage
 long int data_count = 0;                        // Counter for data storage
 
-//long int dma_count = 0;                        // Counter to check dmach1_isr
+// For w=const testing
+long int dma_count = 0;                         // Counter to check dmach1_isr
+float32 f_ref = 0.2f;                              // Frequency of electrical quantities
+#define TWOPI_TS (2*3.14f*TS)                   // 2*pi*Ts for angle calculation
+float32 pom1,pom2;
+
 //long int adc_count_a = 0;                      // Counter to check adca1_isr
 
 /*
@@ -544,8 +554,12 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_1[data_count] =  Iq;
-        dataOut_2[data_count] =  Id;
+        dataOut_1[data_count] =  Ia_avg_Ts;
+        dataOut_2[data_count] =  Ib_avg_Ts;
+        dataOut_3[data_count] =  Ic_avg_Ts;
+        dataOut_4[data_count] =  Ua;
+        dataOut_5[data_count] =  Ub;
+        dataOut_6[data_count] =  Uc;
 
         data_count++;
 
@@ -578,7 +592,18 @@ __interrupt void dmach1_isr(void)
 {
     GpioDataRegs.GPCSET.bit.GPIO66 = 1;                       // Notify dmach1_isr start
 
-    theta[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;          // Capture position
+    //theta[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV*P;          // Capture position
+    theta[0] = TWOPI_TS*f_ref*dma_count;                        // Capture position
+
+    if(theta[0]>6.28f)
+    {
+        theta[0]-= 6.28f;
+        dma_count = 0;
+    }
+    else
+    {
+        dma_count++;
+    }
 
     #if (OVERSAMPLING)
         int i_for = 0;
@@ -591,8 +616,6 @@ __interrupt void dmach1_isr(void)
 
     Sum_Id_avg_Ts = 0.0f;
     Sum_Iq_avg_Ts = 0.0f;
-
-    //dma_count++;
 
     // change dma_sgn to indicate state of the ping pong algorithm
     if (dma_sgn==1)
@@ -657,6 +680,13 @@ __interrupt void dmach1_isr(void)
     // Angles used for dq transform & IREG
     theta_avg_Ts = (theta[0] + theta[1])*0.5f;     // Average measured angle on regulation period
     dtheta = theta[0] - theta[1];
+    /*
+    if(dtheta>6.28f)dtheta-= 6.28f;
+    else if(dtheta<0.0f)dtheta+= 6.28f;
+    pom1 = 2*dtheta;
+    if(pom1>6.28f)pom1-= 6.28f;
+    else if(pom1<0.0f)pom1+= 6.28f;
+    */
 
     // Average measured angle on switching period
     theta_avg_Tpwm = theta[0];
@@ -666,6 +696,9 @@ __interrupt void dmach1_isr(void)
             theta[i_for]= theta[i_for-1];
         }
     theta_avg_Tpwm = theta_avg_Tpwm*INV_UR_1;
+
+    //theta_avg_Ts = theta[0];
+    //theta_avg_Tpwm = theta[0];
 
     // Trigonometry
     sincos(theta_avg_Ts, &_sin[0], &_cos[0]);
@@ -697,24 +730,18 @@ __interrupt void dmach1_isr(void)
     #else
 
         // Direct Park transform using theta_avg_Tpwm
-        Id = Ialpha_avg_Ts * _cos[0] + Ibeta_avg_Ts * _sin[0];
-        Iq = Ibeta_avg_Ts * _cos[0] - Ialpha_avg_Ts * _sin[0];
+        Id = Ialpha_avg_Ts * _cos[1] + Ibeta_avg_Ts * _sin[1];
+        Iq = Ibeta_avg_Ts * _cos[1] - Ialpha_avg_Ts * _sin[1];
 
     #endif
 
     // Current error
-    dId[0] = Id - Id_ref;
-    dIq[0] = Iq - Iq_ref;
+    dId[0] = Id_ref - Id;
+    dIq[0] = Iq_ref -Iq;
 
     // IMC based IREG
-    Ud[0] = Ud[1] + K1*(dId[0]*_cos[3]-dIq[0]*_sin[3])-K2*(dId[1]*_cos[2]-dIq[1]*_sin[2]);
-    Uq[0] = Uq[1] + K1*(dIq[0]*_cos[3]+dId[0]*_sin[3])-K2*(dIq[1]*_cos[2]+dId[1]*_sin[2]);
-
-    // Remember values for the next dma_isr (store previous)
-    Ud[1] = Ud[0];
-    Uq[1] = Uq[0];
-    dId[1] = dId[0];
-    dIq[1] = dIq[0];
+    Ud[0] = Ud[1] + K1*(dId[0]*_cos[3]-dIq[0]*_sin[3]-K2*(dId[1]*_cos[2]-dIq[1]*_sin[2]));
+    Uq[0] = Uq[1] + K1*(dIq[0]*_cos[3]+dId[0]*_sin[3]-K2*(dIq[1]*_cos[2]+dId[1]*_sin[2]));
 
     // Saturate if necessary (based on the DC link voltage capabilities)
     if(Ud[0] > UD_MAX) Ud[0] = UD_MAX;
@@ -723,9 +750,19 @@ __interrupt void dmach1_isr(void)
     if(Uq[0] > UQ_MAX) Uq[0] = UQ_MAX;
     else if(Uq[0] < UQ_MIN) Uq[0] = UQ_MIN;
 
+    // Remember values for the next dma_isr (store previous)
+    Ud[1] = Ud[0];
+    Uq[1] = Uq[0];
+    dId[1] = dId[0];
+    dIq[1] = dIq[0];
+
+    // Open loop testing
+    //Ud[0] = UD_MAX;
+    //Uq[0] = UQ_MAX;
+
     // Inverse Park transform
     Ualpha = Ud[0] * _cos[1] - Uq[0] * _sin[1];
-    Ubeta = Ud[0] * _sin[1] - Uq[0] * _cos[1];
+    Ubeta = Ud[0] * _sin[1] + Uq[0] * _cos[1];
 
     // Inverse Clarke transform
     Ua = Ualpha;
@@ -733,9 +770,9 @@ __interrupt void dmach1_isr(void)
     Uc = -(1.73205081f * Ubeta + Ualpha) * 0.5f;
 
     // Modulation signals
-    PWM_CMP_a = (Uint16)(PWM_TBPRD*(0.5f + Ua)*EINVERSE);
-    PWM_CMP_b = (Uint16)(PWM_TBPRD*(0.5f + Ub)*EINVERSE);
-    PWM_CMP_c = (Uint16)(PWM_TBPRD*(0.5f + Uc)*EINVERSE);
+    PWM_CMP_a = (Uint16)(PWM_TBPRD*(0.5f + Ua*EINVERSE));
+    PWM_CMP_b = (Uint16)(PWM_TBPRD*(0.5f + Ub*EINVERSE));
+    PWM_CMP_c = (Uint16)(PWM_TBPRD*(0.5f + Uc*EINVERSE));
 
     // Limit modulation signals
     if(PWM_CMP_a>D_MAX) PWM_CMP_a=D_MAX;

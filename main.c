@@ -3,7 +3,7 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 2                                        // Update rate (UR>2 -> multisampling algorithm)
+#define UR 4                                        // Update rate (UR>2 -> multisampling algorithm)
 #define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
@@ -123,6 +123,7 @@ void main(void)
     InitGpio();
 
     Configure_GPIO();
+    DELAY_US(100000);               // Let GPIOs configure (to work correctly with HIL)
 
     DINT;                           // Disable ST1.INTM
     IER = 0x0000;                   // Disable CPU interrupts
@@ -455,7 +456,7 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_1[data_count] =  theta; //Vmeas_b;
+        dataOut_1[data_count] =  Vmeas_b;
         dataOut_2[data_count] =  u_b[0];
 
         data_count++;
