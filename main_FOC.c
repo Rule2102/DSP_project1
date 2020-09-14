@@ -17,17 +17,19 @@
 #define ADC_TBPRD (PWM_TBPRD/NOS)                   // Counter period for ePWM used for ADC triggering, up-down mode assumed
 #define MS_TBPRD (2*PWM_TBPRD/UR - 1)               // Counter period of ePWM used to implement multisampling algorithm, up mode;
 #define TS (TPWM/UR)                                // Regulation period
-#define DEADTIME 100                                // Dead time in number of EPWM clocks (see EPwmXRegs.TBPRD) 100 --> 1us
 
 #define E 48.0f                                     // Available DC voltage
 #define EINVERSE (1/E)                              // Inverse of E
-#define UDQ_MAX (E/(2*1.412f))                               // Maximum available voltage
+#define UDQ_MAX (E/(2*1.412f))                      // Maximum available voltage
 #define UD_MAX UDQ_MAX                              // Maximum available voltage in d axis
 #define UD_MIN (-UDQ_MAX)                           // Minimum available voltage in d axis
 #define UQ_MAX UDQ_MAX                              // Maximum available voltage in q axis
 #define UQ_MIN (-UDQ_MAX)                           // Minimum available voltage in q axis
 #define D_MAX (PWM_TBPRD - 5)                       // Maximum duty cycle (to avoid unnecessary switching)
 #define D_MIN 5                                     // Minimum duty cycle (to avoid unnecessary switching)
+
+#define DEADTIME 1                                                          // Dead time in number of EPWM clocks (see EPwmXRegs.TBPRD) 100 --> 1us
+#define UDT ((float32)(DEADTIME)/(float32)(PWM_TBPRD)*E*4/3.1415926f)         // Constant for dead time compensation (4/pi for first harmonic's peak)
 
 // Defines for measurements (position & current)
 #define P 6                                         // Machine's number of pole pairs
@@ -38,7 +40,7 @@
 #define ISENSE_SCALE 10                             // [A] --> [V] (ISENSE_SCALE)A=1V
 #define ISENSE_OFFSET 1.5f                          // 0A --> 1.5V
 
-#define MAX_data_count 200                          // Size of an array used for data storage
+#define MAX_data_count 720                          // Size of an array used for data storage
 
 // Defines for IREG
 #define R 0.0307f                                   // Motor resistance
@@ -116,28 +118,19 @@ Uint16 MS_CMPB_a, MS_CMPB_b, MS_CMPB_c;         // CMPB value for the multisampl
 // Data storage
 float32 dataOut_1[MAX_data_count] = {};
 float32 dataOut_2[MAX_data_count] = {};
-float32 dataOut_3[MAX_data_count] = {};
-float32 dataOut_4[MAX_data_count] = {};
-float32 dataOut_5[MAX_data_count] = {};
-float32 dataOut_6[MAX_data_count] = {};
+//float32 dataOut_3[MAX_data_count] = {};
+//float32 dataOut_4[MAX_data_count] = {};
+//float32 dataOut_5[MAX_data_count] = {};
+//float32 dataOut_6[MAX_data_count] = {};
 Uint16 canPrint = 1;                            // Logic signal used to trigger data storage
 long int data_count = 0;                        // Counter for data storage
 
-// For w=const testing
-long int dma_count = 0;                         // Counter to check dmach1_isr
-float32 f_ref = 0.2f;                              // Frequency of electrical quantities
-#define TWOPI_TS (2*3.14f*TS)                   // 2*pi*Ts for angle calculation
-float32 pom1,pom2;
+// For debugging with f=const
+float32 f_ref = 150.0f;                         // Frequency of electrical quantities
+#define TWOPI_TS (6.283185307f*TS)              // 2*pi*Ts for angle calculation
 
+//long int dma_count = 0;                        // Counter to check dmach1_isr
 //long int adc_count_a = 0;                      // Counter to check adca1_isr
-
-/*
-// Defines & Variables for DMA buffer storage
-#define MAX_buf_count 8                                 // Size of an array used for buffer storage
-Uint16 dataOut_buf[MAX_buf_count*NOS_UR] = {};          // Array for buffer storage
-long int buf_count = 0;                                 // Counter for buffer storage
-Uint16 canBuf = 0;                                      // Logic signal used to trigger buffer storage
-*/
 
 void main(void)
 {
@@ -193,7 +186,7 @@ void main(void)
     EDIS;
 
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
-    Iq_ref = 5.0f;
+    Iq_ref = 12.0f;
 
     StartDMACH1();
 
@@ -267,20 +260,6 @@ void Configure_GPIO(void)
     // Configure as EQEP2I input
     GpioCtrlRegs.GPADIR.bit.GPIO26 = 0;          // Configure as input
     GpioCtrlRegs.GPAMUX2.bit.GPIO26 = 2;         // Mux to eQEP2I
-
-    /*
-    // Configure as EPWM6A output (to emulate encoder output A)
-    GpioCtrlRegs.GPADIR.bit.GPIO10 = 1;          // Configure as output
-    GpioCtrlRegs.GPAMUX1.bit.GPIO10 = 1;         // Mux to ePWM6A
-
-    // Configure as EPWM6B output (to emulate encoder output B)
-    GpioCtrlRegs.GPADIR.bit.GPIO11 = 1;          // Configure as output
-    GpioCtrlRegs.GPAMUX1.bit.GPIO11 = 1;         // Mux to ePWM6B
-
-    // Configure as EPWM3A output (to emulate encoder output I)
-    GpioCtrlRegs.GPADIR.bit.GPIO4 = 1;          // Configure as output
-    GpioCtrlRegs.GPAMUX1.bit.GPIO4 = 1;         // Mux to ePWM3A
-    */
 
     EDIS;
 
@@ -396,41 +375,6 @@ void Configure_ePWM(void)
     // Set PWM output to notify SOCA (JUST FOR DEBUGGING)
     EPwm5Regs.AQCTLA.bit.ZRO = 2;              // Set PWM A high on TBCTR=0
     EPwm5Regs.AQCTLA.bit.PRD = 1;              // Set PWM A low on TBCTR=TBPRD
-
-    /*
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    //EPWMs for emulating encoder
-
-    // EPWM6 for emulating encoder output A & B
-
-      EPwm6Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1 TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
-      EPwm6Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
-      EPwm6Regs.TBCTL.bit.CTRMODE = 2;           // Up-down mode
-      EPwm6Regs.TBCTR = 0x0000;                  // Clear counter
-      EPwm6Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
-
-      EPwm6Regs.TBPRD = 4992;               // Counter period
-
-      // Set PWM output to emulate encoder outputs A & B (JUST FOR DEBUGGING)
-      EPwm6Regs.AQCTLA.bit.ZRO = 3;              // Toggle PWM A on TBCTR=0
-      EPwm6Regs.AQCTLB.bit.PRD = 3;              // Toggle PWM B on  TBCTR=TBPRD
-
-      // EPWM3 for emulating encoder output I
-
-      EPwm3Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1 TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
-      EPwm3Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
-      EPwm3Regs.TBCTL.bit.CTRMODE = 2;           // Up-down mode
-      EPwm3Regs.TBCTR = 0x0000;                  // Clear counter
-      EPwm3Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
-
-      EPwm3Regs.TBPRD = 49920;               // Counter period
-
-      EPwm3Regs.CMPA.bit.CMPA = 4992;
-
-      // Set PWM output to emulate encoder output I (JUST FOR DEBUGGING)
-      EPwm3Regs.AQCTLA.bit.ZRO = 2;              // Set PWM A high on TBCTR=0
-      EPwm3Regs.AQCTLA.bit.CAU = 1;              // Set PWM A low on TBCTR=CMPA during up count
-      */
 }
 
 void Configure_ADC(void)
@@ -554,12 +498,12 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_1[data_count] =  Ia_avg_Ts;
-        dataOut_2[data_count] =  Ib_avg_Ts;
-        dataOut_3[data_count] =  Ic_avg_Ts;
-        dataOut_4[data_count] =  Ua;
-        dataOut_5[data_count] =  Ub;
-        dataOut_6[data_count] =  Uc;
+        dataOut_1[data_count] =  Ua;
+        dataOut_2[data_count] =  Ia_avg_Ts;
+        //dataOut_3[data_count] =  Uc;
+        //dataOut_4[data_count] =  Ia_avg_Ts;
+        //dataOut_5[data_count] =  Ib_avg_Ts;
+        //dataOut_6[data_count] =  Ic_avg_Ts;
 
         data_count++;
 
@@ -593,21 +537,18 @@ __interrupt void dmach1_isr(void)
     GpioDataRegs.GPCSET.bit.GPIO66 = 1;                       // Notify dmach1_isr start
 
     //theta[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV*P;          // Capture position
-    theta[0] = TWOPI_TS*f_ref*dma_count;                        // Capture position
 
-    if(theta[0]>6.28f)
-    {
-        theta[0]-= 6.28f;
-        dma_count = 0;
-    }
-    else
-    {
-        dma_count++;
-    }
+    int i_for = 0;
 
-    #if (OVERSAMPLING)
-        int i_for = 0;
-    #endif
+    theta[0]+= TWOPI_TS*f_ref;                        // Capture position
+
+    if(theta[0]>=6.283185307f)
+        {
+        for (i_for=UR;i_for>=0;i_for--)
+            {
+                theta[i_for]-= 6.283185307f;
+            }
+        }
 
     static int dma_sgn = 1;     // Logic variable to indicate state of the ping pong algorithm
 
@@ -678,15 +619,8 @@ __interrupt void dmach1_isr(void)
     Ibeta_avg_Ts =  0.57735f * Ia_avg_Ts + 1.1547f * Ib_avg_Ts;         // Ibeta=1/sqrt(3)*Ia+2/sqrt(3)*Ib
 
     // Angles used for dq transform & IREG
-    theta_avg_Ts = (theta[0] + theta[1])*0.5f;     // Average measured angle on regulation period
     dtheta = theta[0] - theta[1];
-    /*
-    if(dtheta>6.28f)dtheta-= 6.28f;
-    else if(dtheta<0.0f)dtheta+= 6.28f;
-    pom1 = 2*dtheta;
-    if(pom1>6.28f)pom1-= 6.28f;
-    else if(pom1<0.0f)pom1+= 6.28f;
-    */
+    theta_avg_Ts = (theta[0] + theta[1])*0.5f;     // Average measured angle on regulation period
 
     // Average measured angle on switching period
     theta_avg_Tpwm = theta[0];
@@ -696,9 +630,6 @@ __interrupt void dmach1_isr(void)
             theta[i_for]= theta[i_for-1];
         }
     theta_avg_Tpwm = theta_avg_Tpwm*INV_UR_1;
-
-    //theta_avg_Ts = theta[0];
-    //theta_avg_Tpwm = theta[0];
 
     // Trigonometry
     sincos(theta_avg_Ts, &_sin[0], &_cos[0]);
@@ -757,8 +688,8 @@ __interrupt void dmach1_isr(void)
     dIq[1] = dIq[0];
 
     // Open loop testing
-    //Ud[0] = UD_MAX;
-    //Uq[0] = UQ_MAX;
+    //Ud[0] = 1.0f; //UD_MAX;
+    //Uq[0] = 0.0f; //UQ_MAX;
 
     // Inverse Park transform
     Ualpha = Ud[0] * _cos[1] - Uq[0] * _sin[1];
@@ -768,6 +699,18 @@ __interrupt void dmach1_isr(void)
     Ua = Ualpha;
     Ub = (1.73205081f * Ubeta - Ualpha) * 0.5f;
     Uc = -(1.73205081f * Ubeta + Ualpha) * 0.5f;
+
+    // Dead time compensation
+
+    if(Ia_avg_Ts >= 0.1f) Ua+=UDT;
+    else if(Ia_avg_Ts <= -0.1f) Ua-=UDT;
+
+    if(Ib_avg_Ts >= 0.1f) Ub+=UDT;
+    else if(Ib_avg_Ts <= -0.1f) Ub-=UDT;
+
+    if(Ic_avg_Ts >= 0.1f) Uc+=UDT;
+    else if(Ic_avg_Ts <= -0.1f) Uc-=UDT;
+
 
     // Modulation signals
     PWM_CMP_a = (Uint16)(PWM_TBPRD*(0.5f + Ua*EINVERSE));
@@ -783,39 +726,6 @@ __interrupt void dmach1_isr(void)
 
     if(PWM_CMP_c>D_MAX)PWM_CMP_c=D_MAX;
     else if (PWM_CMP_c<D_MIN)PWM_CMP_c=D_MIN;
-
-    /*
-    #if (!OVERSAMPLING)
-        int i_for = 0;
-    #endif
-
-    if(canBuf)
-    {
-        // dma_sgn has already been toggled !!!
-        if(dma_sgn==-1)
-            for (i_for=0;i_for<NOS_UR;i_for++)
-               {
-                   dataOut_buf[i_for+NOS_UR*buf_count] = DMAbuffer1[i_for+NOS_UR];
-               }
-        else if (dma_sgn==1)
-            for (i_for=0;i_for<NOS_UR;i_for++)
-               {
-                   dataOut_buf[i_for+NOS_UR*buf_count] = DMAbuffer2[i_for+NOS_UR];
-               }
-
-        buf_count++;
-
-        if(buf_count>=MAX_buf_count)
-            {
-            canBuf = 0;
-            buf_count = 0;
-            }
-    }
-
-    PWM_CMP_a = (Uint16)(PWM_TBPRD*0.5f);
-    PWM_CMP_b = (Uint16)(PWM_TBPRD*0.5f);
-    PWM_CMP_c = (Uint16)(PWM_TBPRD*0.5f);
-*/
 
 
     #if (UR!=1)
