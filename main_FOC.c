@@ -28,8 +28,8 @@
 #define D_MAX (PWM_TBPRD - 5)                       // Maximum duty cycle (to avoid unnecessary switching)
 #define D_MIN 5                                     // Minimum duty cycle (to avoid unnecessary switching)
 
-#define DEADTIME 1                                                          // Dead time in number of EPWM clocks (see EPwmXRegs.TBPRD) 100 --> 1us
-#define UDT ((float32)(DEADTIME)/(float32)(PWM_TBPRD)*E*4/3.1415926f)         // Constant for dead time compensation (4/pi for first harmonic's peak)
+#define DEADTIME 100                                                          // Dead time in number of EPWM clocks (see EPwmXRegs.TBPRD) 100 --> 1us
+#define UDT ((float32)(DEADTIME)/(float32)(PWM_TBPRD)*E*4.0f/3.1415926f)         // Constant for dead time compensation (4/pi for first harmonic's peak)
 
 // Defines for measurements (position & current)
 #define P 6                                         // Machine's number of pole pairs
@@ -350,7 +350,7 @@ void Configure_ePWM(void)
 
     EPwm4Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1 TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
     EPwm4Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
-    EPwm4Regs.TBCTL.bit.CTRMODE = 2;           // Up-down mode
+    EPwm4Regs.TBCTL.bit.CTRMODE = 0;           // Up-down mode
     EPwm4Regs.TBCTR = 0x0000;                  // Clear counter
     EPwm4Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
 
@@ -726,7 +726,6 @@ __interrupt void dmach1_isr(void)
 
     if(PWM_CMP_c>D_MAX)PWM_CMP_c=D_MAX;
     else if (PWM_CMP_c<D_MIN)PWM_CMP_c=D_MIN;
-
 
     #if (UR!=1)
 
