@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v18.12.3                    
 ******************************************************************************
->> Linked Mon Sep 14 17:16:11 2020
+>> Linked Tue Sep 15 16:18:05 2020
 
 OUTPUT FILE NAME:   <project1.out>
 ENTRY POINT SYMBOL: "code_start"  address: 00000000
@@ -14,9 +14,9 @@ MEMORY CONFIGURATION
 PAGE 0:
   BEGIN                 00000000   00000002  00000002  00000000  RWIX
   RAMM0                 00000123   000002dd  00000042  0000029b  RWIX
-  RAMLS0                00008000   00000800  00000541  000002bf  RWIX
-  RAMLS1                00008800   00000800  000007f6  0000000a  RWIX
-  RAMLS2                00009000   00000800  00000735  000000cb  RWIX
+  RAMLS0                00008000   00000800  0000049a  00000366  RWIX
+  RAMLS1                00008800   00000800  00000800  00000000  RWIX
+  RAMLS2                00009000   00000800  00000751  000000af  RWIX
   RAMLS3                00009800   00000800  00000000  00000800  RWIX
   RAMLS4                0000a000   00000f00  00000000  00000f00  RWIX
   RAMD0                 0000b000   00000800  000007fe  00000002  RWIX
@@ -100,8 +100,8 @@ PAGE 1:
   GPIOCTRL              00007c00   00000180  00000180  00000000  RWIX
   GPIODAT               00007f00   00000030  00000030  00000000  RWIX
   RAMD1                 0000b800   00000800  00000000  00000800  RWIX
-  RAMGS0                0000c000   00001000  00000020  00000fe0  RWIX
-  RAMGS1                0000d000   00001000  00000d9d  00000263  RWIX
+  RAMGS0                0000c000   00001000  00000008  00000ff8  RWIX
+  RAMGS1                0000d000   00001000  00000c8c  00000374  RWIX
   RAMGS2                0000e000   00001000  00000000  00001000  RWIX
   RAMGS3                0000f000   00001000  00000000  00001000  RWIX
   RAMGS4                00010000   00001000  00000000  00001000  RWIX
@@ -189,36 +189,44 @@ Cla1RegsFile
 *          1    00001400    0000003e     UNINITIALIZED
                   00001400    0000003e     F2837xD_GlobalVariableDefs.obj (Cla1RegsFile)
 
-.ebss      1    0000d000    00000bcd     UNINITIALIZED
-                  0000d000    000005a0     main_FOC.obj (.ebss:_dataOut_1)
-                  0000d5a0    00000018     F2837xD_CpuTimers.obj (.ebss)
-                  0000d5b8    00000008     main_FOC.obj (.ebss:__cos)
-                  0000d5c0    000005a0     main_FOC.obj (.ebss:_dataOut_2)
-                  0000db60    00000008     main_FOC.obj (.ebss:__sin)
-                  0000db68    00000006     main_FOC.obj (.ebss:_theta)
-                  0000db6e    00000006     rts2800_fpu32.lib : exit.c.obj (.ebss)
-                  0000db74    00000004     main_FOC.obj (.ebss:_Id_avg_Ts)
-                  0000db78    00000004     main_FOC.obj (.ebss:_Iq_avg_Ts)
-                  0000db7c    00000004     main_FOC.obj (.ebss:_Ud)
-                  0000db80    0000003c     main_FOC.obj (.ebss)
-                  0000dbbc    00000004     main_FOC.obj (.ebss:_Uq)
-                  0000dbc0    00000004     main_FOC.obj (.ebss:_dId)
-                  0000dbc4    00000004     main_FOC.obj (.ebss:_dIq)
-                  0000dbc8    00000002     rts2800_fpu32.lib : _lock.c.obj (.ebss:__lock)
-                  0000dbca    00000002                       : _lock.c.obj (.ebss:__unlock)
-                  0000dbcc    00000001                       : errno.c.obj (.ebss)
+.ebss      1    0000d000    00000abc     UNINITIALIZED
+                  0000d000    00000190     main_FOC.obj (.ebss:_dataOut_1)
+                  0000d190    00000018     F2837xD_CpuTimers.obj (.ebss)
+                  0000d1a8    00000012     main_FOC.obj (.ebss:_theta)
+                  0000d1ba    00000006     rts2800_fpu32.lib : exit.c.obj (.ebss)
+                  0000d1c0    00000190     main_FOC.obj (.ebss:_dataOut_2)
+                  0000d350    00000010     main_FOC.obj (.ebss:_Id_avg_Ts)
+                  0000d360    00000010     main_FOC.obj (.ebss:_Iq_avg_Ts)
+                  0000d370    00000008     main_FOC.obj (.ebss:__cos)
+                  0000d378    00000008     main_FOC.obj (.ebss:__sin)
+                  0000d380    00000190     main_FOC.obj (.ebss:_dataOut_3)
+                  0000d510    00000004     main_FOC.obj (.ebss:_Ud)
+                  0000d514    00000004     main_FOC.obj (.ebss:_Uq)
+                  0000d518    00000004     main_FOC.obj (.ebss:_dId)
+                  0000d51c    00000004     main_FOC.obj (.ebss:_dIq)
+                  0000d520    00000002     rts2800_fpu32.lib : _lock.c.obj (.ebss:__lock)
+                  0000d522    00000002                       : _lock.c.obj (.ebss:__unlock)
+                  0000d524    00000001                       : errno.c.obj (.ebss)
+                  0000d525    0000001b     --HOLE--
+                  0000d540    00000190     main_FOC.obj (.ebss:_dataOut_4)
+                  0000d6d0    00000030     --HOLE--
+                  0000d700    00000190     main_FOC.obj (.ebss:_dataOut_5)
+                  0000d890    00000030     --HOLE--
+                  0000d8c0    00000190     main_FOC.obj (.ebss:_dataOut_6)
+                  0000da50    00000030     --HOLE--
+                  0000da80    0000003c     main_FOC.obj (.ebss)
 
-.econst    1    0000dbce    000001d0     
-                  0000dbce    000001c0     F2837xD_PieVect.obj (.econst:_PieVectTableInit)
-                  0000dd8e    00000010     rts2800_fpu32.lib : e_log2f.c.obj (.econst)
+.econst    1    0000dabc    000001d0     
+                  0000dabc    000001c0     F2837xD_PieVect.obj (.econst:_PieVectTableInit)
+                  0000dc7c    00000010     rts2800_fpu32.lib : e_log2f.c.obj (.econst)
 
-ramgs0     1    0000c000    00000020     UNINITIALIZED
-                  0000c000    00000020     main_FOC.obj (ramgs0)
+ramgs0     1    0000c000    00000008     UNINITIALIZED
+                  0000c000    00000008     main_FOC.obj (ramgs0)
 
 .TI.ramfunc 
-*          0    00008000    00000541     
-                  00008000    0000053d     main_FOC.obj (.TI.ramfunc:retain)
-                  0000853d    00000004     F2837xD_usDelay.obj (.TI.ramfunc)
+*          0    00008000    0000049a     
+                  00008000    00000496     main_FOC.obj (.TI.ramfunc:retain)
+                  00008496    00000004     F2837xD_usDelay.obj (.TI.ramfunc)
 
 GETBUFFER 
 *          0    0003f800    00000000     DSECT
@@ -597,24 +605,24 @@ CpuSysRegsFile
 *          1    0005d300    00000082     UNINITIALIZED
                   0005d300    00000082     F2837xD_GlobalVariableDefs.obj (CpuSysRegsFile)
 
-.text.1    0    00008800    000007f6     
+.text.1    0    00008800    00000800     
                   00008800    000004aa     F2837xD_SysCtrl.obj (.text)
-                  00008caa    00000282     main_FOC.obj (.text)
-                  00008f2c    000000ca     rts2800_fpu32.lib : e_log2f.c.obj (.text)
+                  00008caa    000002a8     main_FOC.obj (.text)
+                  00008f52    00000088     rts2800_fpu32.lib : fs_div28.asm.obj (.text)
+                  00008fda    00000026     F2837xD_PieVect.obj (.text)
 
-.text.2    0    00009000    00000735     
+.text.2    0    00009000    00000751     
                   00009000    00000404     F2837xD_Dma.obj (.text)
                   00009404    000000f0     F2837xD_Adc.obj (.text)
-                  000094f4    00000088     rts2800_fpu32.lib : fs_div28.asm.obj (.text)
-                  0000957c    00000060     rts2800_fpu32_fast_supplement_coff.lib : exp_f32.obj (.text)
-                  000095dc    00000056     rts2800_fpu32.lib : boot28.asm.obj (.text)
-                  00009632    00000043     rts2800_fpu32_fast_supplement_coff.lib : sincos_f32.obj (.text)
-                  00009675    00000028     F2837xD_PieCtrl.obj (.text)
-                  0000969d    00000026     F2837xD_PieVect.obj (.text)
-                  000096c3    00000024     rts2800_fpu32.lib : cpy_tbl.c.obj (.text)
-                  000096e7    0000001d                       : memcpy.c.obj (.text)
-                  00009704    00000019                       : args_main.c.obj (.text)
-                  0000971d    00000018                       : ll_aox28.asm.obj (.text)
+                  000094f4    000000ca     rts2800_fpu32.lib : e_log2f.c.obj (.text)
+                  000095be    00000060     rts2800_fpu32_fast_supplement_coff.lib : exp_f32.obj (.text)
+                  0000961e    00000056     rts2800_fpu32.lib : boot28.asm.obj (.text)
+                  00009674    00000043     rts2800_fpu32_fast_supplement_coff.lib : sincos_f32.obj (.text)
+                  000096b7    00000028     F2837xD_PieCtrl.obj (.text)
+                  000096df    00000024     rts2800_fpu32.lib : cpy_tbl.c.obj (.text)
+                  00009703    0000001d                       : memcpy.c.obj (.text)
+                  00009720    00000019                       : args_main.c.obj (.text)
+                  00009739    00000018                       : ll_aox28.asm.obj (.text)
 
 .text.3    0    0000b000    000007fe     
                   0000b000    00000585     F2837xD_DefaultISR.obj (.text:retain)
@@ -635,7 +643,7 @@ MODULE SUMMARY
        ------                           ----   ----------------   ------------------
     .\
        F2837xD_GlobalVariableDefs.obj   0      0                  8695              
-       main_FOC.obj                     1983   36                 3018              
+       main_FOC.obj                     1854   36                 2550              
        F2837xD_DefaultISR.obj           1413   0                  0                 
        F2837xD_SysCtrl.obj              1194   0                  0                 
        F2837xD_Dma.obj                  1028   0                  0                 
@@ -647,7 +655,7 @@ MODULE SUMMARY
        F2837xD_usDelay.obj              4      0                  0                 
        F2837xD_CodeStartBranch.obj      2      0                  0                 
     +--+--------------------------------+------+------------------+--------------------+
-       Total:                           6522   484                11737             
+       Total:                           6393   484                11269             
                                                                                     
     C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/lib/rts2800_fpu32.lib
        e_log2f.c.obj                    202    16                 0                 
@@ -675,7 +683,7 @@ MODULE SUMMARY
                                                                                     
        Stack:                           0      0                  512               
     +--+--------------------------------+------+------------------+--------------------+
-       Grand Total:                     7276   2394               12260             
+       Grand Total:                     7147   2394               11792             
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
@@ -812,72 +820,80 @@ address     data page           name
 00007f00     1fc (00007f00)     _GpioDataRegs
 
 0000c000     300 (0000c000)     _DMAbuffer1
-0000c010     300 (0000c000)     _DMAbuffer2
+0000c004     300 (0000c000)     _DMAbuffer2
 
 0000d000     340 (0000d000)     _dataOut_1
 
-0000d5a0     356 (0000d580)     _CpuTimer0
-0000d5a8     356 (0000d580)     _CpuTimer1
-0000d5b0     356 (0000d580)     _CpuTimer2
-0000d5b8     356 (0000d580)     __cos
+0000d190     346 (0000d180)     _CpuTimer0
+0000d198     346 (0000d180)     _CpuTimer1
+0000d1a0     346 (0000d180)     _CpuTimer2
+0000d1a8     346 (0000d180)     _theta
+0000d1ba     346 (0000d180)     ___TI_enable_exit_profile_output
+0000d1bc     346 (0000d180)     ___TI_cleanup_ptr
+0000d1be     346 (0000d180)     ___TI_dtors_ptr
 
-0000d5c0     357 (0000d5c0)     _dataOut_2
+0000d1c0     347 (0000d1c0)     _dataOut_2
 
-0000db60     36d (0000db40)     __sin
-0000db68     36d (0000db40)     _theta
-0000db6e     36d (0000db40)     ___TI_enable_exit_profile_output
-0000db70     36d (0000db40)     ___TI_cleanup_ptr
-0000db72     36d (0000db40)     ___TI_dtors_ptr
-0000db74     36d (0000db40)     _Id_avg_Ts
-0000db78     36d (0000db40)     _Iq_avg_Ts
-0000db7c     36d (0000db40)     _Ud
+0000d350     34d (0000d340)     _Id_avg_Ts
+0000d360     34d (0000d340)     _Iq_avg_Ts
+0000d370     34d (0000d340)     __cos
+0000d378     34d (0000d340)     __sin
 
-0000db80     36e (0000db80)     _n_seg
-0000db81     36e (0000db80)     _PWM_dir
-0000db82     36e (0000db80)     _PWM_nextSeg_max
-0000db83     36e (0000db80)     _PWM_nextSeg_min
-0000db84     36e (0000db80)     _cross_margin
-0000db85     36e (0000db80)     _Ia_sum_Ts
-0000db86     36e (0000db80)     _Ib_sum_Ts
-0000db87     36e (0000db80)     _PWM_CMP_a
-0000db88     36e (0000db80)     _PWM_CMP_b
-0000db89     36e (0000db80)     _PWM_CMP_c
-0000db8a     36e (0000db80)     _MS_CMPA_a
-0000db8b     36e (0000db80)     _MS_CMPA_b
-0000db8c     36e (0000db80)     _MS_CMPA_c
-0000db8d     36e (0000db80)     _MS_CMPB_a
-0000db8e     36e (0000db80)     _MS_CMPB_b
-0000db8f     36e (0000db80)     _MS_CMPB_c
-0000db90     36e (0000db80)     _canPrint
-0000db92     36e (0000db80)     _Ia_avg_Ts
-0000db94     36e (0000db80)     _Ib_avg_Ts
-0000db96     36e (0000db80)     _Ic_avg_Ts
-0000db98     36e (0000db80)     _Ialpha_avg_Ts
-0000db9a     36e (0000db80)     _Ibeta_avg_Ts
-0000db9c     36e (0000db80)     _Sum_Id_avg_Ts
-0000db9e     36e (0000db80)     _Sum_Iq_avg_Ts
-0000dba0     36e (0000db80)     _Id
-0000dba2     36e (0000db80)     _Iq
-0000dba4     36e (0000db80)     _Id_ref
-0000dba6     36e (0000db80)     _Iq_ref
-0000dba8     36e (0000db80)     _Ualpha
-0000dbaa     36e (0000db80)     _Ubeta
-0000dbac     36e (0000db80)     _Ua
-0000dbae     36e (0000db80)     _Ub
-0000dbb0     36e (0000db80)     _Uc
-0000dbb2     36e (0000db80)     _theta_avg_Ts
-0000dbb4     36e (0000db80)     _theta_avg_Tpwm
-0000dbb6     36e (0000db80)     _dtheta
-0000dbb8     36e (0000db80)     _data_count
-0000dbba     36e (0000db80)     _f_ref
-0000dbbc     36e (0000db80)     _Uq
+0000d380     34e (0000d380)     _dataOut_3
 
-0000dbc0     36f (0000dbc0)     _dId
-0000dbc4     36f (0000dbc0)     _dIq
-0000dbc8     36f (0000dbc0)     __lock
-0000dbca     36f (0000dbc0)     __unlock
-0000dbcc     36f (0000dbc0)     _errno
-0000dbce     36f (0000dbc0)     _PieVectTableInit
+0000d510     354 (0000d500)     _Ud
+0000d514     354 (0000d500)     _Uq
+0000d518     354 (0000d500)     _dId
+0000d51c     354 (0000d500)     _dIq
+0000d520     354 (0000d500)     __lock
+0000d522     354 (0000d500)     __unlock
+0000d524     354 (0000d500)     _errno
+
+0000d540     355 (0000d540)     _dataOut_4
+
+0000d700     35c (0000d700)     _dataOut_5
+
+0000d8c0     363 (0000d8c0)     _dataOut_6
+
+0000da80     36a (0000da80)     _n_seg
+0000da81     36a (0000da80)     _PWM_dir
+0000da82     36a (0000da80)     _PWM_nextSeg_max
+0000da83     36a (0000da80)     _PWM_nextSeg_min
+0000da84     36a (0000da80)     _cross_margin
+0000da85     36a (0000da80)     _Ia_sum_Ts
+0000da86     36a (0000da80)     _Ib_sum_Ts
+0000da87     36a (0000da80)     _PWM_CMP_a
+0000da88     36a (0000da80)     _PWM_CMP_b
+0000da89     36a (0000da80)     _PWM_CMP_c
+0000da8a     36a (0000da80)     _MS_CMPA_a
+0000da8b     36a (0000da80)     _MS_CMPA_b
+0000da8c     36a (0000da80)     _MS_CMPA_c
+0000da8d     36a (0000da80)     _MS_CMPB_a
+0000da8e     36a (0000da80)     _MS_CMPB_b
+0000da8f     36a (0000da80)     _MS_CMPB_c
+0000da90     36a (0000da80)     _canPrint
+0000da92     36a (0000da80)     _Ia_avg_Ts
+0000da94     36a (0000da80)     _Ib_avg_Ts
+0000da96     36a (0000da80)     _Ic_avg_Ts
+0000da98     36a (0000da80)     _Ialpha_avg_Ts
+0000da9a     36a (0000da80)     _Ibeta_avg_Ts
+0000da9c     36a (0000da80)     _Sum_Id_avg_Ts
+0000da9e     36a (0000da80)     _Sum_Iq_avg_Ts
+0000daa0     36a (0000da80)     _Id
+0000daa2     36a (0000da80)     _Iq
+0000daa4     36a (0000da80)     _Id_ref
+0000daa6     36a (0000da80)     _Iq_ref
+0000daa8     36a (0000da80)     _Ualpha
+0000daaa     36a (0000da80)     _Ubeta
+0000daac     36a (0000da80)     _Ua
+0000daae     36a (0000da80)     _Ub
+0000dab0     36a (0000da80)     _Uc
+0000dab2     36a (0000da80)     _theta_avg_Ts
+0000dab4     36a (0000da80)     _theta_avg_Tpwm
+0000dab6     36a (0000da80)     _dtheta
+0000dab8     36a (0000da80)     _data_count
+0000daba     36a (0000da80)     _f_ref
+0000dabc     36a (0000da80)     _PieVectTableInit
 
 00016000     580 (00016000)     _FPU32sinTable
 00016000     580 (00016000)     _FPUsinTable
@@ -951,10 +967,10 @@ page  address   name
 ----  -------   ----                                  
 abs   ffffffff  .text                                 
 0     0000b7c9  C$$EXIT                               
-0     000094f4  FS$$DIV                               
-0     0000971d  LL$$AND                               
-0     00009725  LL$$OR                                
-0     0000972d  LL$$XOR                               
+0     00008f52  FS$$DIV                               
+0     00009739  LL$$AND                               
+0     00009741  LL$$OR                                
+0     00009749  LL$$XOR                               
 0     0000b0be  _ADCA1_ISR                            
 0     0000b33e  _ADCA2_ISR                            
 0     0000b348  _ADCA3_ISR                            
@@ -1026,11 +1042,11 @@ abs   ffffffff  .text
 0     00008d5a  _Configure_ePWM                       
 0     00008edd  _Configure_eQEP                       
 1     0005d300  _CpuSysRegs                           
-1     0000d5a0  _CpuTimer0                            
+1     0000d190  _CpuTimer0                            
 1     00000c00  _CpuTimer0Regs                        
-1     0000d5a8  _CpuTimer1                            
+1     0000d198  _CpuTimer1                            
 1     00000c08  _CpuTimer1Regs                        
-1     0000d5b0  _CpuTimer2                            
+1     0000d1a0  _CpuTimer2                            
 1     00000c10  _CpuTimer2Regs                        
 0     00008bce  _CsmUnlock                            
 0     0000b014  _DATALOG_ISR                          
@@ -1078,7 +1094,7 @@ abs   ffffffff  .text
 0     0000b280  _DMA_CH5_ISR                          
 0     0000b28a  _DMA_CH6_ISR                          
 1     0000c000  _DMAbuffer1                           
-1     0000c010  _DMAbuffer2                           
+1     0000c004  _DMAbuffer2                           
 1     00005c00  _DacaRegs                             
 1     00005c10  _DacbRegs                             
 1     00005c20  _DaccRegs                             
@@ -1154,8 +1170,8 @@ abs   ffffffff  .text
 1     00047800  _Emif2Regs                            
 1     00000d00  _EmuBMode                             
 1     00000d01  _EmuBootPins                          
-0     00009694  _EnableInterrupts                     
-0     0000853d  _F28x_usDelay                         
+0     000096d6  _EnableInterrupts                     
+0     00008496  _F28x_usDelay                         
 0     0000b528  _FLASH_CORRECTABLE_ERROR_ISR          
 1     00016502  _FPU32atan2HalfPITable                
 1     00016506  _FPU32atan2Table                      
@@ -1209,38 +1225,38 @@ abs   ffffffff  .text
 0     0000b41a  _IPC1_ISR                             
 0     0000b424  _IPC2_ISR                             
 0     0000b42e  _IPC3_ISR                             
-1     0000db92  _Ia_avg_Ts                            
-1     0000db85  _Ia_sum_Ts                            
-1     0000db98  _Ialpha_avg_Ts                        
-1     0000db94  _Ib_avg_Ts                            
-1     0000db86  _Ib_sum_Ts                            
-1     0000db9a  _Ibeta_avg_Ts                         
-1     0000db96  _Ic_avg_Ts                            
-1     0000dba0  _Id                                   
-1     0000db74  _Id_avg_Ts                            
-1     0000dba4  _Id_ref                               
+1     0000da92  _Ia_avg_Ts                            
+1     0000da85  _Ia_sum_Ts                            
+1     0000da98  _Ialpha_avg_Ts                        
+1     0000da94  _Ib_avg_Ts                            
+1     0000da86  _Ib_sum_Ts                            
+1     0000da9a  _Ibeta_avg_Ts                         
+1     0000da96  _Ic_avg_Ts                            
+1     0000daa0  _Id                                   
+1     0000d350  _Id_avg_Ts                            
+1     0000daa4  _Id_ref                               
 0     00008adf  _InitAuxPll                           
 0     0000b585  _InitGpio                             
 0     00008820  _InitPeripheralClocks                 
-0     00009675  _InitPieCtrl                          
-0     0000969d  _InitPieVectTable                     
+0     000096b7  _InitPieCtrl                          
+0     00008fda  _InitPieVectTable                     
 0     00008800  _InitSysCtrl                          
 0     000088f1  _InitSysPll                           
 1     00007900  _InputXbarRegs                        
 1     00050000  _IpcRegs                              
-1     0000dba2  _Iq                                   
-1     0000db78  _Iq_avg_Ts                            
-1     0000dba6  _Iq_ref                               
+1     0000daa2  _Iq                                   
+1     0000d360  _Iq_avg_Ts                            
+1     0000daa6  _Iq_ref                               
 0     0000b230  _MCBSPA_RX_ISR                        
 0     0000b23a  _MCBSPA_TX_ISR                        
 0     0000b244  _MCBSPB_RX_ISR                        
 0     0000b24e  _MCBSPB_TX_ISR                        
-1     0000db8a  _MS_CMPA_a                            
-1     0000db8b  _MS_CMPA_b                            
-1     0000db8c  _MS_CMPA_c                            
-1     0000db8d  _MS_CMPB_a                            
-1     0000db8e  _MS_CMPB_b                            
-1     0000db8f  _MS_CMPB_c                            
+1     0000da8a  _MS_CMPA_a                            
+1     0000da8b  _MS_CMPA_b                            
+1     0000da8c  _MS_CMPA_c                            
+1     0000da8d  _MS_CMPB_a                            
+1     0000da8e  _MS_CMPB_b                            
+1     0000da8f  _MS_CMPB_c                            
 1     00006000  _McbspaRegs                           
 1     00006040  _McbspbRegs                           
 1     0005f400  _MemCfgRegs                           
@@ -1250,15 +1266,15 @@ abs   ffffffff  .text
 1     00007060  _NmiIntruptRegs                       
 1     00007a80  _OutputXbarRegs                       
 0     0000b564  _PIE_RESERVED_ISR                     
-1     0000db87  _PWM_CMP_a                            
-1     0000db88  _PWM_CMP_b                            
-1     0000db89  _PWM_CMP_c                            
-1     0000db81  _PWM_dir                              
-1     0000db82  _PWM_nextSeg_max                      
-1     0000db83  _PWM_nextSeg_min                      
+1     0000da87  _PWM_CMP_a                            
+1     0000da88  _PWM_CMP_b                            
+1     0000da89  _PWM_CMP_c                            
+1     0000da81  _PWM_dir                              
+1     0000da82  _PWM_nextSeg_max                      
+1     0000da83  _PWM_nextSeg_min                      
 1     00000ce0  _PieCtrlRegs                          
 1     00000d00  _PieVectTable                         
-1     0000dbce  _PieVectTableInit                     
+1     0000dabc  _PieVectTableInit                     
 0     00008f0c  _PrintData                            
 0     0000b532  _RAM_ACCESS_VIOLATION_ISR             
 0     0000b51e  _RAM_CORRECTABLE_ERROR_ISR            
@@ -1301,8 +1317,8 @@ abs   ffffffff  .text
 0     00009269  _StartDMACH4                          
 0     00009302  _StartDMACH5                          
 0     0000939c  _StartDMACH6                          
-1     0000db9c  _Sum_Id_avg_Ts                        
-1     0000db9e  _Sum_Iq_avg_Ts                        
+1     0000da9c  _Sum_Id_avg_Ts                        
+1     0000da9e  _Sum_Iq_avg_Ts                        
 1     00007940  _SyncSocRegs                          
 0     00008bef  _SysIntOsc1Sel                        
 0     00008bff  _SysIntOsc2Sel                        
@@ -1324,14 +1340,14 @@ abs   ffffffff  .text
 0     0000b082  _USER7_ISR                            
 0     0000b08c  _USER8_ISR                            
 0     0000b096  _USER9_ISR                            
-1     0000dbac  _Ua                                   
-1     0000dba8  _Ualpha                               
-1     0000dbae  _Ub                                   
-1     0000dbaa  _Ubeta                                
-1     0000dbb0  _Uc                                   
-1     0000db7c  _Ud                                   
+1     0000daac  _Ua                                   
+1     0000daa8  _Ualpha                               
+1     0000daae  _Ub                                   
+1     0000daaa  _Ubeta                                
+1     0000dab0  _Uc                                   
+1     0000d510  _Ud                                   
 1     00006200  _UppRegs                              
-1     0000dbbc  _Uq                                   
+1     0000d514  _Uq                                   
 0     0000b3f2  _VCU_ISR                              
 0     0000b104  _WAKE_ISR                             
 1     00007000  _WdRegs                               
@@ -1344,9 +1360,9 @@ abs   ffffffff  .text
 1     00007070  _XintRegs                             
 1     00000600  __STACK_END                           
 abs   00000200  __STACK_SIZE                          
-1     0000db70  ___TI_cleanup_ptr                     
-1     0000db72  ___TI_dtors_ptr                       
-1     0000db6e  ___TI_enable_exit_profile_output      
+1     0000d1bc  ___TI_cleanup_ptr                     
+1     0000d1be  ___TI_dtors_ptr                       
+1     0000d1ba  ___TI_enable_exit_profile_output      
 abs   ffffffff  ___TI_pprof_out_hndl                  
 abs   ffffffff  ___TI_prof_data_size                  
 abs   ffffffff  ___TI_prof_data_start                 
@@ -1356,45 +1372,49 @@ abs   ffffffff  ___c_args__
 abs   ffffffff  ___etext__                            
 abs   ffffffff  ___pinit__                            
 abs   ffffffff  ___text__                             
-0     00009704  __args_main                           
-1     0000d5b8  __cos                                 
-1     0000dbc8  __lock                                
+0     00009720  __args_main                           
+1     0000d370  __cos                                 
+1     0000d520  __lock                                
 0     0000b7fa  __nop                                 
 0     0000b7f6  __register_lock                       
 0     0000b7f2  __register_unlock                     
-1     0000db60  __sin                                 
+1     0000d378  __sin                                 
 1     00000400  __stack                               
 0     0000b7fd  __system_post_cinit                   
 0     0000b7fb  __system_pre_init                     
-1     0000dbca  __unlock                              
+1     0000d522  __unlock                              
 0     0000b7c9  _abort                                
 0     00008000  _adca1_isr                            
-0     000095dc  _c_int00                              
-1     0000db90  _canPrint                             
-0     000096c3  _copy_in                              
-1     0000db84  _cross_margin                         
-1     0000dbc0  _dId                                  
-1     0000dbc4  _dIq                                  
+0     0000961e  _c_int00                              
+1     0000da90  _canPrint                             
+0     000096df  _copy_in                              
+1     0000da84  _cross_margin                         
+1     0000d518  _dId                                  
+1     0000d51c  _dIq                                  
 1     0000d000  _dataOut_1                            
-1     0000d5c0  _dataOut_2                            
-1     0000dbb8  _data_count                           
+1     0000d1c0  _dataOut_2                            
+1     0000d380  _dataOut_3                            
+1     0000d540  _dataOut_4                            
+1     0000d700  _dataOut_5                            
+1     0000d8c0  _dataOut_6                            
+1     0000dab8  _data_count                           
 0     0000801d  _dmach1_isr                           
-1     0000dbb6  _dtheta                               
-1     0000dbcc  _errno                                
+1     0000dab6  _dtheta                               
+1     0000d524  _errno                                
 0     0000b7cb  _exit                                 
-0     0000957c  _exp                                  
-0     0000957c  _expf                                 
-1     0000dbba  _f_ref                                
-0     00008f2c  _log2                                 
-0     00008f2c  _log2f                                
+0     000095be  _exp                                  
+0     000095be  _expf                                 
+1     0000daba  _f_ref                                
+0     000094f4  _log2                                 
+0     000094f4  _log2f                                
 0     00008caa  _main                                 
-0     000096e7  _memcpy                               
-1     0000db80  _n_seg                                
-0     00009632  _sincos                               
-0     00009632  _sincosf                              
-1     0000db68  _theta                                
-1     0000dbb4  _theta_avg_Tpwm                       
-1     0000dbb2  _theta_avg_Ts                         
+0     00009703  _memcpy                               
+1     0000da80  _n_seg                                
+0     00009674  _sincos                               
+0     00009674  _sincosf                              
+1     0000d1a8  _theta                                
+1     0000dab4  _theta_avg_Tpwm                       
+1     0000dab2  _theta_avg_Ts                         
 abs   ffffffff  binit                                 
 0     00000123  cinit                                 
 0     00000000  code_start                            
@@ -1412,7 +1432,7 @@ page  address   name
 0     00000ce0  _Cla1SoftIntRegs                      
 0     00008000  _adca1_isr                            
 0     0000801d  _dmach1_isr                           
-0     0000853d  _F28x_usDelay                         
+0     00008496  _F28x_usDelay                         
 0     00008800  _InitSysCtrl                          
 0     00008820  _InitPeripheralClocks                 
 0     000088a4  _DisablePeripheralClocks              
@@ -1442,8 +1462,8 @@ page  address   name
 0     00008edd  _Configure_eQEP                       
 0     00008eeb  _Clear_DMAbuffer                      
 0     00008f0c  _PrintData                            
-0     00008f2c  _log2                                 
-0     00008f2c  _log2f                                
+0     00008f52  FS$$DIV                               
+0     00008fda  _InitPieVectTable                     
 0     00009000  _DMAInitialize                        
 0     0000900b  _DMACH1AddrConfig                     
 0     0000901b  _DMACH1BurstConfig                    
@@ -1489,21 +1509,21 @@ page  address   name
 0     000093f4  _DMACH6AddrConfig32bit                
 0     00009404  _AdcSetMode                           
 0     000094ba  _CalAdcINL                            
-0     000094f4  FS$$DIV                               
-0     0000957c  _exp                                  
-0     0000957c  _expf                                 
-0     000095dc  _c_int00                              
-0     00009632  _sincos                               
-0     00009632  _sincosf                              
-0     00009675  _InitPieCtrl                          
-0     00009694  _EnableInterrupts                     
-0     0000969d  _InitPieVectTable                     
-0     000096c3  _copy_in                              
-0     000096e7  _memcpy                               
-0     00009704  __args_main                           
-0     0000971d  LL$$AND                               
-0     00009725  LL$$OR                                
-0     0000972d  LL$$XOR                               
+0     000094f4  _log2                                 
+0     000094f4  _log2f                                
+0     000095be  _exp                                  
+0     000095be  _expf                                 
+0     0000961e  _c_int00                              
+0     00009674  _sincos                               
+0     00009674  _sincosf                              
+0     000096b7  _InitPieCtrl                          
+0     000096d6  _EnableInterrupts                     
+0     000096df  _copy_in                              
+0     00009703  _memcpy                               
+0     00009720  __args_main                           
+0     00009739  LL$$AND                               
+0     00009741  LL$$OR                                
+0     00009749  LL$$XOR                               
 0     0000b000  _TIMER1_ISR                           
 0     0000b00a  _TIMER2_ISR                           
 0     0000b014  _DATALOG_ISR                          
@@ -1744,66 +1764,70 @@ page  address   name
 1     00007c00  _GpioCtrlRegs                         
 1     00007f00  _GpioDataRegs                         
 1     0000c000  _DMAbuffer1                           
-1     0000c010  _DMAbuffer2                           
+1     0000c004  _DMAbuffer2                           
 1     0000d000  _dataOut_1                            
-1     0000d5a0  _CpuTimer0                            
-1     0000d5a8  _CpuTimer1                            
-1     0000d5b0  _CpuTimer2                            
-1     0000d5b8  __cos                                 
-1     0000d5c0  _dataOut_2                            
-1     0000db60  __sin                                 
-1     0000db68  _theta                                
-1     0000db6e  ___TI_enable_exit_profile_output      
-1     0000db70  ___TI_cleanup_ptr                     
-1     0000db72  ___TI_dtors_ptr                       
-1     0000db74  _Id_avg_Ts                            
-1     0000db78  _Iq_avg_Ts                            
-1     0000db7c  _Ud                                   
-1     0000db80  _n_seg                                
-1     0000db81  _PWM_dir                              
-1     0000db82  _PWM_nextSeg_max                      
-1     0000db83  _PWM_nextSeg_min                      
-1     0000db84  _cross_margin                         
-1     0000db85  _Ia_sum_Ts                            
-1     0000db86  _Ib_sum_Ts                            
-1     0000db87  _PWM_CMP_a                            
-1     0000db88  _PWM_CMP_b                            
-1     0000db89  _PWM_CMP_c                            
-1     0000db8a  _MS_CMPA_a                            
-1     0000db8b  _MS_CMPA_b                            
-1     0000db8c  _MS_CMPA_c                            
-1     0000db8d  _MS_CMPB_a                            
-1     0000db8e  _MS_CMPB_b                            
-1     0000db8f  _MS_CMPB_c                            
-1     0000db90  _canPrint                             
-1     0000db92  _Ia_avg_Ts                            
-1     0000db94  _Ib_avg_Ts                            
-1     0000db96  _Ic_avg_Ts                            
-1     0000db98  _Ialpha_avg_Ts                        
-1     0000db9a  _Ibeta_avg_Ts                         
-1     0000db9c  _Sum_Id_avg_Ts                        
-1     0000db9e  _Sum_Iq_avg_Ts                        
-1     0000dba0  _Id                                   
-1     0000dba2  _Iq                                   
-1     0000dba4  _Id_ref                               
-1     0000dba6  _Iq_ref                               
-1     0000dba8  _Ualpha                               
-1     0000dbaa  _Ubeta                                
-1     0000dbac  _Ua                                   
-1     0000dbae  _Ub                                   
-1     0000dbb0  _Uc                                   
-1     0000dbb2  _theta_avg_Ts                         
-1     0000dbb4  _theta_avg_Tpwm                       
-1     0000dbb6  _dtheta                               
-1     0000dbb8  _data_count                           
-1     0000dbba  _f_ref                                
-1     0000dbbc  _Uq                                   
-1     0000dbc0  _dId                                  
-1     0000dbc4  _dIq                                  
-1     0000dbc8  __lock                                
-1     0000dbca  __unlock                              
-1     0000dbcc  _errno                                
-1     0000dbce  _PieVectTableInit                     
+1     0000d190  _CpuTimer0                            
+1     0000d198  _CpuTimer1                            
+1     0000d1a0  _CpuTimer2                            
+1     0000d1a8  _theta                                
+1     0000d1ba  ___TI_enable_exit_profile_output      
+1     0000d1bc  ___TI_cleanup_ptr                     
+1     0000d1be  ___TI_dtors_ptr                       
+1     0000d1c0  _dataOut_2                            
+1     0000d350  _Id_avg_Ts                            
+1     0000d360  _Iq_avg_Ts                            
+1     0000d370  __cos                                 
+1     0000d378  __sin                                 
+1     0000d380  _dataOut_3                            
+1     0000d510  _Ud                                   
+1     0000d514  _Uq                                   
+1     0000d518  _dId                                  
+1     0000d51c  _dIq                                  
+1     0000d520  __lock                                
+1     0000d522  __unlock                              
+1     0000d524  _errno                                
+1     0000d540  _dataOut_4                            
+1     0000d700  _dataOut_5                            
+1     0000d8c0  _dataOut_6                            
+1     0000da80  _n_seg                                
+1     0000da81  _PWM_dir                              
+1     0000da82  _PWM_nextSeg_max                      
+1     0000da83  _PWM_nextSeg_min                      
+1     0000da84  _cross_margin                         
+1     0000da85  _Ia_sum_Ts                            
+1     0000da86  _Ib_sum_Ts                            
+1     0000da87  _PWM_CMP_a                            
+1     0000da88  _PWM_CMP_b                            
+1     0000da89  _PWM_CMP_c                            
+1     0000da8a  _MS_CMPA_a                            
+1     0000da8b  _MS_CMPA_b                            
+1     0000da8c  _MS_CMPA_c                            
+1     0000da8d  _MS_CMPB_a                            
+1     0000da8e  _MS_CMPB_b                            
+1     0000da8f  _MS_CMPB_c                            
+1     0000da90  _canPrint                             
+1     0000da92  _Ia_avg_Ts                            
+1     0000da94  _Ib_avg_Ts                            
+1     0000da96  _Ic_avg_Ts                            
+1     0000da98  _Ialpha_avg_Ts                        
+1     0000da9a  _Ibeta_avg_Ts                         
+1     0000da9c  _Sum_Id_avg_Ts                        
+1     0000da9e  _Sum_Iq_avg_Ts                        
+1     0000daa0  _Id                                   
+1     0000daa2  _Iq                                   
+1     0000daa4  _Id_ref                               
+1     0000daa6  _Iq_ref                               
+1     0000daa8  _Ualpha                               
+1     0000daaa  _Ubeta                                
+1     0000daac  _Ua                                   
+1     0000daae  _Ub                                   
+1     0000dab0  _Uc                                   
+1     0000dab2  _theta_avg_Ts                         
+1     0000dab4  _theta_avg_Tpwm                       
+1     0000dab6  _dtheta                               
+1     0000dab8  _data_count                           
+1     0000daba  _f_ref                                
+1     0000dabc  _PieVectTableInit                     
 1     00016000  _FPU32sinTable                        
 1     00016000  _FPUsinTable                          
 1     00016100  _FPU32cosTable                        
@@ -1858,4 +1882,4 @@ abs   ffffffff  binit
 abs   ffffffff  etext                                 
 abs   ffffffff  pinit                                 
 
-[451 symbols]
+[455 symbols]

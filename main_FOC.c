@@ -3,7 +3,7 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 2                                        // Update rate (UR>2 -> multisampling algorithm)
+#define UR 8                                        // Update rate (UR>2 -> multisampling algorithm)
 #define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
@@ -18,7 +18,7 @@
 #define MS_TBPRD (2*PWM_TBPRD/UR - 1)               // Counter period of ePWM used to implement multisampling algorithm, up mode;
 #define TS (TPWM/UR)                                // Regulation period
 
-#define E 48.0f                                     // Available DC voltage
+#define E 4.0f                                     // Available DC voltage
 #define EINVERSE (1/E)                              // Inverse of E
 #define UDQ_MAX (E/(2*1.412f))                      // Maximum available voltage
 #define UD_MAX UDQ_MAX                              // Maximum available voltage in d axis
@@ -37,10 +37,11 @@
 #define ANG_CNV (2*3.14f/(float32)(ENC_LINE))       // Constant for angle calculation (conversion from QEP counter)
 #define INV_UR_1 (1/(float32)(UR+1))                // Used for angle averaging on switching period
 #define ADC_SCALE 0.0007326f                        // ADC scaling: 3.0 --> 4095 (zero ADC offset assumed)
-#define ISENSE_SCALE 10                             // [A] --> [V] (ISENSE_SCALE)A=1V
-#define ISENSE_OFFSET 1.5f                          // 0A --> 1.5V
+#define ISENSE_SCALE 10.0f                             // [A] --> [V] (ISENSE_SCALE)A=1V
+#define ISENSE_OFFSET_A 1.5106f                          // 0A --> 1.5V
+#define ISENSE_OFFSET_B 1.5118f                          // 0A --> 1.5V
 
-#define MAX_data_count 720                          // Size of an array used for data storage
+#define MAX_data_count 200                          // Size of an array used for data storage
 
 // Defines for IREG
 #define R 0.0307f                                   // Motor resistance
@@ -118,10 +119,10 @@ Uint16 MS_CMPB_a, MS_CMPB_b, MS_CMPB_c;         // CMPB value for the multisampl
 // Data storage
 float32 dataOut_1[MAX_data_count] = {};
 float32 dataOut_2[MAX_data_count] = {};
-//float32 dataOut_3[MAX_data_count] = {};
-//float32 dataOut_4[MAX_data_count] = {};
-//float32 dataOut_5[MAX_data_count] = {};
-//float32 dataOut_6[MAX_data_count] = {};
+float32 dataOut_3[MAX_data_count] = {};
+float32 dataOut_4[MAX_data_count] = {};
+float32 dataOut_5[MAX_data_count] = {};
+float32 dataOut_6[MAX_data_count] = {};
 Uint16 canPrint = 1;                            // Logic signal used to trigger data storage
 long int data_count = 0;                        // Counter for data storage
 
@@ -498,12 +499,12 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_1[data_count] =  Ua;
-        dataOut_2[data_count] =  Ia_avg_Ts;
-        //dataOut_3[data_count] =  Uc;
-        //dataOut_4[data_count] =  Ia_avg_Ts;
-        //dataOut_5[data_count] =  Ib_avg_Ts;
-        //dataOut_6[data_count] =  Ic_avg_Ts;
+        dataOut_1[data_count] =  Ia_avg_Ts;
+        dataOut_2[data_count] =  Ib_avg_Ts;
+        dataOut_3[data_count] =  Ic_avg_Ts;
+        dataOut_4[data_count] =  Uq[0];
+        dataOut_5[data_count] =  Id;
+        dataOut_6[data_count] =  Ud[0];
 
         data_count++;
 
@@ -604,12 +605,12 @@ __interrupt void dmach1_isr(void)
 
     #if (OVERSAMPLING)
         // Averaging on regulation period & scaling ([dig] --> [A])
-        Ia_avg_Ts = ((float32)(Ia_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET)*ISENSE_SCALE;
-        Ib_avg_Ts = ((float32)(Ib_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET)*ISENSE_SCALE;
+        Ia_avg_Ts = ((float32)(Ia_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
+        Ib_avg_Ts = ((float32)(Ib_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET_B)*ISENSE_SCALE;
     #else
         // Take last measurement stored in DMA buffer
-        Ia_avg_Ts = ((float32)(Ia_sum_Ts)*ADC_SCALE - ISENSE_OFFSET)*ISENSE_SCALE;
-        Ib_avg_Ts = ((float32)(Ib_sum_Ts)*ADC_SCALE - ISENSE_OFFSET)*ISENSE_SCALE;
+        Ia_avg_Ts = ((float32)(Ia_sum_Ts)*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
+        Ib_avg_Ts = ((float32)(Ib_sum_Ts)*ADC_SCALE - ISENSE_OFFSET_B)*ISENSE_SCALE;
     #endif
 
     Ic_avg_Ts = - Ia_avg_Ts - Ib_avg_Ts;        // Calculate current in phase C
@@ -688,7 +689,7 @@ __interrupt void dmach1_isr(void)
     dIq[1] = dIq[0];
 
     // Open loop testing
-    //Ud[0] = 1.0f; //UD_MAX;
+    //Ud[0] = 0.0f; //UD_MAX;
     //Uq[0] = 0.0f; //UQ_MAX;
 
     // Inverse Park transform
@@ -701,7 +702,7 @@ __interrupt void dmach1_isr(void)
     Uc = -(1.73205081f * Ubeta + Ualpha) * 0.5f;
 
     // Dead time compensation
-
+/*
     if(Ia_avg_Ts >= 0.1f) Ua+=UDT;
     else if(Ia_avg_Ts <= -0.1f) Ua-=UDT;
 
@@ -710,7 +711,7 @@ __interrupt void dmach1_isr(void)
 
     if(Ic_avg_Ts >= 0.1f) Uc+=UDT;
     else if(Ic_avg_Ts <= -0.1f) Uc-=UDT;
-
+*/
 
     // Modulation signals
     PWM_CMP_a = (Uint16)(PWM_TBPRD*(0.5f + Ua*EINVERSE));
@@ -718,6 +719,7 @@ __interrupt void dmach1_isr(void)
     PWM_CMP_c = (Uint16)(PWM_TBPRD*(0.5f + Uc*EINVERSE));
 
     // Limit modulation signals
+/*
     if(PWM_CMP_a>D_MAX) PWM_CMP_a=D_MAX;
     else if (PWM_CMP_a<D_MIN) PWM_CMP_a=D_MIN;
 
@@ -726,7 +728,7 @@ __interrupt void dmach1_isr(void)
 
     if(PWM_CMP_c>D_MAX)PWM_CMP_c=D_MAX;
     else if (PWM_CMP_c<D_MIN)PWM_CMP_c=D_MIN;
-
+*/
     #if (UR!=1)
 
          n_seg++; // Indicates a current segment of the virtual carrier
