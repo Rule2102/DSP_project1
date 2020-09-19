@@ -20,7 +20,7 @@
 
 #define E 4.0f                                     // Available DC voltage
 #define EINVERSE (1/E)                              // Inverse of E
-#define UDQ_MAX (E/(2*1.412f))                      // Maximum available voltage
+#define UDQ_MAX (E/(2*1.4142f))                      // Maximum available voltage
 #define UD_MAX UDQ_MAX                              // Maximum available voltage in d axis
 #define UD_MIN (-UDQ_MAX)                           // Minimum available voltage in d axis
 #define UQ_MAX UDQ_MAX                              // Maximum available voltage in q axis
@@ -38,16 +38,16 @@
 #define INV_UR_1 (1/(float32)(UR+1))                // Used for angle averaging on switching period
 #define ADC_SCALE 0.0007326f                        // ADC scaling: 3.0 --> 4095 (zero ADC offset assumed)
 #define ISENSE_SCALE 10.0f                             // [A] --> [V] (ISENSE_SCALE)A=1V
-#define ISENSE_OFFSET_A 1.5106f                          // 0A --> 1.5V
-#define ISENSE_OFFSET_B 1.5118f                          // 0A --> 1.5V
+#define ISENSE_OFFSET_A 1.5096f //1.5106f                          // 0A --> 1.5V
+#define ISENSE_OFFSET_B 1.5111f //1.5118f                          // 0A --> 1.5V
 
-#define MAX_data_count 200                          // Size of an array used for data storage
+#define MAX_data_count 800                          // Size of an array used for data storage
 
 // Defines for IREG
 #define R 0.0307f                                   // Motor resistance
 #define L 0.00012f                                  // Motor inductance
 #define INV_TAU (R/L)                               // 1/(L/R)
-#define ALPHA 0.1f                                  // Gain for IREG
+#define ALPHA 0.04f                                  // Gain for IREG
 #define K1 (ALPHA*L/TS)                             // Constant used for IREG
 #define K2 (exp(-TS*INV_TAU))                       // Parameter that describes system dynamics exp(-R*Ts/L) - constant used for IREG
 
@@ -119,16 +119,18 @@ Uint16 MS_CMPB_a, MS_CMPB_b, MS_CMPB_c;         // CMPB value for the multisampl
 // Data storage
 float32 dataOut_1[MAX_data_count] = {};
 float32 dataOut_2[MAX_data_count] = {};
-float32 dataOut_3[MAX_data_count] = {};
-float32 dataOut_4[MAX_data_count] = {};
-float32 dataOut_5[MAX_data_count] = {};
-float32 dataOut_6[MAX_data_count] = {};
+//float32 dataOut_3[MAX_data_count] = {};
+//float32 dataOut_4[MAX_data_count] = {};
+//float32 dataOut_5[MAX_data_count] = {};
+//float32 dataOut_6[MAX_data_count] = {};
 Uint16 canPrint = 1;                            // Logic signal used to trigger data storage
 long int data_count = 0;                        // Counter for data storage
 
 // For debugging with f=const
 float32 f_ref = 150.0f;                         // Frequency of electrical quantities
 #define TWOPI_TS (6.283185307f*TS)              // 2*pi*Ts for angle calculation
+
+float32 pom1, pom2;
 
 //long int dma_count = 0;                        // Counter to check dmach1_isr
 //long int adc_count_a = 0;                      // Counter to check adca1_isr
@@ -187,7 +189,8 @@ void main(void)
     EDIS;
 
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
-    Iq_ref = 12.0f;
+    Id_ref = 5.0f;
+    Iq_ref = 10.0f;
 
     StartDMACH1();
 
@@ -499,12 +502,12 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_1[data_count] =  Ia_avg_Ts;
-        dataOut_2[data_count] =  Ib_avg_Ts;
-        dataOut_3[data_count] =  Ic_avg_Ts;
-        dataOut_4[data_count] =  Uq[0];
-        dataOut_5[data_count] =  Id;
-        dataOut_6[data_count] =  Ud[0];
+        dataOut_1[data_count] =  Id;
+        dataOut_2[data_count] =  Iq;
+        //dataOut_3[data_count] =  Ud[0];
+        //dataOut_4[data_count] =  Uq[0];
+        //dataOut_5[data_count] =  Id;
+        //dataOut_6[data_count] =  Ud[0];
 
         data_count++;
 
@@ -689,7 +692,7 @@ __interrupt void dmach1_isr(void)
     dIq[1] = dIq[0];
 
     // Open loop testing
-    //Ud[0] = 0.0f; //UD_MAX;
+    //Ud[0] = UD_MAX/2;
     //Uq[0] = 0.0f; //UQ_MAX;
 
     // Inverse Park transform
@@ -702,7 +705,7 @@ __interrupt void dmach1_isr(void)
     Uc = -(1.73205081f * Ubeta + Ualpha) * 0.5f;
 
     // Dead time compensation
-/*
+
     if(Ia_avg_Ts >= 0.1f) Ua+=UDT;
     else if(Ia_avg_Ts <= -0.1f) Ua-=UDT;
 
@@ -711,12 +714,7 @@ __interrupt void dmach1_isr(void)
 
     if(Ic_avg_Ts >= 0.1f) Uc+=UDT;
     else if(Ic_avg_Ts <= -0.1f) Uc-=UDT;
-*/
 
-    // Modulation signals
-    PWM_CMP_a = (Uint16)(PWM_TBPRD*(0.5f + Ua*EINVERSE));
-    PWM_CMP_b = (Uint16)(PWM_TBPRD*(0.5f + Ub*EINVERSE));
-    PWM_CMP_c = (Uint16)(PWM_TBPRD*(0.5f + Uc*EINVERSE));
 
     // Limit modulation signals
 /*
@@ -729,6 +727,13 @@ __interrupt void dmach1_isr(void)
     if(PWM_CMP_c>D_MAX)PWM_CMP_c=D_MAX;
     else if (PWM_CMP_c<D_MIN)PWM_CMP_c=D_MIN;
 */
+
+    // Modulation signals
+    PWM_CMP_a = (Uint16)(PWM_TBPRD*(0.5f + Ua*EINVERSE));
+    PWM_CMP_b = (Uint16)(PWM_TBPRD*(0.5f + Ub*EINVERSE));
+    PWM_CMP_c = (Uint16)(PWM_TBPRD*(0.5f + Uc*EINVERSE));
+
+
     #if (UR!=1)
 
          n_seg++; // Indicates a current segment of the virtual carrier
