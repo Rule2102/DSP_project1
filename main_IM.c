@@ -18,9 +18,9 @@
 #define MS_TBPRD (2*PWM_TBPRD/UR - 1)               // Counter period of ePWM used to implement multisampling algorithm, up mode;
 #define TS (TPWM/UR)                                // Regulation period
 
-#define E 650.0f                                     // Available DC voltage
+#define E 650.0f                                    // Available DC voltage
 #define EINVERSE (1/E)                              // Inverse of E
-#define UDQ_MAX (E/(2*1.4142f))                      // Maximum available voltage
+#define UDQ_MAX (E/(2*1.4142f))                     // Maximum available voltage
 #define UD_MAX UDQ_MAX                              // Maximum available voltage in d axis
 #define UD_MIN (-UDQ_MAX)                           // Minimum available voltage in d axis
 #define UQ_MAX UDQ_MAX                              // Maximum available voltage in q axis
@@ -32,17 +32,19 @@
 #define UDT ((float32)(DEADTIME)/(float32)(PWM_TBPRD)*E*4.0f/3.1415926f)         // Constant for dead time compensation (4/pi for first harmonic's peak)
 
 // Defines for measurements (position & current)
-#define P 1                                         // Machine's number of pole pairs
+#define P 1.0f                                         // Machine's number of pole pairs
+#define INV_P (1/P)                                 // Inverse of machine's pole pairs number
 #define ENC_LINE 1000                               // Number of encoder lines
-#define ANG_CNV (2*3.14f/(float32)(4*ENC_LINE))       // Constant for angle calculation (conversion from QEP counter)
+#define ANG_CNV (2*3.14f/(float32)(4*ENC_LINE))     // Constant for angle calculation (conversion from QEP counter)
 #define RR 11.202f                                  // Rotor phase resistance referred to stator
 #define LR 0.3676f                                  // Rotor phase inductance referred to stator (Lr = Llr + Lm)
-#define INV_TAUR (RR/LR)                            // Inverse of rotor time constant (for slip calculation)
+#define ID_NOM 1.0f                                  // Nominal d current
+#define INV_TAUR_ID (RR/LR/ID_NOM)                            // Inverse of rotor time constant (for slip calculation)
 #define INV_UR_1 (1/(float32)(UR+1))                // Used for angle averaging on switching period
 #define ADC_SCALE 0.0007326f                        // ADC scaling: 3.0 --> 4095 (zero ADC offset assumed)
 #define ISENSE_SCALE 10.0f                          // [A] --> [V] (ISENSE_SCALE)A=1V
-#define ISENSE_OFFSET_A 1.5096f                     // 0A --> 1.5V
-#define ISENSE_OFFSET_B 1.5111f                     // 0A --> 1.5V
+#define ISENSE_OFFSET_A 1.5096f                     // 0A --> 1.5V + offset ADC-a
+#define ISENSE_OFFSET_B 1.5111f                     // 0A --> 1.5V + offset ADC-a
 
 #define MAX_data_count 800                          // Size of an array used for data storage
 
@@ -53,6 +55,7 @@
 #define ALPHA 0.04f                                  // Gain for IREG
 #define K1 (ALPHA*LS/TS)                             // Constant used for IREG
 #define K2 (exp(-TS*INV_TAUS))                       // Parameter that describes system dynamics exp(-R*Ts/L) - constant used for IREG
+
 
 #pragma CODE_SECTION(dmach1_isr, ".TI.ramfunc");    // Allocate code (dmach1_isr) in RAM
 #pragma CODE_SECTION(adca1_isr, ".TI.ramfunc");     // Allocate code (adca1_isr) in RAM
@@ -196,8 +199,8 @@ void main(void)
     EDIS;
 
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
-    Id_ref = 1.0f;
-    Iq_ref = 1.0f;
+    Id_ref = ID_NOM;
+    //Iq_ref = 1.0f;
 
     StartDMACH1();
 
@@ -481,10 +484,10 @@ void Configure_eQEP(void)
 {
 
     EQep2Regs.QDECCTL.bit.QSRC = 0;         // Quadrature count mode
-    EQep2Regs.QEPCTL.bit.PCRM = 0;          // QPOSCNT reset on index event
+    EQep2Regs.QEPCTL.bit.PCRM = 1;          // 0 QPOSCNT reset on index event; 1 to reset on maximum position
     EQep2Regs.QEPCTL.bit.QPEN = 1;          // QEP enable
     EQep2Regs.QCAPCTL.bit.CEN = 1;          // QEP capture Enable
-    EQep2Regs.QPOSMAX = 3999;               // QPOSCNT max (without this QEP does not count)
+    EQep2Regs.QPOSMAX = 4*ENC_LINE-1;       // QPOSCNT max (without this QEP does not count)
 
 }
 
@@ -510,7 +513,7 @@ void PrintData()
     if(canPrint)
     {
         dataOut_1[data_count] =  theta_m;
-        dataOut_2[data_count] =  Ua;
+        dataOut_2[data_count] =  theta[0];
         //dataOut_3[data_count] =  Ud[0];
         //dataOut_4[data_count] =  Uq[0];
         //dataOut_5[data_count] =  Id;
@@ -547,15 +550,18 @@ __interrupt void dmach1_isr(void)
 {
     GpioDataRegs.GPCSET.bit.GPIO66 = 1;                       // Notify dmach1_isr start
 
-    theta_m = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV*P;          // Capture position
+    theta_m = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV*INV_P;          // Capture position
 
     // Slip calculation
-    omega_k = INV_TAUR*Iq_ref/Id_ref;
+    omega_k = INV_TAUR_ID*Iq_ref;
     theta_k+= omega_k*TS;
     if(theta_k >= 6.283185307f) theta_k-= 6.283185307f;
-
+/*
+    theta_s = theta_m + theta_k;
+    if(theta_s >= 6.283185307f) theta_s-= 6.283185307f;
+    else if(theta_s < 0) theta_s+= 6.283185307f;
+*/
     theta[0] = theta_m + theta_k;
-
     if(theta[0] >= 6.283185307f) theta[0]-= 6.283185307f;
     else if(theta[0] < 0) theta[0]+= 6.283185307f;
 
@@ -710,7 +716,7 @@ __interrupt void dmach1_isr(void)
 
     // Open loop testing
     //Ud[0] = UD_MAX/2;
-    //Uq[0] = 0.0f; //UQ_MAX;
+    //Uq[0] = 0.0f; //UQ_MAX/2;
 
     // Inverse Park transform
     Ualpha = Ud[0] * _cos[1] - Uq[0] * _sin[1];

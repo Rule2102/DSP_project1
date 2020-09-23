@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v18.12.3                    
 ******************************************************************************
->> Linked Mon Sep 21 16:43:23 2020
+>> Linked Wed Sep 23 20:06:12 2020
 
 OUTPUT FILE NAME:   <project1.out>
 ENTRY POINT SYMBOL: "code_start"  address: 00000000
@@ -14,8 +14,8 @@ MEMORY CONFIGURATION
 PAGE 0:
   BEGIN                 00000000   00000002  00000002  00000000  RWIX
   RAMM0                 00000123   000002dd  00000047  00000296  RWIX
-  RAMLS0                00008000   00000800  000004df  00000321  RWIX
-  RAMLS1                00008800   00000800  000007ec  00000014  RWIX
+  RAMLS0                00008000   00000800  000004d7  00000329  RWIX
+  RAMLS1                00008800   00000800  000007eb  00000015  RWIX
   RAMLS2                00009000   00000800  0000074f  000000b1  RWIX
   RAMLS3                00009800   00000800  00000000  00000800  RWIX
   RAMLS4                0000a000   00000f00  00000000  00000f00  RWIX
@@ -216,9 +216,9 @@ ramgs0     1    0000c000    00000020     UNINITIALIZED
                   0000c000    00000020     main_IM.obj (ramgs0)
 
 .TI.ramfunc 
-*          0    00008000    000004df     
-                  00008000    000004db     main_IM.obj (.TI.ramfunc:retain)
-                  000084db    00000004     F2837xD_usDelay.obj (.TI.ramfunc)
+*          0    00008000    000004d7     
+                  00008000    000004d3     main_IM.obj (.TI.ramfunc:retain)
+                  000084d3    00000004     F2837xD_usDelay.obj (.TI.ramfunc)
 
 GETBUFFER 
 *          0    0003f800    00000000     DSECT
@@ -597,11 +597,11 @@ CpuSysRegsFile
 *          1    0005d300    00000082     UNINITIALIZED
                   0005d300    00000082     F2837xD_GlobalVariableDefs.obj (CpuSysRegsFile)
 
-.text.1    0    00008800    000007ec     
+.text.1    0    00008800    000007eb     
                   00008800    000004aa     F2837xD_SysCtrl.obj (.text)
-                  00008caa    00000292     main_IM.obj (.text)
-                  00008f3c    00000088     rts2800_fpu32.lib : fs_div28.asm.obj (.text)
-                  00008fc4    00000028     F2837xD_PieCtrl.obj (.text)
+                  00008caa    00000291     main_IM.obj (.text)
+                  00008f3b    00000088     rts2800_fpu32.lib : fs_div28.asm.obj (.text)
+                  00008fc3    00000028     F2837xD_PieCtrl.obj (.text)
 
 .text.2    0    00009000    0000074f     
                   00009000    00000404     F2837xD_Dma.obj (.text)
@@ -635,7 +635,7 @@ MODULE SUMMARY
        ------                           ----   ----------------   ------------------
     .\
        F2837xD_GlobalVariableDefs.obj   0      0                  8695              
-       main_IM.obj                      1901   41                 3350              
+       main_IM.obj                      1892   41                 3350              
        F2837xD_DefaultISR.obj           1413   0                  0                 
        F2837xD_SysCtrl.obj              1194   0                  0                 
        F2837xD_Dma.obj                  1028   0                  0                 
@@ -647,7 +647,7 @@ MODULE SUMMARY
        F2837xD_usDelay.obj              4      0                  0                 
        F2837xD_CodeStartBranch.obj      2      0                  0                 
     +--+--------------------------------+------+------------------+--------------------+
-       Total:                           6440   489                12069             
+       Total:                           6431   489                12069             
                                                                                     
     C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/lib/rts2800_fpu32.lib
        e_log2f.c.obj                    202    16                 0                 
@@ -675,7 +675,7 @@ MODULE SUMMARY
                                                                                     
        Stack:                           0      0                  512               
     +--+--------------------------------+------+------------------+--------------------+
-       Grand Total:                     7194   2399               12592             
+       Grand Total:                     7185   2399               12592             
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
@@ -956,7 +956,7 @@ page  address   name
 ----  -------   ----                                  
 abs   ffffffff  .text                                 
 0     0000b7c9  C$$EXIT                               
-0     00008f3c  FS$$DIV                               
+0     00008f3b  FS$$DIV                               
 0     00009737  LL$$AND                               
 0     0000973f  LL$$OR                                
 0     00009747  LL$$XOR                               
@@ -1014,7 +1014,7 @@ abs   ffffffff  .text
 1     0004a000  _CanbRegs                             
 1     00001400  _Cla1Regs                             
 0     00000ce0  _Cla1SoftIntRegs                      
-0     00008eef  _Clear_DMAbuffer                      
+0     00008eee  _Clear_DMAbuffer                      
 1     0005d200  _ClkCfgRegs                           
 1     00005c80  _Cmpss1Regs                           
 1     00005ca0  _Cmpss2Regs                           
@@ -1025,11 +1025,11 @@ abs   ffffffff  .text
 1     00005d40  _Cmpss7Regs                           
 1     00005d60  _Cmpss8Regs                           
 0     00008c8d  _ConfigureTMXAnalogTrim               
-0     00008e47  _Configure_ADC                        
-0     00008ea7  _Configure_DMA                        
-0     00008cfd  _Configure_GPIO                       
-0     00008d5e  _Configure_ePWM                       
-0     00008ee1  _Configure_eQEP                       
+0     00008e43  _Configure_ADC                        
+0     00008ea3  _Configure_DMA                        
+0     00008cf9  _Configure_GPIO                       
+0     00008d5a  _Configure_ePWM                       
+0     00008edd  _Configure_eQEP                       
 1     0005d300  _CpuSysRegs                           
 1     0000dcc8  _CpuTimer0                            
 1     00000c00  _CpuTimer0Regs                        
@@ -1159,8 +1159,8 @@ abs   ffffffff  .text
 1     00047800  _Emif2Regs                            
 1     00000d00  _EmuBMode                             
 1     00000d01  _EmuBootPins                          
-0     00008fe3  _EnableInterrupts                     
-0     000084db  _F28x_usDelay                         
+0     00008fe2  _EnableInterrupts                     
+0     000084d3  _F28x_usDelay                         
 0     0000b528  _FLASH_CORRECTABLE_ERROR_ISR          
 1     00016502  _FPU32atan2HalfPITable                
 1     00016506  _FPU32atan2Table                      
@@ -1227,7 +1227,7 @@ abs   ffffffff  .text
 0     00008adf  _InitAuxPll                           
 0     0000b585  _InitGpio                             
 0     00008820  _InitPeripheralClocks                 
-0     00008fc4  _InitPieCtrl                          
+0     00008fc3  _InitPieCtrl                          
 0     000096b7  _InitPieVectTable                     
 0     00008800  _InitSysCtrl                          
 0     000088f1  _InitSysPll                           
@@ -1264,7 +1264,7 @@ abs   ffffffff  .text
 1     00000ce0  _PieCtrlRegs                          
 1     00000d00  _PieVectTable                         
 1     0000dd1a  _PieVectTableInit                     
-0     00008f10  _PrintData                            
+0     00008f0f  _PrintData                            
 0     0000b532  _RAM_ACCESS_VIOLATION_ISR             
 0     0000b51e  _RAM_CORRECTABLE_ERROR_ISR            
 0     0000b01e  _RTOS_ISR                             
@@ -1423,7 +1423,7 @@ page  address   name
 0     00000ce0  _Cla1SoftIntRegs                      
 0     00008000  _adca1_isr                            
 0     0000801d  _dmach1_isr                           
-0     000084db  _F28x_usDelay                         
+0     000084d3  _F28x_usDelay                         
 0     00008800  _InitSysCtrl                          
 0     00008820  _InitPeripheralClocks                 
 0     000088a4  _DisablePeripheralClocks              
@@ -1446,16 +1446,16 @@ page  address   name
 0     00008c70  _HIB                                  
 0     00008c8d  _ConfigureTMXAnalogTrim               
 0     00008caa  _main                                 
-0     00008cfd  _Configure_GPIO                       
-0     00008d5e  _Configure_ePWM                       
-0     00008e47  _Configure_ADC                        
-0     00008ea7  _Configure_DMA                        
-0     00008ee1  _Configure_eQEP                       
-0     00008eef  _Clear_DMAbuffer                      
-0     00008f10  _PrintData                            
-0     00008f3c  FS$$DIV                               
-0     00008fc4  _InitPieCtrl                          
-0     00008fe3  _EnableInterrupts                     
+0     00008cf9  _Configure_GPIO                       
+0     00008d5a  _Configure_ePWM                       
+0     00008e43  _Configure_ADC                        
+0     00008ea3  _Configure_DMA                        
+0     00008edd  _Configure_eQEP                       
+0     00008eee  _Clear_DMAbuffer                      
+0     00008f0f  _PrintData                            
+0     00008f3b  FS$$DIV                               
+0     00008fc3  _InitPieCtrl                          
+0     00008fe2  _EnableInterrupts                     
 0     00009000  _DMAInitialize                        
 0     0000900b  _DMACH1AddrConfig                     
 0     0000901b  _DMACH1BurstConfig                    
