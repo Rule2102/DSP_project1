@@ -4,7 +4,7 @@
 #include <string.h>
 
 #define UR 2                                        // Update rate (UR>2 -> multisampling algorithm)
-#define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
+#define OVERSAMPLING 0                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
 #define LOG2_NOS_UR (log2(NOS_UR))                  // Used for averaging on regulation period (if OVERSAMPLING==1)
@@ -20,36 +20,28 @@
 
 #define E 4.0f                                     // Available DC voltage
 #define EINVERSE (1/E)                              // Inverse of E
-#define UDQ_MAX (E/(2*1.4142f))                      // Maximum available voltage
-#define UD_MAX UDQ_MAX                              // Maximum available voltage in d axis
-#define UD_MIN (-UDQ_MAX)                           // Minimum available voltage in d axis
-#define UQ_MAX UDQ_MAX                              // Maximum available voltage in q axis
-#define UQ_MIN (-UDQ_MAX)                           // Minimum available voltage in q axis
 #define D_MAX (PWM_TBPRD - 5)                       // Maximum duty cycle (to avoid unnecessary switching)
 #define D_MIN 5                                     // Minimum duty cycle (to avoid unnecessary switching)
-
+#define PI 3.141593f                                // PI
 #define DEADTIME 100                                                          // Dead time in number of EPWM clocks (see EPwmXRegs.TBPRD) 100 --> 1us
-#define UDT ((float32)(DEADTIME)/(float32)(PWM_TBPRD)*E*4.0f/3.1415926f)         // Constant for dead time compensation (4/pi for first harmonic's peak)
+#define UDT ((float32)(DEADTIME)/(float32)(PWM_TBPRD)*E*4.0f/PI)         // Constant for dead time compensation (4/pi for first harmonic's peak)
 
 // Defines for measurements (position & current)
-#define P 6                                         // Machine's number of pole pairs
-#define ENC_LINE 1024                               // Number of encoder lines
-#define ANG_CNV (2*3.14f/(float32)(ENC_LINE))       // Constant for angle calculation (conversion from QEP counter)
+#define P 1.0f                                      // Machine's number of pole pairs
+#define ENC_LINE 1000                               // Number of encoder lines
+#define ANG_CNV (2*PI/(float32)(4*ENC_LINE*P))      // Constant for angle calculation (conversion from QEP counter)
 #define INV_UR_1 (1/(float32)(UR+1))                // Used for angle averaging on switching period
 #define ADC_SCALE 0.0007326f                        // ADC scaling: 3.0 --> 4095 (zero ADC offset assumed)
-#define ISENSE_SCALE 10.0f                             // [A] --> [V] (ISENSE_SCALE)A=1V
-#define ISENSE_OFFSET_A 1.5096f //1.5106f                          // 0A --> 1.5V
-#define ISENSE_OFFSET_B 1.5111f //1.5118f                          // 0A --> 1.5V
+#define ISENSE_SCALE 10.0f                          // [A] --> [V] (ISENSE_SCALE)A=1V
+#define ISENSE_OFFSET_A 1.5096f                     // 0A --> 1.5V + offset ADC-a
+#define ISENSE_OFFSET_B 1.5111f                     // 0A --> 1.5V + offset ADC-a
 
-#define MAX_data_count 800                          // Size of an array used for data storage
+#define MAX_data_count 400                          // Size of an array used for data storage
 
 // Defines for IREG
 #define R 0.0307f                                   // Motor resistance
 #define L 0.00012f                                  // Motor inductance
 #define INV_TAU (R/L)                               // 1/(L/R)
-#define ALPHA 0.04f                                  // Gain for IREG
-#define K1 (ALPHA*L/TS)                             // Constant used for IREG
-#define K2 (exp(-TS*INV_TAU))                       // Parameter that describes system dynamics exp(-R*Ts/L) - constant used for IREG
 
 #pragma CODE_SECTION(dmach1_isr, ".TI.ramfunc");    // Allocate code (dmach1_isr) in RAM
 #pragma CODE_SECTION(adca1_isr, ".TI.ramfunc");     // Allocate code (adca1_isr) in RAM
@@ -69,6 +61,7 @@ void Clear_DMAbuffer(void);                    // Clear DMA buffers
 void Configure_GPIO(void);                     // Configure GPIO
 void Configure_eQEP(void);                     // Configure EQEP
 void PrintData(void);                          // Data storage used to export monitored variables to .dat file
+void Init_VARS(void);                          // Initialize variables
 
 __interrupt void adca1_isr(void);              // JUST FOR DEBIGGING to check sampling process
 __interrupt void dmach1_isr(void);             // Regulation takes place in dmach1_isr
@@ -96,11 +89,16 @@ float32 dIq[2] = {};                            // Current error in d axis; dIq[
 float32 Id_ref = 0.0f;                          // Reference d current
 float32 Iq_ref = 0.0f;                          // Reference q current
 
+// IREG
+float32 alpha = 0.2f;                           // Gain for IREG
+float32 K1, K2;                                  // Constants used for IREG
+
 // Voltages
 float32 Ud[2]={};                               // D voltage (IREG output - control signal)
 float32 Uq[2]={};                               // Q voltage (IREG output - control signal)
 float32 Ualpha, Ubeta;                          // Voltages in alpha/beta frame
 float32 Ua, Ub, Uc;                             // A,B,C voltages
+float32 Udq_max = E/(2.0f);//1.4142f);                // Maximum available voltage
 
 // Angles
 float32 theta[UR+1] = {};                       // Measured angle - theta[0]=current, theta[1]=previous, etc.
@@ -128,7 +126,7 @@ long int data_count = 0;                        // Counter for data storage
 
 // For debugging with f=const
 float32 f_ref = 150.0f;                         // Frequency of electrical quantities
-#define TWOPI_TS (6.283185307f*TS)              // 2*pi*Ts for angle calculation
+#define TWOPI_TS (2*PI*TS)              // 2*pi*Ts for angle calculation
 
 float32 pom1, pom2;
 
@@ -155,6 +153,8 @@ void main(void)
 
     InitPieCtrl();                  // DINT, PIECTRL, PIEIER.x, .PIEIFR.x (disable all, clear all)
     InitPieVectTable();             // PIECTRL (enable) & what else ("setup to a known state")?
+
+    Init_VARS();
 
     EALLOW;
     CpuSysRegs.PCLKCR0.bit.TBCLKSYNC = 0;       // Stop the TBCLK clock
@@ -189,8 +189,8 @@ void main(void)
     EDIS;
 
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
-    Id_ref = 5.0f;
-    Iq_ref = 10.0f;
+    Id_ref = 4.0f;
+    Iq_ref = 0.0f; //10.0f;
 
     StartDMACH1();
 
@@ -199,6 +199,14 @@ void main(void)
         }
 
 }
+
+void Init_VARS(void)
+{
+    K1 = alpha*L/TS;                        // Constant for IREF
+    K2 = exp(-TS*INV_TAU);                  // Parameter that describes system dynamics exp(-R*Ts/L) - constant used for IREG
+
+}
+
 
 void Configure_GPIO(void)
 {
@@ -474,10 +482,10 @@ void Configure_eQEP(void)
 {
 
     EQep2Regs.QDECCTL.bit.QSRC = 0;         // Quadrature count mode
-    EQep2Regs.QEPCTL.bit.PCRM = 0;          // QPOSCNT reset on index event
+    EQep2Regs.QEPCTL.bit.PCRM = 1;          // 0 --> QPOSCNT reset on index event; 1 --> reset on max CNT
     EQep2Regs.QEPCTL.bit.QPEN = 1;          // QEP enable
     EQep2Regs.QCAPCTL.bit.CEN = 1;          // QEP capture Enable
-    EQep2Regs.QPOSMAX = 0xffffffff;         // QPOSCNT max (without this QEP does not count)
+    EQep2Regs.QPOSMAX = 4*ENC_LINE-1;       // QPOSCNT max (without this QEP does not count)
 
 }
 
@@ -540,17 +548,17 @@ __interrupt void dmach1_isr(void)
 {
     GpioDataRegs.GPCSET.bit.GPIO66 = 1;                       // Notify dmach1_isr start
 
-    //theta[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV*P;          // Capture position
+    //theta[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;          // Capture position
 
     int i_for = 0;
 
     theta[0]+= TWOPI_TS*f_ref;                        // Capture position
 
-    if(theta[0]>=6.283185307f)
+    if(theta[0]>= 2*PI)
         {
         for (i_for=UR;i_for>=0;i_for--)
             {
-                theta[i_for]-= 6.283185307f;
+                theta[i_for]-= 2*PI;
             }
         }
 
@@ -679,11 +687,11 @@ __interrupt void dmach1_isr(void)
     Uq[0] = Uq[1] + K1*(dIq[0]*_cos[3]+dId[0]*_sin[3]-K2*(dIq[1]*_cos[2]+dId[1]*_sin[2]));
 
     // Saturate if necessary (based on the DC link voltage capabilities)
-    if(Ud[0] > UD_MAX) Ud[0] = UD_MAX;
-    else if(Ud[0] < UD_MIN) Ud[0] = UD_MIN;
+    if(Ud[0] > Udq_max) Ud[0] = Udq_max;
+    else if(Ud[0] < -Udq_max) Ud[0] = Udq_max;
 
-    if(Uq[0] > UQ_MAX) Uq[0] = UQ_MAX;
-    else if(Uq[0] < UQ_MIN) Uq[0] = UQ_MIN;
+    if(Uq[0] > Udq_max) Uq[0] = Udq_max;
+    else if(Uq[0] < -Udq_max) Uq[0] = Udq_max;
 
     // Remember values for the next dma_isr (store previous)
     Ud[1] = Ud[0];

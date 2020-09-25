@@ -2,7 +2,7 @@
 clear all
 clc
 
-ur = 8;             % update rate
+ur = 2;             % update rate
 OVERSAMPLING = 1;   % logic variable to determine with/without oversampling
 
 %}
@@ -24,30 +24,32 @@ Tadc = Tpwm/Nos;
 % simulation step size
 Tsim = gcd(gcd(Ttbclk*1e9,Tadc*1e9),Ts*1e9)/1e9; 
 
-E = 4;                  % available voltage
+E = 4; %520;                 % available voltage
 DEADTIME = 100;
 
-Udq_max = E/(2*sqrt(2));
+Udq_max = E/(2);
 UD_MAX = Udq_max;
 UD_MIN = -Udq_max;
 UQ_MAX = Udq_max;
 UQ_MIN = -Udq_max;
 
-R = 0.0307;
-L = 120e-6;
+R = 0.0307; % 0.47;
+L = 120e-6; %10e-3;
 
 ISENSE_SCALE = 10;
 
-Id_ref = 5;
-Iq_ref = 10;
-f_ref = 150;
+Id_ref = 4; %0; %5;
+Iq_ref = 0; %10;
+f_ref = 150; %150;
 
-alpha = 0.04;
+alpha = 0.2; %0.04;
 K1 = alpha*L/Ts;
 K2 = exp(-Ts*R/L);
 
-Udol = UD_MAX/2;
+Udol = 0.1; %UD_MAX/2;
 Uqol = 0;
+
+tau_fil = 11.9e-6;
 
 
 
