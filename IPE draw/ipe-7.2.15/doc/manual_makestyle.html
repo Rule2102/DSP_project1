@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<!-- XML file produced from file: manual.tex
+     using Hyperlatex v 15.02 (c) Otfried Cheong
+     on Emacs 25.2.2, Sun Apr 26 13:04:17 2020 -->
+<head>
+<title>Ipe Manual -- 6.1 Make your own stylesheet!</title>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,
+    initial-scale=1" /><link rel="stylesheet" href="manual.css" />
+<style type="text/css">
+.tex-maketitle { text-align: center; }
+div.tex-abstract { margin-left: 20%; margin-right: 10%; }
+h3.tex-abstract  { text-align: center; }
+div.tex-verse, div.tex-quote, div.tex-quotation, div.tex-math {
+  margin-left : 10%; 
+  margin-right : 10%;
+}
+.tex-normalsize { font-size: medium; }
+.tex-large { font-size: large; }
+.tex-Large { font-size: x-large; }
+.tex-LARGE { font-size: xx-large; }
+.tex-huge { font-size: xx-large; }
+.tex-Huge { font-size: xx-large; }
+.tex-small { font-size: small; }
+.tex-footnotesize { font-size: x-small; }
+.tex-scriptsize { font-size: x-small; }
+.tex-tiny { font-size: xx-small; }
+.tex-emph { font-style: italic; }
+.tex-strong { font-weight: bold; }
+.tex-bf { font-weight: bold; }
+.tex-it { font-style: italic; }
+.tex-tt { font-family: monospace; }
+.tex-underline { text-decoration: underline; }
+.tex-sf { font: sans-serif; }
+.tex-sc { font-variant: small-caps; }
+.tex-center { text-align: center; }
+.tex-mbox { white-space: nowrap; }
+.tex-verbatim, .tex-example {
+  border-radius: 16px;
+  box-shadow: #387BBE 0px 0px 12px 0px;
+  padding: 1em 1em;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+dl.tex-description {
+  padding-left: 2em;
+  padding-right: 2em;
+}
+dl.tex-description dt {
+  float: left;
+  clear: left;
+  color: green;
+  width: 200px;
+}
+dl.tex-description dd {
+  margin-left: 200px;
+  margin-right: 100px;
+}
+</style>
+
+</head>
+<body bgcolor="#ffffe6">
+<div data-role="page">
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="manual_29.html"><img border="0" alt="6.2 Stylesheet theory" src="next.png"></a></td><td bgcolor="#99ccff"><a href="manual_stylesheets.html"><img border="0" alt="6 Stylesheets" src="up.png"></a></td><td bgcolor="#99ccff"><img alt="" src="blank.png"></td><td align="center" bgcolor="#99ccff" width="100%"><span class="tex-bf">6.1 Make your own stylesheet!</span></td></tr></table>
+<div data-role="content">
+<h2>6.1 Make your own stylesheet!</h2>
+<p>So you are ready to roll your own stylesheet, to have the colors and
+pen widths you've always wanted?  Here you go:
+<p>First, decide on a name for your stylesheet.  In this section, let's
+pick the name "personal".
+<p>Open an Ipe document (or make a new one and save it in a file), then 
+start up your favorite text editor and create the file
+<span class="tex-emph">personal.isy</span>.  The file must be in the <span class="tex-strong">the same folder</span>
+as your Ipe document!
+<p>Enter the following contents into the file, and save it:
+<pre class="tex-verbatim">
+&lt;ipestyle name="personal"&gt;
+&lt;color name="yellowgreen" value="0.604 0.804 0.196"/&gt;
+&lt;/ipestyle&gt;
+</pre>
+(The <code>name</code> attribute in the first line must match the filename,
+without the extension <code>.isy</code>.)
+<p>In Ipe, use <span class="tex-emph">Style sheets</span> from the <span class="tex-emph">Edit</span> menu to bring up
+the stylesheet dialog.  Press the <span class="tex-emph">Add</span> button, and select your
+file <span class="tex-emph">personal.isy</span>.  You'll see <span class="tex-emph">personal</span> appear at the
+top of the list of stylesheets.  Click Ok to confirm adding the
+stylesheet.
+<p>You will notice that a new color named "yellowgreen" is now
+available in the dropdown for stroke and fill color.
+Congratulations&mdash;you made your first stylesheet!
+<p>You can now add colors, pen widths, and sizes for symbols (markers),
+arrows, and the grids, by imitating the following examples:
+<pre class="tex-verbatim">
+&lt;pen name="light" value="0.7"/&gt;
+&lt;symbolsize name="giant" value="20"/&gt;
+&lt;arrowsize name="small" value="6"/&gt;
+&lt;gridsize name="10 pts" value="10"/&gt;
+&lt;anglesize name="20 deg" value="20"/&gt;
+</pre>
+Each line contains the symbolic&nbsp;<code>name</code>, and an absolute numeric
+value in&nbsp;<code>value</code>.  The name must start with a letter (grid size
+and angle size are exceptions).
+<p>To add a definition, update the file <span class="tex-emph">personal.isy</span> in your text
+editor, then use <span class="tex-emph">Update style sheets</span> from the <span class="tex-emph">Edit</span>
+menu. This will cause Ipe to read the file again, and to replace the
+copy of the stylesheet inside your document with this newest version.
+<p>This way, you can quickly test out new definitions by editing the
+stylesheet in your text editor, and pressing <code>Ctrl+Shift+U</code> in
+Ipe to try out the new definitions.
+<p>You may wonder how to get your favorite colors right, so here is a
+little trick:  draw a small box in Ipe, then press the absolute stroke
+color button (the top-left button in the <span class="tex-emph">Properties</span> panel).  It
+will allow you to select a color using a graphical user interface.
+Once you have found the right color, apply it to the box (by selecting
+<span class="tex-emph">&lt;absolute&gt;</span> in the stroke color selector), then right-click on
+the box and select <span class="tex-emph">Edit as XML</span>. A dialog will appear showing
+the current definition of the box in Ipe's internal XML format, like
+this:
+<pre class="tex-verbatim">
+&lt;path stroke="0.561 0.349 0.008" pen="ultrafat"&gt;
+64 816 m
+64 800 l
+80 800 l
+80 816 l
+h
+&lt;/path&gt;
+</pre>
+You can now copy the color definition (in this case <code>"0.561 0.349
+  0.008"</code>, a nice shade of brown) to your stylesheet.
+<p>You can find inspiration for more colors in the <span class="tex-emph">colors.isy</span>
+stylesheet in Ipe's <span class="tex-emph">styles</span> folder. It defines all the colors of
+the X11 color database&mdash;you could make a selection of these for your
+own use.
+<p>There is much more you can do with stylesheets.  Have a look in the
+stylesheets that come with Ipe for some inspiration, or keep reading
+this chapter and the <a href="manual_presentations.html">next</a>.  The ultimate
+reference is, of course, the <a href="manual_ipestyle.html">description of the stylesheet file
+  format</a>.
+</div>
+</div></body></html>
