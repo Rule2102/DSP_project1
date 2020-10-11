@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<!-- XML file produced from file: manual.tex
+     using Hyperlatex v 15.02 (c) Otfried Cheong
+     on Emacs 25.2.2, Sun Apr 26 13:04:17 2020 -->
+<head>
+<title>Ipe Manual -- 6 Stylesheets</title>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,
+    initial-scale=1" /><link rel="stylesheet" href="manual.css" />
+<style type="text/css">
+.tex-maketitle { text-align: center; }
+div.tex-abstract { margin-left: 20%; margin-right: 10%; }
+h3.tex-abstract  { text-align: center; }
+div.tex-verse, div.tex-quote, div.tex-quotation, div.tex-math {
+  margin-left : 10%; 
+  margin-right : 10%;
+}
+.tex-normalsize { font-size: medium; }
+.tex-large { font-size: large; }
+.tex-Large { font-size: x-large; }
+.tex-LARGE { font-size: xx-large; }
+.tex-huge { font-size: xx-large; }
+.tex-Huge { font-size: xx-large; }
+.tex-small { font-size: small; }
+.tex-footnotesize { font-size: x-small; }
+.tex-scriptsize { font-size: x-small; }
+.tex-tiny { font-size: xx-small; }
+.tex-emph { font-style: italic; }
+.tex-strong { font-weight: bold; }
+.tex-bf { font-weight: bold; }
+.tex-it { font-style: italic; }
+.tex-tt { font-family: monospace; }
+.tex-underline { text-decoration: underline; }
+.tex-sf { font: sans-serif; }
+.tex-sc { font-variant: small-caps; }
+.tex-center { text-align: center; }
+.tex-mbox { white-space: nowrap; }
+.tex-verbatim, .tex-example {
+  border-radius: 16px;
+  box-shadow: #387BBE 0px 0px 12px 0px;
+  padding: 1em 1em;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+dl.tex-description {
+  padding-left: 2em;
+  padding-right: 2em;
+}
+dl.tex-description dt {
+  float: left;
+  clear: left;
+  color: green;
+  width: 200px;
+}
+dl.tex-description dd {
+  margin-left: 200px;
+  margin-right: 100px;
+}
+</style>
+
+</head>
+<body bgcolor="#ffffe6">
+<div data-role="page">
+<table width="100%" cellpadding=0 cellspacing=2><tr>
+    <td bgcolor="#99ccff"><a href="manual_presentations.html"><img border="0" alt="7 Presentations" src="next.png"></a></td><td bgcolor="#99ccff"><a href="manual.html"><img border="0" alt="Top" src="up.png"></a></td><td bgcolor="#99ccff"><a href="manual_21.html"><img border="0" alt="5 Snapping" src="previous.png"></a></td><td align="center" bgcolor="#99ccff" width="100%"><span class="tex-bf">6 Stylesheets</span></td></tr></table>
+<div data-role="content">
+<h1>6 Stylesheets</h1>
+
+<p>The symbolic attributes appearing in an Ipe document are translated to
+absolute values for rendering by a <span class="tex-emph">stylesheet</span> that is attached
+to the document.  Documents can have multiple "cascaded"
+stylesheets, the sheets form a stack, and symbols are looked up from
+top to bottom.  At the bottom of any stylesheet cascade is always the
+minimal <span class="tex-emph">standard</span> style sheet, which is built into Ipe.  
+<p>When you create a new empty document, it automatically gets a copy of
+this standard style sheet (which does little more than define the
+"normal" attribute for each kind of attribute).  In addition, Ipe
+inserts a predefined list of stylesheets.  The list of these
+stylesheets can be <a href="manual_46.html">customized</a> using an ipelet,
+using Ipe's command line options, and an environment variable.  By
+default, a new document gets the stylesheet <span class="tex-emph">basic</span> that comes
+with Ipe.
+<p>The stylesheet dialog (in the <span class="tex-emph">Edit</span> menu under
+<span class="tex-emph">Stylesheets</span>) allows you to inspect the cascade of stylesheets
+associated with your document, to add and remove stylesheets, and to
+change their order.  You can also save individual stylesheets.
+<p>The stylesheets of your document also determine the symbolic choices
+you have in the Ipe user interface.  If you feel that Ipe does not
+offer you the right choice of colors, pen widths, etc., you are ready
+to make your own style sheet!
+
+<ul>
+<li><a href="manual_makestyle.html">6.1 Make your own stylesheet!</a>
+<li><a href="manual_29.html">6.2 Stylesheet theory</a>
+<li><a href="manual_30.html">6.3 Symbols</a>
+<li><a href="manual_31.html">6.4 Decorations</a>
+<li><a href="manual_32.html">6.5 More about stylesheets</a>
+</ul>
+</div>
+</div></body></html>
