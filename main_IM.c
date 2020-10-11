@@ -721,8 +721,8 @@ __interrupt void dmach1_isr(void)
     dIq[1] = dIq[0];
 
     // Open loop testing
-    Ud[0] = Udq_max/2;
-    Uq[0] = 0.0f; //UQ_MAX;
+    //Ud[0] = Udq_max/2;
+    //Uq[0] = 0.0f; //UQ_MAX;
 
     // Inverse Park transform
     Ualpha = Ud[0] * _cos[1] - Uq[0] * _sin[1];

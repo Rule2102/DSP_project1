@@ -1,4 +1,4 @@
-Model motor
+Model bldc
 
 REM *****************************************:
 REM * Common entries:
@@ -8,7 +8,50 @@ REM Setting the simulation time step...
 rtds_write 0x00000000 0x00000050
 
 REM Module block enable
-rtds_write 0x00000003 0x00010000
+rtds_write 0x00000003 0x00010001
+rtds_file_write 0x00820000 pmsm_sr_imem.txt
+rtds_file_write 0x00810010 pmsm_sr_gprst.txt
+rtds_write 0x00810000 0x00000004
+rtds_write 0x00810001 0x00000006
+rtds_write 0x00810400 0x41100000
+rtds_write 0x00810401 0x00000000
+rtds_write 0x00810402 0x3F7FFB78
+rtds_write 0x00810403 0x70398000
+rtds_write 0x00810404 0x3F7FFB78
+rtds_write 0x00810405 0x70398000
+rtds_write 0x00810406 0x3506368D
+rtds_write 0x00810407 0x0CD28000
+rtds_write 0x00810408 0x3890F1F8
+rtds_write 0x00810409 0xCCAB0000
+rtds_write 0x0081040A 0x3506368D
+rtds_write 0x0081040B 0x0CD28000
+rtds_write 0x0081040C 0x43930F0F
+rtds_write 0x0081040D 0x0F0F0000
+rtds_write 0x0081040E 0x43930F0F
+rtds_write 0x0081040F 0x0F0F0000
+rtds_write 0x00810410 0x3DEC56D5
+rtds_write 0x00810411 0xCFAAC000
+rtds_write 0x00800001 5e-07
+rtds_write 0x00800011 0.0967741935483871
+rtds_write 0x00800012 0.16666666666666666
+rtds_write 0x00800017 5.0
+rtds_write 0x00800005 0x00000000
+rtds_write 0x00800020 0x00000000
+rtds_write 0x0080001E 0.0
+rtds_write 0x0080001F 6.0
+rtds_write 0x00800013 0.006283185307179587
+rtds_write 0x00800014 1000.0
+rtds_write 0x00800015 0x000003E8
+rtds_write 0x00800016 0.001
+rtds_write 0x00800021 0x00000010
+rtds_write 0x00800023 0x00000000
+rtds_write 0x00800022 0x00000001
+rtds_write 0x0080002B 1.0
+rtds_write 0x0080002C 0.015707963267948963
+rtds_write 0x0080002D 0x00000000
+rtds_write 0x0080002E 0x00000000
+rtds_write 0x00800026 0.0
+rtds_write 0x00800027 1.0
 
 REM LUT solver inputs...
 rtds_write 0x01000000 0x00000000
@@ -27,7 +70,7 @@ rtds_file_write 0x08180000 SPC0_red_table.txt
 
 rtds_write 0x08100020 0x00000004
 rtds_write 0x08100021 0x00000003
-rtds_write 0x08100023 0x00000001
+rtds_write 0x08100023 0x00000000
 rtds_write 0x08100024 0x00000000
 rtds_write 0x08100025 0x00000000
 rtds_write 0x08100026 0x00000000
@@ -48,7 +91,7 @@ rtds_file_write 0x08140000 igbt_leg_imem.txt
 rtds_file_write 0x08142000 igbt_leg_lut.txt
 rtds_write 0x08100040 0x00000004
 rtds_write 0x08100041 0x00000003
-rtds_write 0x08100043 0x00000001
+rtds_write 0x08100043 0x00000000
 rtds_write 0x08100044 0x00000000
 rtds_write 0x08100045 0x00000000
 rtds_write 0x08100046 0x00000000
@@ -69,7 +112,7 @@ rtds_file_write 0x08148000 igbt_leg_imem.txt
 rtds_file_write 0x0814A000 igbt_leg_lut.txt
 rtds_write 0x08100060 0x00000004
 rtds_write 0x08100061 0x00000003
-rtds_write 0x08100063 0x00000001
+rtds_write 0x08100063 0x00000000
 rtds_write 0x08100064 0x00000000
 rtds_write 0x08100065 0x00000000
 rtds_write 0x08100066 0x00000000
@@ -108,7 +151,7 @@ REM SPC0 Contactors initialization...
 
 REM SPC0 GDS compensation settings...
 rtds_write 0x080C0000 0x00000001
-rtds_write 0x080C0001 0x00000005
+rtds_write 0x080C0001 0x00000003
 rtds_write 0x080C0004 0x3C4CCCCC
 rtds_write 0x080C0005 0xCCCD0000
 rtds_write 0x08100000 0x00000050
@@ -254,10 +297,10 @@ REM Setting the capture sample step...
 REM post SP Init calculation...
 rtds_write  
 rtds_write 0x00000041 0x000011C1
-rtds_write 0x00000005 0x00000000
+rtds_write 0x00000005 0x00000002
 rtds_write 0x00000043 0x00002710
 rtds_write 0x00000042 0x000001F3
-rtds_write 0x0000000A 0x00000000
+rtds_write 0x0000000A 0x00000001
 
 
 REM CoProcessors uBlaze_1, uBlaze_2 and uBlaze_3 configuration
@@ -278,6 +321,9 @@ glbl_write 0xFFFFFF1C 0xe1a0f002
 glbl_write 0x00000000 0xe3e0f0ff
 glbl_write 0xf8000244 0x2
 glbl_write 0xf8000244 0x22
+glbl_write 0xf8000244 0x20
+glbl_write 0xf8000244 0x0
+glbl_file_write 0xfffc0000 user_sp_cpu_0_imem.bin
 
 
 REM special case for HIL402 for eth ve and SV
@@ -297,6 +343,7 @@ sys_command 0x1
 REM enable ETH0 Intr on Core0 CPU
 glbl_write 0xF8F01834 0x01010101
 glbl_write 0x40800000 0x7
+glbl_write 0xfffffff0 0xfffc0000
 
 
 REM Restart counter for collected Linux OS communication apps

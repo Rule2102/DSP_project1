@@ -15,7 +15,7 @@
     </sim_setup>
     <pesb>
         <cell>
-            <name>VSI</name>
+            <name>Three Phase Inverter1</name>
             <type>
                 <cell>igbt_leg</cell>
             </type>
@@ -62,149 +62,310 @@
     </pesb>
     <variables>
         <cell>
-            <name>Ia.Lf_Ia</name>
+            <name>Ia1.Lf_Ia</name>
             <address>0</address>
             <type>current</type>
             <initial_condition>0.0</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
-            <name>Ib.Lf_Ia</name>
+            <name>Ia2.Lf_Ia</name>
             <address>1</address>
             <type>current</type>
             <initial_condition>0.0</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
-            <name>Ic.Lf_Ia</name>
+            <name>Ia3.Lf_Ia</name>
             <address>2</address>
             <type>current</type>
             <initial_condition>0.0</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
-            <name>L2</name>
+            <name>v_ab</name>
             <address>3</address>
-            <type>current</type>
-            <initial_condition>0.0</initial_condition>
+            <type>voltage</type>
+            <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
-            <name>L3</name>
+            <name>v_al</name>
             <address>4</address>
-            <type>current</type>
-            <initial_condition>0.0</initial_condition>
+            <type>voltage</type>
+            <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
-            <name>VSI.IGBT Leg1.v1</name>
+            <name>v_bc</name>
+            <address>5</address>
+            <type>voltage</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>v_be</name>
+            <address>6</address>
+            <type>voltage</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>Three Phase Inverter1.IGBT Leg1.v1</name>
             <address>385</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>VSI.IGBT Leg1.v2</name>
+            <name>Three Phase Inverter1.IGBT Leg1.v2</name>
             <address>386</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>VSI.IGBT Leg2.v1</name>
+            <name>Three Phase Inverter1.IGBT Leg2.v1</name>
             <address>393</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>VSI.IGBT Leg2.v2</name>
+            <name>Three Phase Inverter1.IGBT Leg2.v2</name>
             <address>394</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>VSI.IGBT Leg3.v1</name>
+            <name>Three Phase Inverter1.IGBT Leg3.v1</name>
             <address>401</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>VSI.IGBT Leg3.v2</name>
+            <name>Three Phase Inverter1.IGBT Leg3.v2</name>
             <address>402</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>Ia.Ia1</name>
-            <address>5</address>
-            <type>current</type>
-            <initial_condition>None</initial_condition>
-            <visible>False</visible>
-        </cell>
-        <cell>
-            <name>Ia</name>
-            <address>6</address>
+            <name>i_a</name>
+            <address>7</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
-            <name>Ib.Ia1</name>
-            <address>7</address>
-            <type>current</type>
-            <initial_condition>None</initial_condition>
-            <visible>False</visible>
-        </cell>
-        <cell>
-            <name>Ib</name>
+            <name>i_al</name>
             <address>8</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
-            <name>Ic.Ia1</name>
+            <name>i_b</name>
             <address>9</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
-            <visible>False</visible>
+            <visible>True</visible>
         </cell>
         <cell>
-            <name>Ic</name>
+            <name>i_be</name>
             <address>10</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
-            <name>VSI.IGBT Leg1.il</name>
+            <name>i_c</name>
+            <address>11</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>Ia1.Ia1</name>
+            <address>12</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>False</visible>
+        </cell>
+        <cell>
+            <name>Ia1</name>
+            <address>13</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>Ia2.Ia1</name>
+            <address>14</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>False</visible>
+        </cell>
+        <cell>
+            <name>Ia2</name>
+            <address>15</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>Ia3.Ia1</name>
+            <address>16</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>False</visible>
+        </cell>
+        <cell>
+            <name>Ia3</name>
+            <address>17</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>Three Phase Inverter1.IGBT Leg1.il</name>
             <address>384</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>VSI.IGBT Leg2.il</name>
+            <name>Three Phase Inverter1.IGBT Leg2.il</name>
             <address>392</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>VSI.IGBT Leg3.il</name>
+            <name>Three Phase Inverter1.IGBT Leg3.il</name>
             <address>400</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>Vin</name>
+            <name>Vs1</name>
             <address>33280</address>
             <type>voltage</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>i_als</name>
+            <address>32768</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>i_bes</name>
+            <address>32769</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>i_ds</name>
+            <address>32770</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>i_qs</name>
+            <address>32771</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>psi_als</name>
+            <address>32772</address>
+            <type>flux</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>psi_bes</name>
+            <address>32773</address>
+            <type>flux</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>psi_ds</name>
+            <address>32774</address>
+            <type>flux</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>psi_qs</name>
+            <address>32775</address>
+            <type>flux</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>machine electrical torque</name>
+            <address>32776</address>
+            <type>torque</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>machine mechanical torque</name>
+            <address>32777</address>
+            <type>torque</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>machine mechanical speed</name>
+            <address>32778</address>
+            <type>angular speed</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>machine mechanical angle</name>
+            <address>32779</address>
+            <type>angle</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>machine sine encoder A</name>
+            <address>32780</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>machine sine encoder B</name>
+            <address>32781</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>machine resolver A</name>
+            <address>32782</address>
+            <type>current</type>
+            <initial_condition>None</initial_condition>
+            <visible>True</visible>
+        </cell>
+        <cell>
+            <name>machine resolver B</name>
+            <address>32783</address>
+            <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
@@ -342,6 +503,18 @@
             <address>16</address>
         </cell>
         <cell>
+            <name>machine encoder A</name>
+            <address>256</address>
+        </cell>
+        <cell>
+            <name>machine encoder B</name>
+            <address>257</address>
+        </cell>
+        <cell>
+            <name>machine encoder Z</name>
+            <address>258</address>
+        </cell>
+        <cell>
             <name>HIL0 digital input 1</name>
             <address>512</address>
         </cell>
@@ -470,40 +643,48 @@
             <address>543</address>
         </cell>
         <cell>
-            <name>VSI.IGBT Leg1_vout_cmp</name>
+            <name>Three Phase Inverter1.IGBT Leg1_vout_cmp</name>
             <address>816</address>
         </cell>
         <cell>
-            <name>VSI.IGBT Leg2_vout_cmp</name>
+            <name>Three Phase Inverter1.IGBT Leg2_vout_cmp</name>
             <address>817</address>
         </cell>
         <cell>
-            <name>VSI.IGBT Leg3_vout_cmp</name>
+            <name>Three Phase Inverter1.IGBT Leg3_vout_cmp</name>
             <address>818</address>
-        </cell>
-        <cell>
-            <name>VSI.IGBT Leg1_stf</name>
-            <address>1036</address>
-        </cell>
-        <cell>
-            <name>VSI.IGBT Leg2_stf</name>
-            <address>1037</address>
-        </cell>
-        <cell>
-            <name>VSI.IGBT Leg3_stf</name>
-            <address>1038</address>
         </cell>
     </do_var_list>
     <sources>
         <cell>
-            <name>Vin</name>
+            <name>Vs1</name>
             <type>1phase</type>
             <address>[0]</address>
             <unit>V</unit>
-            <init_settings>['Constant', 0.5]</init_settings>
+            <init_settings>['Constant', 520.0]</init_settings>
         </cell>
     </sources>
     <machines>
+        <cell>
+            <name>BLDC</name>
+            <load_ctrl>True</load_ctrl>
+            <ext_mdl_load_type>speed</ext_mdl_load_type>
+            <site>0</site>
+            <init>
+                <friction_coef>0.0</friction_coef>
+                <mew_ratio>0.16666666666666666</mew_ratio>
+                <enc_ppr>1000</enc_ppr>
+                <res_pole_pairs>1</res_pole_pairs>
+                <constants>
+                        <cell>
+                            <address>61</address>
+                            <value>0.1154</value>
+                        </cell>
+                </constants>
+            </init>
+            <mch_speed>machine mechanical speed</mch_speed>
+            <mch_torque>machine electrical torque</mch_torque>
+        </cell>
     </machines>
     <pv_panels>
     </pv_panels>
@@ -515,15 +696,15 @@
         <spc_dtv>
             <cell>
                 <address>0</address>
-                <fqn>VSI.IGBT Leg1</fqn>
+                <fqn>Three Phase Inverter1.IGBT Leg1</fqn>
             </cell>
             <cell>
                 <address>1</address>
-                <fqn>VSI.IGBT Leg2</fqn>
+                <fqn>Three Phase Inverter1.IGBT Leg2</fqn>
             </cell>
             <cell>
                 <address>2</address>
-                <fqn>VSI.IGBT Leg3</fqn>
+                <fqn>Three Phase Inverter1.IGBT Leg3</fqn>
             </cell>
         </spc_dtv>
         <par_dtv>
@@ -533,13 +714,31 @@
 <!-- ******* SP DATA ******** -->
 
     <model_properties>
-        <execution_rates>[None]</execution_rates>
+        <execution_rates>[[[2e-06]]]</execution_rates>
     </model_properties>
 
 
+    <do_var_list>
+        <cell>
+            <name>Digital Probe1</name>
+            <address>2048</address>
+        </cell>
+
+    </do_var_list>
 
 
 
+    <dsp_monitors>
+        <monitor>
+            <type>user</type>
+            <cpu_idx>0</cpu_idx>
+            <execution_rates>[2e-06]</execution_rates>
+            <execution_rate_labels>['ER0 (2e-06)']</execution_rate_labels>
+            <timer_counters>[319]</timer_counters>
+
+            
+        </monitor>
+    </dsp_monitors>
 
     <streaming>
 
