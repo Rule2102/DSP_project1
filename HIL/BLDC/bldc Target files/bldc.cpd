@@ -714,31 +714,13 @@
 <!-- ******* SP DATA ******** -->
 
     <model_properties>
-        <execution_rates>[[[2e-06]]]</execution_rates>
+        <execution_rates>[None]</execution_rates>
     </model_properties>
 
 
-    <do_var_list>
-        <cell>
-            <name>Digital Probe1</name>
-            <address>2048</address>
-        </cell>
-
-    </do_var_list>
 
 
 
-    <dsp_monitors>
-        <monitor>
-            <type>user</type>
-            <cpu_idx>0</cpu_idx>
-            <execution_rates>[2e-06]</execution_rates>
-            <execution_rate_labels>['ER0 (2e-06)']</execution_rate_labels>
-            <timer_counters>[319]</timer_counters>
-
-            
-        </monitor>
-    </dsp_monitors>
 
     <streaming>
 

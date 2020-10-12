@@ -2,7 +2,7 @@
 <link_info>
    <banner>TMS320C2000 Linker PC v18.12.3.LTS</banner>
    <copyright>Copyright (c) 1996-2018 Texas Instruments Incorporated</copyright>
-   <link_time>0x5f803db1</link_time>
+   <link_time>0x5f83ea05</link_time>
    <link_errors>0x0</link_errors>
    <output_file>project1.out</output_file>
    <entry_point>
@@ -428,77 +428,77 @@
       <object_component id="oc-90">
          <name>.ebss</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd3e8</run_address>
+         <run_address>0xd74a</run_address>
          <size>0x18</size>
          <input_file_ref idref="fl-4"/>
       </object_component>
       <object_component id="oc-128">
          <name>.ebss</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd800</run_address>
+         <run_address>0xd700</run_address>
          <size>0x4a</size>
          <input_file_ref idref="fl-f"/>
       </object_component>
       <object_component id="oc-18b">
          <name>.ebss:_Id_avg_Ts</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd850</run_address>
+         <run_address>0xd76e</run_address>
          <size>0x4</size>
          <input_file_ref idref="fl-f"/>
       </object_component>
       <object_component id="oc-18c">
          <name>.ebss:_Iq_avg_Ts</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd854</run_address>
+         <run_address>0xd772</run_address>
          <size>0x4</size>
          <input_file_ref idref="fl-f"/>
       </object_component>
       <object_component id="oc-18d">
          <name>.ebss:_dId</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd860</run_address>
+         <run_address>0xd780</run_address>
          <size>0x4</size>
          <input_file_ref idref="fl-f"/>
       </object_component>
       <object_component id="oc-18e">
          <name>.ebss:_dIq</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd864</run_address>
+         <run_address>0xd784</run_address>
          <size>0x4</size>
          <input_file_ref idref="fl-f"/>
       </object_component>
       <object_component id="oc-18f">
          <name>.ebss:_Ud</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd858</run_address>
+         <run_address>0xd776</run_address>
          <size>0x4</size>
          <input_file_ref idref="fl-f"/>
       </object_component>
       <object_component id="oc-190">
          <name>.ebss:_Uq</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd85c</run_address>
+         <run_address>0xd77a</run_address>
          <size>0x4</size>
          <input_file_ref idref="fl-f"/>
       </object_component>
       <object_component id="oc-186">
          <name>.ebss:_theta</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd7f8</run_address>
+         <run_address>0xd762</run_address>
          <size>0x6</size>
          <input_file_ref idref="fl-f"/>
       </object_component>
       <object_component id="oc-189">
          <name>.ebss:__sin</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd7f0</run_address>
+         <run_address>0xd6f6</run_address>
          <size>0x8</size>
          <input_file_ref idref="fl-f"/>
       </object_component>
       <object_component id="oc-18a">
          <name>.ebss:__cos</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd7e8</run_address>
+         <run_address>0xd376</run_address>
          <size>0x8</size>
          <input_file_ref idref="fl-f"/>
       </object_component>
@@ -506,69 +506,69 @@
          <name>.ebss:_dataOut_1</name>
          <uninitialized>true</uninitialized>
          <run_address>0xd000</run_address>
-         <size>0x3e8</size>
+         <size>0x376</size>
          <input_file_ref idref="fl-f"/>
       </object_component>
       <object_component id="oc-19f">
          <name>.ebss:_dataOut_2</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd400</run_address>
-         <size>0x3e8</size>
+         <run_address>0xd380</run_address>
+         <size>0x376</size>
          <input_file_ref idref="fl-f"/>
       </object_component>
       <object_component id="oc-16e">
          <name>.ebss</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd84a</run_address>
+         <run_address>0xd768</run_address>
          <size>0x6</size>
          <input_file_ref idref="fl-26"/>
       </object_component>
       <object_component id="oc-1a1">
          <name>.ebss:__lock</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd7fe</run_address>
+         <run_address>0xd37e</run_address>
          <size>0x2</size>
          <input_file_ref idref="fl-27"/>
       </object_component>
       <object_component id="oc-1a6">
          <name>.ebss:__unlock</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd868</run_address>
+         <run_address>0xd6fe</run_address>
          <size>0x2</size>
          <input_file_ref idref="fl-27"/>
       </object_component>
       <object_component id="oc-184">
          <name>.ebss</name>
          <uninitialized>true</uninitialized>
-         <run_address>0xd86a</run_address>
+         <run_address>0xd77e</run_address>
          <size>0x1</size>
          <input_file_ref idref="fl-2a"/>
       </object_component>
       <object_component id="oc-1a3">
          <name>.econst:_PieVectTableInit</name>
-         <load_address>0xd86c</load_address>
-         <run_address>0xd86c</run_address>
+         <load_address>0xd788</load_address>
+         <run_address>0xd788</run_address>
          <size>0x1c0</size>
          <input_file_ref idref="fl-c"/>
       </object_component>
       <object_component id="oc-142">
          <name>.econst</name>
-         <load_address>0xda2c</load_address>
-         <run_address>0xda2c</run_address>
+         <load_address>0xd948</load_address>
+         <run_address>0xd948</run_address>
          <size>0x10</size>
          <input_file_ref idref="fl-1e"/>
       </object_component>
       <object_component id="oc-197">
          <name>.econst:_Zero</name>
-         <load_address>0xda3c</load_address>
-         <run_address>0xda3c</run_address>
+         <load_address>0xd958</load_address>
+         <run_address>0xd958</run_address>
          <size>0x4</size>
          <input_file_ref idref="fl-1d"/>
       </object_component>
       <object_component id="oc-13c">
          <name>.econst</name>
-         <load_address>0xda40</load_address>
-         <run_address>0xda40</run_address>
+         <load_address>0xd95c</load_address>
+         <run_address>0xd95c</run_address>
          <size>0x2</size>
          <input_file_ref idref="fl-1d"/>
       </object_component>
@@ -2379,7 +2379,7 @@
       <logical_group id="lg-9" display="no" color="cyan">
          <name>.ebss</name>
          <run_address>0xd000</run_address>
-         <size>0x86b</size>
+         <size>0x788</size>
          <contents>
             <object_component_ref idref="oc-90"/>
             <object_component_ref idref="oc-128"/>
@@ -2402,8 +2402,8 @@
       </logical_group>
       <logical_group id="lg-a" display="no" color="cyan">
          <name>.econst</name>
-         <load_address>0xd86c</load_address>
-         <run_address>0xd86c</run_address>
+         <load_address>0xd788</load_address>
+         <run_address>0xd788</run_address>
          <size>0x1d6</size>
          <contents>
             <object_component_ref idref="oc-1a3"/>
@@ -5060,27 +5060,23 @@
          <page_id>0x1</page_id>
          <origin>0xd000</origin>
          <length>0x1000</length>
-         <used_space>0xa41</used_space>
-         <unused_space>0x5bf</unused_space>
+         <used_space>0x95e</used_space>
+         <unused_space>0x6a2</unused_space>
          <attributes>RWIX</attributes>
          <usage_details>
             <allocated_space>
                <start_address>0xd000</start_address>
-               <size>0x86b</size>
+               <size>0x788</size>
                <logical_group_ref idref="lg-9"/>
             </allocated_space>
-            <available_space>
-               <start_address>0xd86b</start_address>
-               <size>0x1</size>
-            </available_space>
             <allocated_space>
-               <start_address>0xd86c</start_address>
+               <start_address>0xd788</start_address>
                <size>0x1d6</size>
                <logical_group_ref idref="lg-a"/>
             </allocated_space>
             <available_space>
-               <start_address>0xda42</start_address>
-               <size>0x5be</size>
+               <start_address>0xd95e</start_address>
+               <size>0x6a2</size>
             </available_space>
          </usage_details>
       </memory_area>
@@ -5778,17 +5774,17 @@
       </symbol>
       <symbol id="sm-158">
          <name>_CpuTimer2</name>
-         <value>0xd3f8</value>
+         <value>0xd75a</value>
          <object_component_ref idref="oc-90"/>
       </symbol>
       <symbol id="sm-159">
          <name>_CpuTimer0</name>
-         <value>0xd3e8</value>
+         <value>0xd74a</value>
          <object_component_ref idref="oc-90"/>
       </symbol>
       <symbol id="sm-15a">
          <name>_CpuTimer1</name>
-         <value>0xd3f0</value>
+         <value>0xd752</value>
          <object_component_ref idref="oc-90"/>
       </symbol>
       <symbol id="sm-1f2">
@@ -7278,7 +7274,7 @@
       </symbol>
       <symbol id="sm-43a">
          <name>_PieVectTableInit</name>
-         <value>0xd86c</value>
+         <value>0xd788</value>
          <object_component_ref idref="oc-1a3"/>
       </symbol>
       <symbol id="sm-43b">
@@ -7398,12 +7394,12 @@
       </symbol>
       <symbol id="sm-4f0">
          <name>_dIq</name>
-         <value>0xd864</value>
+         <value>0xd784</value>
          <object_component_ref idref="oc-18e"/>
       </symbol>
       <symbol id="sm-4f1">
          <name>_dId</name>
-         <value>0xd860</value>
+         <value>0xd780</value>
          <object_component_ref idref="oc-18d"/>
       </symbol>
       <symbol id="sm-4f2">
@@ -7413,32 +7409,32 @@
       </symbol>
       <symbol id="sm-4f3">
          <name>_Uq</name>
-         <value>0xd85c</value>
+         <value>0xd77a</value>
          <object_component_ref idref="oc-190"/>
       </symbol>
       <symbol id="sm-4f4">
          <name>_Ud</name>
-         <value>0xd858</value>
+         <value>0xd776</value>
          <object_component_ref idref="oc-18f"/>
       </symbol>
       <symbol id="sm-4f5">
          <name>_Uc</name>
-         <value>0xd836</value>
+         <value>0xd736</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-4f6">
          <name>_Ub</name>
-         <value>0xd834</value>
+         <value>0xd734</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-4f7">
          <name>_Ua</name>
-         <value>0xd832</value>
+         <value>0xd732</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-4f8">
          <name>_Sum_Id_avg_Ts</name>
-         <value>0xd81c</value>
+         <value>0xd71c</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-4f9">
@@ -7453,22 +7449,22 @@
       </symbol>
       <symbol id="sm-4fb">
          <name>_Iq_ref</name>
-         <value>0xd826</value>
+         <value>0xd726</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-4fc">
          <name>_cross_margin</name>
-         <value>0xd804</value>
+         <value>0xd704</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-4fd">
          <name>_theta_avg_Tpwm</name>
-         <value>0xd83c</value>
+         <value>0xd73c</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-4fe">
          <name>_f_ref</name>
-         <value>0xd842</value>
+         <value>0xd742</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-4ff">
@@ -7488,12 +7484,12 @@
       </symbol>
       <symbol id="sm-502">
          <name>_K2</name>
-         <value>0xd82c</value>
+         <value>0xd72c</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-503">
          <name>_K1</name>
-         <value>0xd82a</value>
+         <value>0xd72a</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-504">
@@ -7503,57 +7499,57 @@
       </symbol>
       <symbol id="sm-505">
          <name>_MS_CMPA_a</name>
-         <value>0xd80a</value>
+         <value>0xd70a</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-506">
          <name>_MS_CMPA_b</name>
-         <value>0xd80b</value>
+         <value>0xd70b</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-507">
          <name>_MS_CMPA_c</name>
-         <value>0xd80c</value>
+         <value>0xd70c</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-508">
          <name>_Iq</name>
-         <value>0xd822</value>
+         <value>0xd722</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-509">
          <name>_Id</name>
-         <value>0xd820</value>
+         <value>0xd720</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-50a">
          <name>_Ia_sum_Ts</name>
-         <value>0xd805</value>
+         <value>0xd705</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-50b">
          <name>_Ibeta_avg_Ts</name>
-         <value>0xd81a</value>
+         <value>0xd71a</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-50c">
          <name>_Ia_avg_Ts</name>
-         <value>0xd812</value>
+         <value>0xd712</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-50d">
          <name>_Id_ref</name>
-         <value>0xd824</value>
+         <value>0xd724</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-50e">
          <name>_Id_avg_Ts</name>
-         <value>0xd850</value>
+         <value>0xd76e</value>
          <object_component_ref idref="oc-18b"/>
       </symbol>
       <symbol id="sm-50f">
          <name>_Ualpha</name>
-         <value>0xd82e</value>
+         <value>0xd72e</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-510">
@@ -7573,67 +7569,67 @@
       </symbol>
       <symbol id="sm-513">
          <name>_theta</name>
-         <value>0xd7f8</value>
+         <value>0xd762</value>
          <object_component_ref idref="oc-186"/>
       </symbol>
       <symbol id="sm-514">
          <name>_dtheta</name>
-         <value>0xd83e</value>
+         <value>0xd73e</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-515">
          <name>_MS_CMPB_a</name>
-         <value>0xd80d</value>
+         <value>0xd70d</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-516">
          <name>_MS_CMPB_b</name>
-         <value>0xd80e</value>
+         <value>0xd70e</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-517">
          <name>_MS_CMPB_c</name>
-         <value>0xd80f</value>
+         <value>0xd70f</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-518">
          <name>_pom2</name>
-         <value>0xd846</value>
+         <value>0xd746</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-519">
          <name>_pom1</name>
-         <value>0xd844</value>
+         <value>0xd744</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-51a">
          <name>_canPrint</name>
-         <value>0xd810</value>
+         <value>0xd710</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-51b">
          <name>_Ib_sum_Ts</name>
-         <value>0xd806</value>
+         <value>0xd706</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-51c">
          <name>_alpha</name>
-         <value>0xd828</value>
+         <value>0xd728</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-51d">
          <name>__sin</name>
-         <value>0xd7f0</value>
+         <value>0xd6f6</value>
          <object_component_ref idref="oc-189"/>
       </symbol>
       <symbol id="sm-51e">
          <name>_Iq_avg_Ts</name>
-         <value>0xd854</value>
+         <value>0xd772</value>
          <object_component_ref idref="oc-18c"/>
       </symbol>
       <symbol id="sm-51f">
          <name>_Ib_avg_Ts</name>
-         <value>0xd814</value>
+         <value>0xd714</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-520">
@@ -7643,12 +7639,12 @@
       </symbol>
       <symbol id="sm-521">
          <name>_dma_count</name>
-         <value>0xd848</value>
+         <value>0xd748</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-522">
          <name>_Ubeta</name>
-         <value>0xd830</value>
+         <value>0xd730</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-523">
@@ -7663,37 +7659,37 @@
       </symbol>
       <symbol id="sm-525">
          <name>_dataOut_2</name>
-         <value>0xd400</value>
+         <value>0xd380</value>
          <object_component_ref idref="oc-19f"/>
       </symbol>
       <symbol id="sm-526">
          <name>_n_seg</name>
-         <value>0xd800</value>
+         <value>0xd700</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-527">
          <name>_PWM_nextSeg_min</name>
-         <value>0xd803</value>
+         <value>0xd703</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-528">
          <name>_Ic_avg_Ts</name>
-         <value>0xd816</value>
+         <value>0xd716</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-529">
          <name>__cos</name>
-         <value>0xd7e8</value>
+         <value>0xd376</value>
          <object_component_ref idref="oc-18a"/>
       </symbol>
       <symbol id="sm-52a">
          <name>_theta_avg_Ts</name>
-         <value>0xd83a</value>
+         <value>0xd73a</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-52b">
          <name>_Ialpha_avg_Ts</name>
-         <value>0xd818</value>
+         <value>0xd718</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-52c">
@@ -7703,42 +7699,42 @@
       </symbol>
       <symbol id="sm-52d">
          <name>_Sum_Iq_avg_Ts</name>
-         <value>0xd81e</value>
+         <value>0xd71e</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-52e">
          <name>_data_count</name>
-         <value>0xd840</value>
+         <value>0xd740</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-52f">
          <name>_Udq_max</name>
-         <value>0xd838</value>
+         <value>0xd738</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-530">
          <name>_PWM_nextSeg_max</name>
-         <value>0xd802</value>
+         <value>0xd702</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-531">
          <name>_PWM_CMP_a</name>
-         <value>0xd807</value>
+         <value>0xd707</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-532">
          <name>_PWM_dir</name>
-         <value>0xd801</value>
+         <value>0xd701</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-533">
          <name>_PWM_CMP_b</name>
-         <value>0xd808</value>
+         <value>0xd708</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-534">
          <name>_PWM_CMP_c</name>
-         <value>0xd809</value>
+         <value>0xd709</value>
          <object_component_ref idref="oc-128"/>
       </symbol>
       <symbol id="sm-540">
@@ -7933,12 +7929,12 @@
       </symbol>
       <symbol id="sm-63b">
          <name>___TI_cleanup_ptr</name>
-         <value>0xd84c</value>
+         <value>0xd76a</value>
          <object_component_ref idref="oc-16e"/>
       </symbol>
       <symbol id="sm-63c">
          <name>___TI_enable_exit_profile_output</name>
-         <value>0xd84a</value>
+         <value>0xd768</value>
          <object_component_ref idref="oc-16e"/>
       </symbol>
       <symbol id="sm-63d">
@@ -7948,17 +7944,17 @@
       </symbol>
       <symbol id="sm-63e">
          <name>___TI_dtors_ptr</name>
-         <value>0xd84e</value>
+         <value>0xd76c</value>
          <object_component_ref idref="oc-16e"/>
       </symbol>
       <symbol id="sm-652">
          <name>__unlock</name>
-         <value>0xd868</value>
+         <value>0xd6fe</value>
          <object_component_ref idref="oc-1a6"/>
       </symbol>
       <symbol id="sm-653">
          <name>__lock</name>
-         <value>0xd7fe</value>
+         <value>0xd37e</value>
          <object_component_ref idref="oc-1a1"/>
       </symbol>
       <symbol id="sm-654">
@@ -7983,7 +7979,7 @@
       </symbol>
       <symbol id="sm-678">
          <name>_errno</name>
-         <value>0xd86a</value>
+         <value>0xd77e</value>
          <object_component_ref idref="oc-184"/>
       </symbol>
    </symbol_table>

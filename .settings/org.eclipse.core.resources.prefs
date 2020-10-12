@@ -1,4 +1,8 @@
 eclipse.preferences.version=1
+encoding//Debug/HIL/BLDC/bldc\ Target\ files/subdir_rules.mk=UTF-8
+encoding//Debug/HIL/BLDC/bldc\ Target\ files/subdir_vars.mk=UTF-8
+encoding//Debug/HIL/BLDC/bldc\ Target\ files/vhsp/subdir_rules.mk=UTF-8
+encoding//Debug/HIL/BLDC/bldc\ Target\ files/vhsp/subdir_vars.mk=UTF-8
 encoding//Debug/makefile=UTF-8
 encoding//Debug/objects.mk=UTF-8
 encoding//Debug/optimizerAssistant/opt_for_speed__0/makefile=UTF-8

@@ -370,7 +370,7 @@ void Configure_ePWM(void)
 
     EPwm4Regs.TBCTL.bit.CLKDIV =  0;           // CLKDIV=1 TBCLK=EPWMCLK/(HSPCLKDIV*CLKDIV)
     EPwm4Regs.TBCTL.bit.HSPCLKDIV = 0;         // HSPCLKDIV=1
-    EPwm4Regs.TBCTL.bit.CTRMODE = 0;           // Up-down mode
+    EPwm4Regs.TBCTL.bit.CTRMODE = 0;           // Up mode
     EPwm4Regs.TBCTR = 0x0000;                  // Clear counter
     EPwm4Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
 
@@ -559,10 +559,9 @@ __interrupt void dmach1_isr(void)
     theta[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;          // Capture position
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
 
-    theta[0] = fmod(theta[0],2.0f*PI);
-
     int i_for = 0;
 
+    theta[0] = fmod(theta[0],2.0f*PI);
     if(theta[1]-theta[0]>= PI)
         for (i_for=UR;i_for>0;i_for--)
             {
@@ -579,7 +578,7 @@ __interrupt void dmach1_isr(void)
                 theta[i_for]-= 2*PI;
             }
     theta_enc[1] = theta_enc[0];
-    */
+*/
     dma_count++;
 
     if(dma_count == DMACNT_PRNT)

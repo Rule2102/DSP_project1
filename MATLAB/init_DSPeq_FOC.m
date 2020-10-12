@@ -56,7 +56,8 @@ Uqol = 0;                   % q axis voltage
 % parameters for measurements
 ISENSE_SCALE = 10;          % scaling factor for current measurement
 tau_fil = 5e-6;             % time const of low-pass filter
-ofst = 0;                   % offset (measurement error influence)
+ofst_a = -0.0188;           % offset for Ia (measurement error influence)
+ofst_b = -0.0042;           % offset for Ib (measurement error influence)
 
 % initial conditions
 Edq0_c = 1j*emf;                % complex electromotive force
