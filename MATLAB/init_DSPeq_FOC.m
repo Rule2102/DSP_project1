@@ -2,7 +2,7 @@
 clear all
 clc
 
-ur = 2;             % update rate
+ur = 8;             % update rate
 OVERSAMPLING = 1;   % logic variable to determine with/without oversampling
 
 Id_ref = 0;                 % reference current in d axis 
@@ -75,6 +75,15 @@ dmacnt_prnt = round(0.69*dmacnt_ref);                  % start printing in DSP (
 dmacnt_end = round(dmacnt_ref*1.2);        % number of regulation periods for simulation to run
 tend = dmacnt_end*Ts;               % simulation duration
 MAX_data_count = dmacnt_end - dmacnt_prnt;   % array length for DSP's RAM export
+
+if(ur==8)
+    alpha = 0.084;
+    dmacnt_prnt = 3000;
+    MAX_data_count = 850;
+    dmacnt_end = MAX_data_count + dmacnt_prnt;
+    tend = dmacnt_end*Ts;
+end
+    
 
 
 

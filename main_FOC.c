@@ -36,9 +36,9 @@
 #define ISENSE_OFFSET_A 1.50f //96f                     // 0A --> 1.5V + offset ADC-a
 #define ISENSE_OFFSET_B 1.50f //111f                     // 0A --> 1.5V + offset ADC-a
 
-#define MAX_data_count 443                          // Size of an array used for data storage
-#define DMACNT_REF 869                              // Set reference after DMACNT_REF regulation periods
-#define DMACNT_PRNT 600                             // Start printing after DMACNT_PRNT regulation periods
+#define MAX_data_count 443 //850                         // Size of an array used for data storage
+#define DMACNT_REF  869  //3478                          // Set reference after DMACNT_REF regulation periods
+#define DMACNT_PRNT 600  //3000                          // Start printing after DMACNT_PRNT regulation periods
 
 // Defines for IREG
 #define R 0.47f                                     // Motor resistance
@@ -92,7 +92,7 @@ float32 Id_ref = 0.0f;                          // Reference d current
 float32 Iq_ref = 7.0f;                          // Reference q current
 
 // IREG
-float32 alpha = 0.2f;                            // Gain for IREG
+float32 alpha = 0.2f; //0.084f;                            // Gain for IREG
 float32 K1, K2;                                  // Constants used for IREG
 
 // Voltages
@@ -556,29 +556,33 @@ __interrupt void dmach1_isr(void)
 {
     GpioDataRegs.GPCSET.bit.GPIO66 = 1;                       // Notify dmach1_isr start
 
-    theta[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;          // Capture position
+    theta_enc[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;        // Capture position
+    //theta[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;          // Capture position
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
 
     int i_for = 0;
-
+/*
     theta[0] = fmod(theta[0],2.0f*PI);
     if(theta[1]-theta[0]>= PI)
         for (i_for=UR;i_for>0;i_for--)
             {
                 theta[i_for]-= 2*PI;
             }
-/*
+*/
     // avoid using fmod
-    theta_enc[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;
+
     theta[0] += theta_enc[0] - theta_enc[1];
-    theta[0] *= (theta_enc[0]!=0);
-    if(theta[0] >= 2*PI)
-        for (i_for=UR;i_for>=0;i_for--)
+    if(theta_enc[0] <= 2*PI && theta_enc[0] >= 0)
+        theta[0] = theta_enc[0];
+    if(theta[0]>=2*PI)
+        theta[0]-=2*PI;
+    if(theta[1]-theta[0]>= PI)
+        for (i_for=UR;i_for>0;i_for--)
             {
                 theta[i_for]-= 2*PI;
             }
     theta_enc[1] = theta_enc[0];
-*/
+
     dma_count++;
 
     if(dma_count == DMACNT_PRNT)
