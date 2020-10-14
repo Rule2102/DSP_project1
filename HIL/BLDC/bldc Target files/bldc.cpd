@@ -672,13 +672,13 @@
             <site>0</site>
             <init>
                 <friction_coef>0.0</friction_coef>
-                <mew_ratio>0.16666666666666666</mew_ratio>
+                <mew_ratio>0.3333333333333333</mew_ratio>
                 <enc_ppr>1000</enc_ppr>
                 <res_pole_pairs>1</res_pole_pairs>
                 <constants>
                         <cell>
                             <address>61</address>
-                            <value>0.1154</value>
+                            <value>0.1322</value>
                         </cell>
                 </constants>
             </init>

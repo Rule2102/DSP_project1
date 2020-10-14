@@ -45,7 +45,7 @@
                 <external_torque_type>0</external_torque_type>
                 <load_source>0</load_source>
                 <load_type>1</load_type>
-                <machine_speed>282.743338823</machine_speed>
+                <machine_speed>565.4867</machine_speed>
                 <initial_speed>0.0</initial_speed>
                 <initial_angle>0.0</initial_angle>
                 <initial_encoder_offset>0.0</initial_encoder_offset>

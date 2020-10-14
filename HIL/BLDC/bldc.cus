@@ -38,13 +38,13 @@ SETTINGS_DIR = get_settings_dir_path()
                     <width>120</width>
                     <height>120</height>
                     <appearance><![CDATA[Flat]]></appearance>
-                    <state>Scope</state>
+                    <state>Capture</state>
                     <layout>None</layout>
                     <presets>
                         <active_capture_preset>Default</active_capture_preset>
                         <active_scope_preset>Default</active_scope_preset>
                         <capture name="Default">
-                            <time_interval>0.1</time_interval>
+                            <time_interval>1.1</time_interval>
                             <sample_rate>2000000.0</sample_rate>
                             <background_color>white</background_color>
                             <layout>Vertical</layout>
@@ -52,10 +52,34 @@ SETTINGS_DIR = get_settings_dir_path()
                             <analog_signals>
                             <analog>
                             <channel>0</channel>
-                            <name>machine mechanical angle</name>
+                            <name>Ia1</name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
+                            <coupling>False</coupling>
+                            <viewports>
+                                
+                           </viewports>
+                        </analog>
+                            <analog>
+                            <channel>1</channel>
+                            <name>i_qs</name>
+                            <is_locked>False</is_locked>
+                            <vertical_scale>Auto</vertical_scale>
+                            <vertical_offset>0</vertical_offset>
+                            <coupling>False</coupling>
+                            <viewports>
+                                
+                                <num_viewport>1</num_viewport>
+                                
+                           </viewports>
+                        </analog>
+                            <analog>
+                            <channel>2</channel>
+                            <name>i_ds</name>
+                            <is_locked>False</is_locked>
+                            <vertical_scale>Auto</vertical_scale>
+                            <vertical_offset>0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
                                 
@@ -65,37 +89,15 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             </analog_signals>
                             <digital_signals>
-                            <digital>
-                            <channel>0</channel>
-                            <name>HIL0 digital input 7</name>
-                            <is_locked>False</is_locked>
-                            <vertical_offset>0.0</vertical_offset>
-                            <viewports>
-                                
-                                <num_viewport>1</num_viewport>
-                                
-                           </viewports>
-                        </digital>
-                            <digital>
-                            <channel>1</channel>
-                            <name>machine encoder Z</name>
-                            <is_locked>False</is_locked>
-                            <vertical_offset>0.0</vertical_offset>
-                            <viewports>
-                                
-                                <num_viewport>1</num_viewport>
-                                
-                           </viewports>
-                        </digital>
                             </digital_signals>
                             <trigger>
                                 <device>0</device>
                                 <is_force>False</is_force>
-                                <type>Digital</type>
-                                <source>HIL0 digital input 7</source>
+                                <type>Analog</type>
+                                <source>i_qs</source>
                                 <edge>Rising edge</edge>
-                                <treshold>0.0</treshold>
-                                <offset>50.0</offset>
+                                <treshold>0.5</treshold>
+                                <offset>5.0</offset>
                                 <useFirstTrigger>True</useFirstTrigger>
                             </trigger>
                             <plotting_options in_use="False">
@@ -108,8 +110,8 @@ SETTINGS_DIR = get_settings_dir_path()
                             <layout>Grid</layout>
                             <legend>True</legend>
                             <show_viewports>2</show_viewports>
-                            <decimation>11</decimation>
-                            <time_base>0.01</time_base>
+                            <decimation>100</decimation>
+                            <time_base>0.1</time_base>
                             <analog_signals>
                             <analog>
                             <channel>0</channel>
@@ -130,6 +132,8 @@ SETTINGS_DIR = get_settings_dir_path()
                             <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
+                                
+                                <num_viewport>1</num_viewport>
                                 
                            </viewports>
                         </analog>
@@ -170,7 +174,7 @@ SETTINGS_DIR = get_settings_dir_path()
                             <channel>5</channel>
                             <name>i_qs</name>
                             <is_locked>False</is_locked>
-                            <vertical_scale>2</vertical_scale>
+                            <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
@@ -183,7 +187,7 @@ SETTINGS_DIR = get_settings_dir_path()
                             <channel>6</channel>
                             <name>i_ds</name>
                             <is_locked>False</is_locked>
-                            <vertical_scale>2</vertical_scale>
+                            <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
@@ -197,7 +201,7 @@ SETTINGS_DIR = get_settings_dir_path()
                             <name>psi_qs</name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
-                            <vertical_offset>0</vertical_offset>
+                            <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
                                 
@@ -222,33 +226,57 @@ SETTINGS_DIR = get_settings_dir_path()
                                 <source>machine mechanical angle</source>
                                 <edge>Rising edge</edge>
                                 <treshold>0.0</treshold>
-                                <offset>50</offset>
+                                <offset>50.0</offset>
                                 <useFirstTrigger>False</useFirstTrigger>
                             </trigger>
                         </scope>
                         </presets>
                     <capture>
-                        <time_interval>0.1</time_interval>
+                        <time_interval>1.1</time_interval>
                         <sample_rate>2000000.0</sample_rate>
                         <background_color>white</background_color>
                         <layout>Vertical</layout>
                         <legend>True</legend>
                         <trigger>
-                            <type>Digital</type>
-                            <source>HIL0 digital input 7</source>
+                            <type>Analog</type>
+                            <source>i_qs</source>
                             <edge>Rising edge</edge>
-                            <treshold>0.0</treshold>
-                            <offset>50.0</offset>
+                            <treshold>0.5</treshold>
+                            <offset>5.0</offset>
                             <useFirstTrigger>True</useFirstTrigger>
                         </trigger>
 
                         <analog_signals>
                             <analog>
                             <channel>0</channel>
-                            <name>machine mechanical angle</name>
+                            <name>Ia1</name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
+                            <coupling>False</coupling>
+                            <viewports>
+                                
+                           </viewports>
+                        </analog>
+                            <analog>
+                            <channel>1</channel>
+                            <name>i_qs</name>
+                            <is_locked>False</is_locked>
+                            <vertical_scale>Auto</vertical_scale>
+                            <vertical_offset>0</vertical_offset>
+                            <coupling>False</coupling>
+                            <viewports>
+                                
+                                <num_viewport>1</num_viewport>
+                                
+                           </viewports>
+                        </analog>
+                            <analog>
+                            <channel>2</channel>
+                            <name>i_ds</name>
+                            <is_locked>False</is_locked>
+                            <vertical_scale>Auto</vertical_scale>
+                            <vertical_offset>0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
                                 
@@ -259,34 +287,12 @@ SETTINGS_DIR = get_settings_dir_path()
                             </analog_signals>
 
                          <digital_signals>
-                            <digital>
-                            <channel>0</channel>
-                            <name>HIL0 digital input 7</name>
-                            <is_locked>False</is_locked>
-                            <vertical_offset>0.0</vertical_offset>
-                            <viewports>
-                                
-                                <num_viewport>1</num_viewport>
-                                
-                           </viewports>
-                        </digital>
-                            <digital>
-                            <channel>1</channel>
-                            <name>machine encoder Z</name>
-                            <is_locked>False</is_locked>
-                            <vertical_offset>0.0</vertical_offset>
-                            <viewports>
-                                
-                                <num_viewport>1</num_viewport>
-                                
-                           </viewports>
-                        </digital>
                             </digital_signals>
 
                     </capture>
 
                     <scope>
-                        <time_base>0.01 </time_base>
+                        <time_base>0.1 </time_base>
                         <background_color>white</background_color>
                         <layout>Grid</layout>
                         <legend>True</legend>
@@ -296,7 +302,7 @@ SETTINGS_DIR = get_settings_dir_path()
                             <source>machine mechanical angle</source>
                             <edge>Rising edge</edge>
                             <treshold>0.0</treshold>
-                            <offset>50</offset>
+                            <offset>50.0</offset>
                         </trigger>
 
                          <analog_signals>
@@ -319,6 +325,8 @@ SETTINGS_DIR = get_settings_dir_path()
                             <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
+                                
+                                <num_viewport>1</num_viewport>
                                 
                            </viewports>
                         </analog>
@@ -359,7 +367,7 @@ SETTINGS_DIR = get_settings_dir_path()
                             <channel>5</channel>
                             <name>i_qs</name>
                             <is_locked>False</is_locked>
-                            <vertical_scale>2</vertical_scale>
+                            <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
@@ -372,7 +380,7 @@ SETTINGS_DIR = get_settings_dir_path()
                             <channel>6</channel>
                             <name>i_ds</name>
                             <is_locked>False</is_locked>
-                            <vertical_scale>2</vertical_scale>
+                            <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
@@ -386,7 +394,7 @@ SETTINGS_DIR = get_settings_dir_path()
                             <name>psi_qs</name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
-                            <vertical_offset>0</vertical_offset>
+                            <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
                                 

@@ -2,7 +2,7 @@
 <link_info>
    <banner>TMS320C2000 Linker PC v18.12.3.LTS</banner>
    <copyright>Copyright (c) 1996-2018 Texas Instruments Incorporated</copyright>
-   <link_time>0x5f85570e</link_time>
+   <link_time>0x5f86f8f0</link_time>
    <link_errors>0x0</link_errors>
    <output_file>project1.out</output_file>
    <entry_point>
@@ -563,13 +563,13 @@
          <name>.TI.ramfunc:retain</name>
          <load_address>0x8000</load_address>
          <run_address>0x8000</run_address>
-         <size>0x4e2</size>
+         <size>0x4e6</size>
          <input_file_ref idref="fl-f"/>
       </object_component>
       <object_component id="oc-121">
          <name>.TI.ramfunc</name>
-         <load_address>0x84e2</load_address>
-         <run_address>0x84e2</run_address>
+         <load_address>0x84e6</load_address>
+         <run_address>0x84e6</run_address>
          <size>0x4</size>
          <input_file_ref idref="fl-e"/>
       </object_component>
@@ -2379,7 +2379,7 @@
          <name>.TI.ramfunc</name>
          <load_address>0x8000</load_address>
          <run_address>0x8000</run_address>
-         <size>0x4e6</size>
+         <size>0x4ea</size>
          <contents>
             <object_component_ref idref="oc-12a"/>
             <object_component_ref idref="oc-121"/>
@@ -3535,18 +3535,18 @@
          <page_id>0x0</page_id>
          <origin>0x8000</origin>
          <length>0x800</length>
-         <used_space>0x4e6</used_space>
-         <unused_space>0x31a</unused_space>
+         <used_space>0x4ea</used_space>
+         <unused_space>0x316</unused_space>
          <attributes>RWIX</attributes>
          <usage_details>
             <allocated_space>
                <start_address>0x8000</start_address>
-               <size>0x4e6</size>
+               <size>0x4ea</size>
                <logical_group_ref idref="lg-f"/>
             </allocated_space>
             <available_space>
-               <start_address>0x84e6</start_address>
-               <size>0x31a</size>
+               <start_address>0x84ea</start_address>
+               <size>0x316</size>
             </available_space>
          </usage_details>
       </memory_area>
@@ -7309,7 +7309,7 @@
       </symbol>
       <symbol id="sm-49c">
          <name>_F28x_usDelay</name>
-         <value>0x84e2</value>
+         <value>0x84e6</value>
          <object_component_ref idref="oc-121"/>
       </symbol>
       <symbol id="sm-4f2">

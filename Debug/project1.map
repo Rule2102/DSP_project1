@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v18.12.3                    
 ******************************************************************************
->> Linked Tue Oct 13 09:28:14 2020
+>> Linked Wed Oct 14 15:11:12 2020
 
 OUTPUT FILE NAME:   <project1.out>
 ENTRY POINT SYMBOL: "code_start"  address: 00000000
@@ -14,7 +14,7 @@ MEMORY CONFIGURATION
 PAGE 0:
   BEGIN                 00000000   00000002  00000002  00000000  RWIX
   RAMM0                 00000123   000002dd  00000051  0000028c  RWIX
-  RAMLS0                00008000   00000800  000004e6  0000031a  RWIX
+  RAMLS0                00008000   00000800  000004ea  00000316  RWIX
   RAMLS1                00008800   00000800  000007ed  00000013  RWIX
   RAMLS2                00009000   00000800  00000777  00000089  RWIX
   RAMLS3                00009800   00000800  00000000  00000800  RWIX
@@ -218,9 +218,9 @@ ramgs0     1    0000c000    00000020     UNINITIALIZED
                   0000c000    00000020     main_FOC.obj (ramgs0)
 
 .TI.ramfunc 
-*          0    00008000    000004e6     
-                  00008000    000004e2     main_FOC.obj (.TI.ramfunc:retain)
-                  000084e2    00000004     F2837xD_usDelay.obj (.TI.ramfunc)
+*          0    00008000    000004ea     
+                  00008000    000004e6     main_FOC.obj (.TI.ramfunc:retain)
+                  000084e6    00000004     F2837xD_usDelay.obj (.TI.ramfunc)
 
 GETBUFFER 
 *          0    0003f800    00000000     DSECT
@@ -637,7 +637,7 @@ MODULE SUMMARY
        ------                           ----   ----------------   ------------------
     .\
        F2837xD_GlobalVariableDefs.obj   0      0                  8695              
-       main_FOC.obj                     1949   51                 1928              
+       main_FOC.obj                     1953   51                 1928              
        F2837xD_DefaultISR.obj           1413   0                  0                 
        F2837xD_SysCtrl.obj              1194   0                  0                 
        F2837xD_Dma.obj                  1028   0                  0                 
@@ -649,7 +649,7 @@ MODULE SUMMARY
        F2837xD_usDelay.obj              4      0                  0                 
        F2837xD_CodeStartBranch.obj      2      0                  0                 
     +--+--------------------------------+------+------------------+--------------------+
-       Total:                           6488   499                10647             
+       Total:                           6492   499                10647             
                                                                                     
     C:/ti/ccs920/ccs/tools/compiler/ti-cgt-c2000_18.12.3.LTS/lib/rts2800_fpu32.lib
        e_log2f.c.obj                    202    16                 0                 
@@ -677,7 +677,7 @@ MODULE SUMMARY
                                                                                     
        Stack:                           0      0                  512               
     +--+--------------------------------+------+------------------+--------------------+
-       Grand Total:                     7242   2409               11170             
+       Grand Total:                     7246   2409               11170             
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
@@ -1166,7 +1166,7 @@ abs   ffffffff  .text
 1     00000d00  _EmuBMode                             
 1     00000d01  _EmuBootPins                          
 0     000096d6  _EnableInterrupts                     
-0     000084e2  _F28x_usDelay                         
+0     000084e6  _F28x_usDelay                         
 0     0000b528  _FLASH_CORRECTABLE_ERROR_ISR          
 1     00016502  _FPU32atan2HalfPITable                
 1     00016506  _FPU32atan2Table                      
@@ -1432,7 +1432,7 @@ page  address   name
 0     00000ce0  _Cla1SoftIntRegs                      
 0     00008000  _adca1_isr                            
 0     0000801d  _dmach1_isr                           
-0     000084e2  _F28x_usDelay                         
+0     000084e6  _F28x_usDelay                         
 0     00008800  _InitSysCtrl                          
 0     00008820  _InitPeripheralClocks                 
 0     000088a4  _DisablePeripheralClocks              

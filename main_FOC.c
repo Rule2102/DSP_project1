@@ -27,14 +27,14 @@
 #define UDT ((float32)(DEADTIME)/(float32)(PWM_TBPRD)*E*4.0f/PI)         // Constant for dead time compensation (4/pi for first harmonic's peak)
 
 // Defines for measurements (position & current)
-#define P 6.0f                                      // Machine's number of pole pairs
+#define P 3.0f                                      // Machine's number of pole pairs
 #define ENC_LINE 1000                               // Number of encoder lines
 #define ANG_CNV (2*PI*P/(float32)(4*ENC_LINE))      // Constant for angle calculation (conversion from QEP counter)
 #define INV_UR_1 (1/(float32)(UR+1))                // Used for angle averaging on switching period
 #define ADC_SCALE 0.0007326f                        // ADC scaling: 3.0 --> 4095 (zero ADC offset assumed)
 #define ISENSE_SCALE 10.0f                          // [A] --> [V] (ISENSE_SCALE)A=1V
-#define ISENSE_OFFSET_A 1.50f //96f                     // 0A --> 1.5V + offset ADC-a
-#define ISENSE_OFFSET_B 1.50f //111f                     // 0A --> 1.5V + offset ADC-a
+#define ISENSE_OFFSET_A (1.50f + 0.00309f + 0.00013f) //96f                     // 0A --> 1.5V + offset ADC-a
+#define ISENSE_OFFSET_B (1.50f + 0.00448f + 0.00012f)//111f                     // 0A --> 1.5V + offset ADC-a
 
 #define MAX_data_count 443 //850                         // Size of an array used for data storage
 #define DMACNT_REF  869  //3478                          // Set reference after DMACNT_REF regulation periods
@@ -750,8 +750,8 @@ __interrupt void dmach1_isr(void)
     dIq[1] = dIq[0];
 
     // Open loop testing
-    //Ud[0] = 0;
-    //Uq[0] = 0;
+    //Ud[0] = 0.0f;
+    //Uq[0] = 0.0f;
 
     // Inverse Park transform
     Ualpha = Ud[0] * _cos[1] - Uq[0] * _sin[1];
