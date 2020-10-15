@@ -37,7 +37,7 @@
                 <control_enabled>True</control_enabled>
                 <ext_model_load_type>1</ext_model_load_type>
                 <site>0</site>
-                <init_values>[(61, 0.1154)]</init_values>
+                <init_values>[(61, 0.132213)]</init_values>
                 <constant_torque>0.0</constant_torque>
                 <linear_torque>0.0</linear_torque>
                 <square_torque>0.0</square_torque>

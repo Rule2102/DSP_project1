@@ -38,7 +38,7 @@ SETTINGS_DIR = get_settings_dir_path()
                     <width>120</width>
                     <height>120</height>
                     <appearance><![CDATA[Flat]]></appearance>
-                    <state>Capture</state>
+                    <state>Scope</state>
                     <layout>None</layout>
                     <presets>
                         <active_capture_preset>Default</active_capture_preset>
@@ -66,7 +66,7 @@ SETTINGS_DIR = get_settings_dir_path()
                             <name>i_qs</name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
-                            <vertical_offset>0</vertical_offset>
+                            <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
                                 
@@ -79,7 +79,7 @@ SETTINGS_DIR = get_settings_dir_path()
                             <name>i_ds</name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
-                            <vertical_offset>0</vertical_offset>
+                            <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
                                 
@@ -263,7 +263,7 @@ SETTINGS_DIR = get_settings_dir_path()
                             <name>i_qs</name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
-                            <vertical_offset>0</vertical_offset>
+                            <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
                                 
@@ -276,7 +276,7 @@ SETTINGS_DIR = get_settings_dir_path()
                             <name>i_ds</name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
-                            <vertical_offset>0</vertical_offset>
+                            <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
                                 

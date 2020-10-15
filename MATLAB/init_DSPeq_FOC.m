@@ -2,7 +2,7 @@
 clear all
 clc
 
-ur = 8;             % update rate
+ur = 2;             % update rate
 OVERSAMPLING = 1;   % logic variable to determine with/without oversampling
 
 Id_ref = 0;                 % reference current in d axis 
@@ -37,9 +37,9 @@ L = 3.4e-3;                 % phase inductance
 taus = L/R;                 % phase time constant
 f_ref = 270;                % electrical frequency
 we = 2*pi*f_ref;            % angular frequency
-p = 6;                      % number of machine pole pairs
+p = 3;                      % number of machine pole pairs
 wm = we/p;                  % rotor mechanical speed
-psi = 0.687/p;                % permanenet magnet flux
+psi = 0.687/(sqrt(3)*p);                % permanenet magnet flux
 emf = psi*we;               % machine electromotive force
 ph = pi;                    % phase of the load when modeled with 3phase sine source (so that Ed=0)
 
@@ -56,8 +56,8 @@ Uqol = 0;                   % q axis voltage
 % parameters for measurements
 ISENSE_SCALE = 10;          % scaling factor for current measurement
 tau_fil = 5e-6;             % time const of low-pass filter
-ofst_a = -0.0188;           % offset for Ia (measurement error influence)
-ofst_b = -0.0042;           % offset for Ib (measurement error influence)
+ofst_a = 0;           % offset for Ia (measurement error influence)
+ofst_b = 0;           % offset for Ib (measurement error influence)
 
 % initial conditions
 Edq0_c = 1j*emf;                % complex electromotive force

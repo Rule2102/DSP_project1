@@ -37,8 +37,8 @@
 #define ISENSE_OFFSET_B (1.50f + 0.00448f + 0.00012f)//111f                     // 0A --> 1.5V + offset ADC-a
 
 #define MAX_data_count 443 //850                         // Size of an array used for data storage
-#define DMACNT_REF  869  //3478                          // Set reference after DMACNT_REF regulation periods
-#define DMACNT_PRNT 600  //3000                          // Start printing after DMACNT_PRNT regulation periods
+#define DMACNT_REF  10869  //3478                          // Set reference after DMACNT_REF regulation periods
+#define DMACNT_PRNT 10600  //3000                          // Start printing after DMACNT_PRNT regulation periods
 
 // Defines for IREG
 #define R 0.47f                                     // Motor resistance

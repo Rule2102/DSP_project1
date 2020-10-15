@@ -2,7 +2,7 @@ version = 4.2
 
 //
 // Saved by sw version: 2020.2
-// Save timestamp: 14-Oct-2020 @ 03:24:58 PM
+// Save timestamp: 15-Oct-2020 @ 04:09:22 PM
 //
 
 model "bldc" {
@@ -45,7 +45,7 @@ model "bldc" {
         component "core/Permanent Magnet Synchronous Machine with Salient Rotor" BLDC {
             Ld = "3.4e-3"
             Lq = "3.4e-3"
-            Psi_pm = "0.1322"
+            Psi_pm = "0.132213"
             Rs = "0.47"
             enc_ppr = "1000"
             execution_rate = "1e-6"
