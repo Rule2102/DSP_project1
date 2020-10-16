@@ -38,7 +38,7 @@ SETTINGS_DIR = get_settings_dir_path()
                     <width>120</width>
                     <height>120</height>
                     <appearance><![CDATA[Flat]]></appearance>
-                    <state>Scope</state>
+                    <state>Capture</state>
                     <layout>None</layout>
                     <presets>
                         <active_capture_preset>Default</active_capture_preset>
@@ -59,11 +59,13 @@ SETTINGS_DIR = get_settings_dir_path()
                             <coupling>False</coupling>
                             <viewports>
                                 
+                                <num_viewport>1</num_viewport>
+                                
                            </viewports>
                         </analog>
                             <analog>
                             <channel>1</channel>
-                            <name>i_qs</name>
+                            <name>Ia2</name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -76,7 +78,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>2</channel>
-                            <name>i_ds</name>
+                            <name>Ia3</name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -94,7 +96,7 @@ SETTINGS_DIR = get_settings_dir_path()
                                 <device>0</device>
                                 <is_force>False</is_force>
                                 <type>Analog</type>
-                                <source>i_qs</source>
+                                <source>Ia1</source>
                                 <edge>Rising edge</edge>
                                 <treshold>0.5</treshold>
                                 <offset>5.0</offset>
@@ -239,7 +241,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         <legend>True</legend>
                         <trigger>
                             <type>Analog</type>
-                            <source>i_qs</source>
+                            <source>Ia1</source>
                             <edge>Rising edge</edge>
                             <treshold>0.5</treshold>
                             <offset>5.0</offset>
@@ -256,11 +258,13 @@ SETTINGS_DIR = get_settings_dir_path()
                             <coupling>False</coupling>
                             <viewports>
                                 
+                                <num_viewport>1</num_viewport>
+                                
                            </viewports>
                         </analog>
                             <analog>
                             <channel>1</channel>
-                            <name>i_qs</name>
+                            <name>Ia2</name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -273,7 +277,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>2</channel>
-                            <name>i_ds</name>
+                            <name>Ia3</name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
