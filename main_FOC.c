@@ -666,7 +666,7 @@ __interrupt void dmach1_isr(void)
 
     #if (OVERSAMPLING)
         // Averaging on regulation period & scaling ([dig] --> [A])
-        Ia_avg_Ts = ((float32)(Ia_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
+        Ia_avg_Ts = ((float32)(Ia_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE t)*ISENSE_SCALE;
         Ib_avg_Ts = ((float32)(Ib_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET_B)*ISENSE_SCALE;
     #else
         // Take last measurement stored in DMA buffer
@@ -686,12 +686,15 @@ __interrupt void dmach1_isr(void)
 
     // Average measured angle on switching period
     theta_avg_Tpwm = theta[0];
+    /*
+    // Angle averaging on Tpwm not needed
     for (i_for=UR;i_for>0;i_for--)
         {
             theta_avg_Tpwm+=theta[i_for];
             theta[i_for]= theta[i_for-1];
         }
     theta_avg_Tpwm = theta_avg_Tpwm*INV_UR_1;
+    */
 
     // Trigonometry
     sincos(theta_avg_Ts, &_sin[0], &_cos[0]);

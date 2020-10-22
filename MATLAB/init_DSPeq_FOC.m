@@ -3,7 +3,7 @@ clear all
 clc
 
 ur = 2;             % update rate
-OVERSAMPLING = 1;   % logic variable to determine with/without oversampling
+OVERSAMPLING = 0;   % logic variable to determine with/without oversampling
 
 Id_ref = 0;                 % reference current in d axis 
 Iq_ref = 2;                 % reference current in q axis
@@ -83,8 +83,13 @@ if(ur==8)
     dmacnt_end = MAX_data_count + dmacnt_prnt;
     tend = dmacnt_end*Ts;
 end
-    
 
+% frequency response analysis settings
+fmax = 1/Tpwm/2;
+f_test = 400:50:fmax;
+z=tf('z',Ts);
+W1 = alpha/(z^2-z+alpha);
+tfra = 0.32; % required experiment length based on f_test (see FRA block)
 
 
 
