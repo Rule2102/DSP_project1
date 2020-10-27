@@ -25,7 +25,7 @@ Ts = Tpwm/ur;                   % regulation period
 Tadc = Tpwm/Nos;
 
 % simulation step size
-Tsim = gcd(gcd(Ttbclk*1e9,Tadc*1e9),Ts*1e9)/1e9; 
+Tsim = gcd(gcd(Ttbclk*1e9,Tadc*1e9),Ts*1e9)/1e9;
 
 % inverter parameters
 E = 520;                   % available voltage
@@ -89,7 +89,7 @@ fmax = 1/Tpwm/2;
 f_test = 400:50:fmax;
 z=tf('z',Ts);
 W1 = alpha/(z^2-z+alpha);
-tfra = 0.32; % required experiment length based on f_test (see FRA block)
+tfra = 0.33; % required experiment length based on f_test (see FRA block)
 
 
 

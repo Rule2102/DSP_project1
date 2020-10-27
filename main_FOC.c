@@ -23,7 +23,7 @@
 #define D_MAX (PWM_TBPRD - 5)                       // Maximum duty cycle (to avoid unnecessary switching)
 #define D_MIN 5                                     // Minimum duty cycle (to avoid unnecessary switching)
 #define PI 3.141593f                                // PI
-#define DEADTIME 100                                                          // Dead time in number of EPWM clocks (see EPwmXRegs.TBPRD) 100 --> 1us
+#define DEADTIME 100                                                     // Dead time in number of EPWM clocks (see EPwmXRegs.TBPRD) 100 --> 1us
 #define UDT ((float32)(DEADTIME)/(float32)(PWM_TBPRD)*E*4.0f/PI)         // Constant for dead time compensation (4/pi for first harmonic's peak)
 
 // Defines for measurements (position & current)
@@ -35,6 +35,7 @@
 #define ISENSE_SCALE 10.0f                          // [A] --> [V] (ISENSE_SCALE)A=1V
 #define ISENSE_OFFSET_A (1.50f + 0.00309f + 0.00013f - 0.00573f - 0.00529f + 0.00028f) // - 0.01443f) //96f                     // 0A --> 1.5V + offset ADC-a
 #define ISENSE_OFFSET_B (1.50f + 0.00448f + 0.00012f - 0.00567f - 0.00563f + 0.00032f) // - 0.01492f)//111f                     // 0A --> 1.5V + offset ADC-a
+float32 IMAX = 25.0f;                                   // Limit for over-current protection
 
 #define MAX_data_count 443 //850                         // Size of an array used for data storage
 #define DMACNT_REF 10869  //3478                          // Set reference after DMACNT_REF regulation periods
@@ -74,6 +75,8 @@ Uint16 PWM_dir;                                // Direction of the virtual carri
 Uint16 PWM_nextSeg_max;                        // Maximum value of the virtual carrier in the following control period (n_seg + 1)
 Uint16 PWM_nextSeg_min;                        // Minimum value of the virtual carrier in the following control period (n_seg + 1)
 Uint16 cross_margin = 7;                       // Cross margin to avoid glitches in EPWM output (experimentally determined)
+Uint16 reg_enabled = 1;                        // Logic variable used to start output
+Uint16 error_flag = 0;                         // Indicate if an error occurred (overcurrent protection, etc)
 
 // Variables for motor control
 
@@ -105,11 +108,10 @@ float32 Udq_max = E/(2.0f);//1.4142f);                // Maximum available volta
 // Angles
 float32 theta[UR+1] = {};                       // Machine electrical angle - theta[0]=current, theta[1]=previous, etc.
 float32 theta_avg_Ts;                           // Averaged angle on Ts
-float32 theta_avg_Tpwm;                         // Averaged angle on Tpwm
 float32 theta_enc[2] = {};                      // Mechanical angle calcualted using QEP counter
 float32 dtheta;                                 // Angle difference used in IREG (w*Ts)
-float32 _sin[4];                                // _sin[0]=sin(theta_avg_Ts), _sin[1]=sin(theta_avg_Tpwm), _sin[2]=sin(dtheta), _sin[3]=sin(2*dtheta)
-float32 _cos[4];                                // _cos[0]=cos(theta_avg_Ts), _cos[1]=sin(theta_avg_Tpwm), _cos[2]=sin(dtheta), _cos[3]=sin(2*dtheta)
+float32 _sin[4];                                // _sin[0]=sin(theta_avg_Ts), _sin[1]=sin(theta[0]), _sin[2]=sin(dtheta), _sin[3]=sin(2*dtheta)
+float32 _cos[4];                                // _cos[0]=cos(theta_avg_Ts), _cos[1]=sin(theta[0]), _cos[2]=sin(dtheta), _cos[3]=sin(2*dtheta)
 
 // Variables for CMP registers
 
@@ -225,26 +227,38 @@ void Configure_GPIO(void)
     // Configure as EPWM1A output (phase A high side)
     GpioCtrlRegs.GPADIR.bit.GPIO0 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO0 = 1;         // Mux to ePWM1A
+    GpioCtrlRegs.GPAPUD.bit.GPIO0 = 1;          // Disable internal pull-up
+    GpioDataRegs.GPASET.bit.GPIO0 = 0;          // Set low, until otherwise specified by control algorithm
 
     // Configure as EPWM1B output (phase A low side)
     GpioCtrlRegs.GPADIR.bit.GPIO1 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;         // Mux to ePWM1B
+    GpioCtrlRegs.GPAPUD.bit.GPIO1 = 1;          // Disable internal pull-up
+    GpioDataRegs.GPASET.bit.GPIO1 = 0;          // Set low, until otherwise specified by control algorithm
 
     // Configure as EPWM2A output (phase B high side)
     GpioCtrlRegs.GPADIR.bit.GPIO2 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 1;         // Mux to ePWM2A
+    GpioCtrlRegs.GPAPUD.bit.GPIO2 = 1;          // Disable internal pull-up
+    GpioDataRegs.GPASET.bit.GPIO2 = 0;          // Set low, until otherwise specified by control algorithm
 
     // Configure as EPWM2B output (phase B low side)
     GpioCtrlRegs.GPADIR.bit.GPIO3 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO3 = 1;         // Mux to ePWM2B
+    GpioCtrlRegs.GPAPUD.bit.GPIO3 = 1;          // Disable internal pull-up
+    GpioDataRegs.GPASET.bit.GPIO3 = 0;          // Set low, until otherwise specified by control algorithm
 
     // Configure as EPWM3A output (phase C high side)
     GpioCtrlRegs.GPADIR.bit.GPIO4 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO4 = 1;         // Mux to ePWM3A
+    GpioCtrlRegs.GPAPUD.bit.GPIO4 = 1;          // Disable internal pull-up
+    GpioDataRegs.GPASET.bit.GPIO4 = 0;          // Set low, until otherwise specified by control algorithm
 
     // Configure as EPWM3B output (phase C low side)
     GpioCtrlRegs.GPADIR.bit.GPIO5 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO5 = 1;         // Mux to ePWM3B
+    GpioCtrlRegs.GPAPUD.bit.GPIO5 = 1;          // Disable internal pull-up
+    GpioDataRegs.GPASET.bit.GPIO5 = 0;          // Set low, until otherwise specified by control algorithm
 
     // GPIOs for debugging/measurements
 
@@ -308,11 +322,13 @@ void Configure_ePWM(void)
     EPwm1Regs.AQCTLA.bit.CAU = 1;               // Set EPWMA low on TBCTR=CMPA during up count
     EPwm1Regs.AQCTLA.bit.CBU = 2;               // Set EPWMA high on TBCTR=CMPB during up count
 
-
     EPwm1Regs.DBCTL.bit.POLSEL = 2;             // Active high complementary - EPWMxB is inverted.
     EPwm1Regs.DBCTL.bit.OUT_MODE = 3;           // DBM is fully enabled
     EPwm1Regs.DBFED.bit.DBFED = DEADTIME;       // Set delay for rising edge (DBRED)
     EPwm1Regs.DBRED.bit.DBRED = DEADTIME;       // Set delay for falling edge (DBFED)
+
+    EPwm1Regs.TZCTL.bit.TZA = 2;                // Set EPWMA low when the trip-zone is triggered
+    EPwm1Regs.TZCTL.bit.TZB = 2;                // Set EPWMB low when the trip-zone is triggered
 
     // EPWM2 as a multisampling carrier for phase B
 
@@ -332,13 +348,16 @@ void Configure_ePWM(void)
     EPwm2Regs.CMPA.bit.CMPA = MS_TBPRD + 1;               // Value of the CMPA at the beginning (action never happens)
     EPwm2Regs.CMPB.bit.CMPB = MS_TBPRD + 1;               // Value of the CMPB at the beginning (action never happens)
 
-    EPwm2Regs.AQCTLA.bit.CAU = 1;              // Set EPWMA low on TBCTR=CMPA during up count
-    EPwm2Regs.AQCTLA.bit.CBU = 2;              // Set EPWMA high on TBCTR=CMPB during up count
+    EPwm2Regs.AQCTLA.bit.CAU = 1;               // Set EPWMA low on TBCTR=CMPA during up count
+    EPwm2Regs.AQCTLA.bit.CBU = 2;               // Set EPWMA high on TBCTR=CMPB during up count
 
     EPwm2Regs.DBCTL.bit.POLSEL = 2;             // Active high complementary - EPWMxB is inverted.
     EPwm2Regs.DBCTL.bit.OUT_MODE = 3;           // DBM is fully enabled
     EPwm2Regs.DBFED.bit.DBFED = DEADTIME;       // Set delay for rising edge (DBRED)
     EPwm2Regs.DBRED.bit.DBRED = DEADTIME;       // Set delay for falling edge (DBFED)
+
+    EPwm2Regs.TZCTL.bit.TZA = 2;                // Set EPWMA low when the trip-zone is triggered
+    EPwm2Regs.TZCTL.bit.TZB = 2;                // Set EPWMB low when the trip-zone is triggered
 
     // EPWM3 as a multisampling carrier for phase C
 
@@ -348,7 +367,7 @@ void Configure_ePWM(void)
     EPwm3Regs.TBCTR = 0x0000;                  // Clear counter
     EPwm3Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
 
-    EPwm3Regs.TBPRD = MS_TBPRD;                // Counter period
+    EPwm3Regs.TBPRD = MS_TBPRD;                 // Counter period
 
     EPwm3Regs.CMPCTL.bit.SHDWAMODE = 0;         // Shadow mode active for CMPA
     EPwm3Regs.CMPCTL.bit.SHDWBMODE = 0;         // Shadow mode active for CMPB
@@ -358,13 +377,16 @@ void Configure_ePWM(void)
     EPwm3Regs.CMPA.bit.CMPA = MS_TBPRD + 1;               // Value of the CMPA at the beginning (action never happens)
     EPwm3Regs.CMPB.bit.CMPB = MS_TBPRD + 1;               // Value of the CMPB at the beginning (action never happens)
 
-    EPwm3Regs.AQCTLA.bit.CAU = 1;              // Set EPWMA low on TBCTR=CMPA during up count
-    EPwm3Regs.AQCTLA.bit.CBU = 2;              // Set EPWMA high on TBCTR=CMPB during up count
+    EPwm3Regs.AQCTLA.bit.CAU = 1;               // Set EPWMA low on TBCTR=CMPA during up count
+    EPwm3Regs.AQCTLA.bit.CBU = 2;               // Set EPWMA high on TBCTR=CMPB during up count
 
     EPwm3Regs.DBCTL.bit.POLSEL = 2;             // Active high complementary - EPWMxB is inverted.
     EPwm3Regs.DBCTL.bit.OUT_MODE = 3;           // DBM is fully enabled
     EPwm3Regs.DBFED.bit.DBFED = DEADTIME;       // Set delay for rising edge (DBRED)
     EPwm3Regs.DBRED.bit.DBRED = DEADTIME;       // Set delay for falling edge (DBFED)
+
+    EPwm3Regs.TZCTL.bit.TZA = 2;                // Set EPWMA low when the trip-zone is triggered
+    EPwm3Regs.TZCTL.bit.TZB = 2;                // Set EPWMB low when the trip-zone is triggered
 
     // EPWM4 to notify multisampling carrier TBCTR=0 (JUST FOR DEBUGGING)
 
@@ -395,6 +417,12 @@ void Configure_ePWM(void)
     // Set PWM output to notify SOCA (JUST FOR DEBUGGING)
     EPwm5Regs.AQCTLA.bit.ZRO = 2;              // Set PWM A high on TBCTR=0
     EPwm5Regs.AQCTLA.bit.PRD = 1;              // Set PWM A low on TBCTR=TBPRD
+
+    EALLOW;
+    EPwm1Regs.TZCLR.bit.OST = 1;
+    EPwm2Regs.TZCLR.bit.OST = 1;
+    EPwm3Regs.TZCLR.bit.OST = 1;
+    EDIS;
 }
 
 void Configure_ADC(void)
@@ -556,20 +584,11 @@ __interrupt void dmach1_isr(void)
 {
     GpioDataRegs.GPCSET.bit.GPIO66 = 1;                       // Notify dmach1_isr start
 
+
     theta_enc[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;        // Capture position
-    //theta[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;          // Capture position
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
 
     int i_for = 0;
-/*
-    theta[0] = fmod(theta[0],2.0f*PI);
-    if(theta[1]-theta[0]>= PI)
-        for (i_for=UR;i_for>0;i_for--)
-            {
-                theta[i_for]-= 2*PI;
-            }
-*/
-    // avoid using fmod
 
     theta[0] += theta_enc[0] - theta_enc[1];
     if(theta_enc[0] <= 2*PI && theta_enc[0] >= 0)
@@ -577,30 +596,24 @@ __interrupt void dmach1_isr(void)
     if(theta[0]>=2*PI)
         theta[0]-=2*PI;
     if(theta[1]-theta[0]>= PI)
-        for (i_for=UR;i_for>0;i_for--)
-            {
-                theta[i_for]-= 2*PI;
-            }
+        theta[1]-=2*PI;
     theta_enc[1] = theta_enc[0];
 
     dma_count++;
 
+    // setting reference and printing
     if(dma_count == DMACNT_PRNT)
     {
         canPrint = 1;
-
     }
 
     if(dma_count == DMACNT_REF)
     {
-
         Iq_ref = 2.0f;
-
     }
 
-
 /*
- // Set your own theta based on predefined frquency
+ // Set your own theta based on the predefined frequency
     theta[0]+= TWOPI_TS*f_ref;                        // Capture position
 
     if(theta[0]>= 2*PI)
@@ -666,7 +679,7 @@ __interrupt void dmach1_isr(void)
 
     #if (OVERSAMPLING)
         // Averaging on regulation period & scaling ([dig] --> [A])
-        Ia_avg_Ts = ((float32)(Ia_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE t)*ISENSE_SCALE;
+        Ia_avg_Ts = ((float32)(Ia_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
         Ib_avg_Ts = ((float32)(Ib_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET_B)*ISENSE_SCALE;
     #else
         // Take last measurement stored in DMA buffer
@@ -676,271 +689,293 @@ __interrupt void dmach1_isr(void)
 
     Ic_avg_Ts = - Ia_avg_Ts - Ib_avg_Ts;        // Calculate current in phase C
 
-    // Direct Clarke transform  (abc -> alpha/beta)
-    Ialpha_avg_Ts = Ia_avg_Ts;                                          // Ialpha=Ia
-    Ibeta_avg_Ts =  0.57735f * Ia_avg_Ts + 1.1547f * Ib_avg_Ts;         // Ibeta=1/sqrt(3)*Ia+2/sqrt(3)*Ib
+    error_flag = abs(Ia_avg_Ts) > IMAX || abs(Ib_avg_Ts) > IMAX || abs(Ic_avg_Ts) > IMAX;       // Check for overcurrent protection
 
-    // Angles used for dq transform & IREG
-    dtheta = theta[0] - theta[1];
-    theta_avg_Ts = (theta[0] + theta[1])*0.5f;     // Average measured angle on regulation period
-
-    // Average measured angle on switching period
-    theta_avg_Tpwm = theta[0];
-    /*
-    // Angle averaging on Tpwm not needed
-    for (i_for=UR;i_for>0;i_for--)
+    if(error_flag)
         {
-            theta_avg_Tpwm+=theta[i_for];
-            theta[i_for]= theta[i_for-1];
+            // Set TZ flags
+            EALLOW;
+            EPwm1Regs.TZFRC.bit.OST = 1;
+            EPwm2Regs.TZFRC.bit.OST = 1;
+            EPwm3Regs.TZFRC.bit.OST = 1;
+            EDIS;
+            // Disable regulation
+            reg_enabled = 0;
         }
-    theta_avg_Tpwm = theta_avg_Tpwm*INV_UR_1;
-    */
+    else
+        {
+            if(reg_enabled)
+                {
+                    // Clear TZ flags
+                    EALLOW;
+                    EPwm1Regs.TZCLR.bit.OST = 1;
+                    EPwm2Regs.TZCLR.bit.OST = 1;
+                    EPwm3Regs.TZCLR.bit.OST = 1;
+                    EDIS;
 
-    // Trigonometry
-    sincos(theta_avg_Ts, &_sin[0], &_cos[0]);
-    sincos(theta_avg_Tpwm, &_sin[1], &_cos[1]);
-    sincos(dtheta, &_sin[2], &_cos[2]);
-    sincos(2*dtheta, &_sin[3], &_cos[3]);
+                    // Direct Clarke transform  (abc -> alpha/beta)
+                    Ialpha_avg_Ts = Ia_avg_Ts;                                          // Ialpha=Ia
+                    Ibeta_avg_Ts =  0.57735f * Ia_avg_Ts + 1.1547f * Ib_avg_Ts;         // Ibeta=1/sqrt(3)*Ia+2/sqrt(3)*Ib
 
-    #if (OVERSAMPLING)
+                    // Angles used for dq transform & IREG
+                    dtheta = theta[0] - theta[1];
+                    theta_avg_Ts = (theta[0] + theta[1])*0.5f;     // Average measured angle on regulation period
 
-        // Direct Park transform using theta_avg_Ts
-        Id_avg_Ts[0] = Ialpha_avg_Ts * _cos[0] + Ibeta_avg_Ts * _sin[0];
-        Iq_avg_Ts[0] = Ibeta_avg_Ts * _cos[0] - Ialpha_avg_Ts * _sin[0];
+                    // Trigonometry
+                    sincos(theta_avg_Ts, &_sin[0], &_cos[0]);
+                    sincos(theta[0], &_sin[1], &_cos[1]);
+                    sincos(dtheta, &_sin[2], &_cos[2]);
+                    sincos(2*dtheta, &_sin[3], &_cos[3]);
 
-        for (i_for=0;i_for<UR;i_for++)
-            {
-                Sum_Id_avg_Ts+= Id_avg_Ts[i_for];
-                Sum_Iq_avg_Ts+= Iq_avg_Ts[i_for];
-            }
+                    #if (OVERSAMPLING)
 
-        for (i_for=UR-1;i_for>0;i_for--)
-            {
-                Id_avg_Ts[i_for]= Id_avg_Ts[i_for-1];
-                Iq_avg_Ts[i_for]= Iq_avg_Ts[i_for-1];
-            }
+                        // Direct Park transform using theta_avg_Ts
+                        Id_avg_Ts[0] = Ialpha_avg_Ts * _cos[0] + Ibeta_avg_Ts * _sin[0];
+                        Iq_avg_Ts[0] = Ibeta_avg_Ts * _cos[0] - Ialpha_avg_Ts * _sin[0];
 
-        // Averaging on switching period
-        Id = Sum_Id_avg_Ts*INV_UR;
-        Iq = Sum_Iq_avg_Ts*INV_UR;
-    #else
+                        for (i_for=0;i_for<UR;i_for++)
+                            {
+                                Sum_Id_avg_Ts+= Id_avg_Ts[i_for];
+                                Sum_Iq_avg_Ts+= Iq_avg_Ts[i_for];
+                            }
 
-        // Direct Park transform using theta_avg_Tpwm
-        Id = Ialpha_avg_Ts * _cos[1] + Ibeta_avg_Ts * _sin[1];
-        Iq = Ibeta_avg_Ts * _cos[1] - Ialpha_avg_Ts * _sin[1];
+                        for (i_for=UR-1;i_for>0;i_for--)
+                            {
+                                Id_avg_Ts[i_for]= Id_avg_Ts[i_for-1];
+                                Iq_avg_Ts[i_for]= Iq_avg_Ts[i_for-1];
+                            }
 
-    #endif
+                        // Averaging on switching period
+                        Id = Sum_Id_avg_Ts*INV_UR;
+                        Iq = Sum_Iq_avg_Ts*INV_UR;
+                    #else
 
-    // Current error
-    dId[0] = Id_ref - Id;
-    dIq[0] = Iq_ref - Iq;
+                        // Direct Park transform using theta[0]
+                        Id = Ialpha_avg_Ts * _cos[1] + Ibeta_avg_Ts * _sin[1];
+                        Iq = Ibeta_avg_Ts * _cos[1] - Ialpha_avg_Ts * _sin[1];
 
-    // IMC based IREG
-    Ud[0] = Ud[1] + K1*(dId[0]*_cos[3]-dIq[0]*_sin[3]-K2*(dId[1]*_cos[2]-dIq[1]*_sin[2]));
-    Uq[0] = Uq[1] + K1*(dIq[0]*_cos[3]+dId[0]*_sin[3]-K2*(dIq[1]*_cos[2]+dId[1]*_sin[2]));
+                    #endif
 
-    // Saturate if necessary (based on the DC link voltage capabilities)
-    if(Ud[0] > Udq_max) Ud[0] = Udq_max;
-    else if(Ud[0] < -Udq_max) Ud[0] = Udq_max;
+                    // Current error
+                    dId[0] = Id_ref - Id;
+                    dIq[0] = Iq_ref - Iq;
 
-    if(Uq[0] > Udq_max) Uq[0] = Udq_max;
-    else if(Uq[0] < -Udq_max) Uq[0] = Udq_max;
+                    // IMC based IREG
+                    Ud[0] = Ud[1] + K1*(dId[0]*_cos[3]-dIq[0]*_sin[3]-K2*(dId[1]*_cos[2]-dIq[1]*_sin[2]));
+                    Uq[0] = Uq[1] + K1*(dIq[0]*_cos[3]+dId[0]*_sin[3]-K2*(dIq[1]*_cos[2]+dId[1]*_sin[2]));
 
-    // Remember values for the next dma_isr (store previous)
-    Ud[1] = Ud[0];
-    Uq[1] = Uq[0];
-    dId[1] = dId[0];
-    dIq[1] = dIq[0];
+                    // Saturate if necessary (based on the DC link voltage capabilities)
+                    if(Ud[0] > Udq_max) Ud[0] = Udq_max;
+                    else if(Ud[0] < -Udq_max) Ud[0] = Udq_max;
 
-    // Open loop testing
-    //Ud[0] = 0.0f;
-    //Uq[0] = 0.0f;
+                    if(Uq[0] > Udq_max) Uq[0] = Udq_max;
+                    else if(Uq[0] < -Udq_max) Uq[0] = Udq_max;
 
-    // Inverse Park transform
-    Ualpha = Ud[0] * _cos[1] - Uq[0] * _sin[1];
-    Ubeta = Ud[0] * _sin[1] + Uq[0] * _cos[1];
+                    // Remember values for the next dma_isr (store previous)
+                    Ud[1] = Ud[0];
+                    Uq[1] = Uq[0];
+                    dId[1] = dId[0];
+                    dIq[1] = dIq[0];
+                    theta[1] = theta[0];
 
-    // Inverse Clarke transform
-    Ua = Ualpha;
-    Ub = (1.73205081f * Ubeta - Ualpha) * 0.5f;
-    Uc = -(1.73205081f * Ubeta + Ualpha) * 0.5f;
+                    // Open loop testing
+                    //Ud[0] = 0.0f;
+                    //Uq[0] = 0.0f;
 
-    // Dead time compensation
-/*
-    if(Ia_avg_Ts >= 0.1f) Ua+=UDT;
-    else if(Ia_avg_Ts <= -0.1f) Ua-=UDT;
+                    // Inverse Park transform
+                    Ualpha = Ud[0] * _cos[1] - Uq[0] * _sin[1];
+                    Ubeta = Ud[0] * _sin[1] + Uq[0] * _cos[1];
 
-    if(Ib_avg_Ts >= 0.1f) Ub+=UDT;
-    else if(Ib_avg_Ts <= -0.1f) Ub-=UDT;
+                    // Inverse Clarke transform
+                    Ua = Ualpha;
+                    Ub = (1.73205081f * Ubeta - Ualpha) * 0.5f;
+                    Uc = -(1.73205081f * Ubeta + Ualpha) * 0.5f;
 
-    if(Ic_avg_Ts >= 0.1f) Uc+=UDT;
-    else if(Ic_avg_Ts <= -0.1f) Uc-=UDT;
-*/
+                    // Dead time compensation
+                /*
+                    if(Ia_avg_Ts >= 0.1f) Ua+=UDT;
+                    else if(Ia_avg_Ts <= -0.1f) Ua-=UDT;
 
-    // Limit modulation signals
-/*
-    if(PWM_CMP_a>D_MAX) PWM_CMP_a=D_MAX;
-    else if (PWM_CMP_a<D_MIN) PWM_CMP_a=D_MIN;
+                    if(Ib_avg_Ts >= 0.1f) Ub+=UDT;
+                    else if(Ib_avg_Ts <= -0.1f) Ub-=UDT;
 
-    if(PWM_CMP_b>D_MAX)PWM_CMP_b=D_MAX;
-    else if (PWM_CMP_b<D_MIN)PWM_CMP_b=D_MIN;
+                    if(Ic_avg_Ts >= 0.1f) Uc+=UDT;
+                    else if(Ic_avg_Ts <= -0.1f) Uc-=UDT;
+                */
 
-    if(PWM_CMP_c>D_MAX)PWM_CMP_c=D_MAX;
-    else if (PWM_CMP_c<D_MIN)PWM_CMP_c=D_MIN;
-*/
+                    // Limit modulation signals
+                /*
+                    if(PWM_CMP_a>D_MAX) PWM_CMP_a=D_MAX;
+                    else if (PWM_CMP_a<D_MIN) PWM_CMP_a=D_MIN;
 
-    // Modulation signals
-    PWM_CMP_a = (Uint16)(PWM_TBPRD*(0.5f + Ua*EINVERSE));
-    PWM_CMP_b = (Uint16)(PWM_TBPRD*(0.5f + Ub*EINVERSE));
-    PWM_CMP_c = (Uint16)(PWM_TBPRD*(0.5f + Uc*EINVERSE));
+                    if(PWM_CMP_b>D_MAX)PWM_CMP_b=D_MAX;
+                    else if (PWM_CMP_b<D_MIN)PWM_CMP_b=D_MIN;
 
+                    if(PWM_CMP_c>D_MAX)PWM_CMP_c=D_MAX;
+                    else if (PWM_CMP_c<D_MIN)PWM_CMP_c=D_MIN;
+                */
 
-    #if (UR!=1)
+                    // Modulation signals
+                    PWM_CMP_a = (Uint16)(PWM_TBPRD*(0.5f + Ua*EINVERSE));
+                    PWM_CMP_b = (Uint16)(PWM_TBPRD*(0.5f + Ub*EINVERSE));
+                    PWM_CMP_c = (Uint16)(PWM_TBPRD*(0.5f + Uc*EINVERSE));
+                }
 
-         n_seg++; // Indicates a current segment of the virtual carrier
+            else
+                {
+                    // Set duty cycle to 0.5 if regulation is disabled and there is no error flag
+                    PWM_CMP_a = (Uint16)(PWM_TBPRD*0.5f);
+                    PWM_CMP_b = (Uint16)(PWM_TBPRD*0.5f);
+                    PWM_CMP_c = (Uint16)(PWM_TBPRD*0.5f);
+                }
 
-         if(n_seg>UR)
-             n_seg=1;
+            #if (UR!=1)
 
-         if(n_seg>UR/2)
-             PWM_dir=2;
-         else
-             PWM_dir=1;
+                 n_seg++; // Indicates a current segment of the virtual carrier
 
-         if(PWM_dir==1) // Virtual carrier up count (during this time set EPWM low)
-             {
-                 // Never set EPWM high on up count (except for the last interrupt during virtual carrier up count);
-                 MS_CMPB_a=MS_TBPRD+1; // Phase A
-                 MS_CMPB_b=MS_TBPRD+1; // Phase B
-                 MS_CMPB_c=MS_TBPRD+1; // Phase C
+                 if(n_seg>UR)
+                     n_seg=1;
 
-                 if (n_seg!=UR/2)  // Not the last interrupt during virtual carrier up count
+                 if(n_seg>UR/2)
+                     PWM_dir=2;
+                 else
+                     PWM_dir=1;
+
+                 if(PWM_dir==1) // Virtual carrier up count (during this time set EPWM low)
+                     {
+                         // Never set EPWM high on up count (except for the last interrupt during virtual carrier up count);
+                         MS_CMPB_a=MS_TBPRD+1; // Phase A
+                         MS_CMPB_b=MS_TBPRD+1; // Phase B
+                         MS_CMPB_c=MS_TBPRD+1; // Phase C
+
+                         if (n_seg!=UR/2)  // Not the last interrupt during virtual carrier up count
+                         {
+                             // Maximum value of the virtual carrier in the following control period (n_seg + 1)
+                             PWM_nextSeg_max=(n_seg)*(MS_TBPRD+1)+MS_TBPRD;
+                             // Minimum value of the virtual carrier in the following control period (n_seg + 1)
+                             PWM_nextSeg_min=(n_seg)*(MS_TBPRD+1);
+
+                             // Phase A
+                             if((PWM_CMP_a>=PWM_nextSeg_min+cross_margin))
+                                 // Horizontal crossing (set EPWM low) or crossing occurs later (no action because MS_CMPA_a>MS_TBPRD)
+                                 MS_CMPA_a=PWM_CMP_a-PWM_nextSeg_min;
+                             else
+                                 // Vertical crossing (set EPWM low immediately) or crossing already happened (no action)
+                                 MS_CMPA_a=cross_margin; // Cross margin to ensure CMP loading before compare event
+
+                             // Phase B
+                             if((PWM_CMP_b>=PWM_nextSeg_min+cross_margin))
+                                 // Horizontal crossing (set EPWM low) or crossing occurs later (no action because MS_CMPA_a>MS_TBPRD)
+                                 MS_CMPA_b=PWM_CMP_b-PWM_nextSeg_min;
+                             else
+                                 // Vertical crossing (set EPWM low immediately) or crossing already happened (no action)
+                                 MS_CMPA_b=cross_margin; // Cross margin to ensure CMP loading before compare event
+
+                             // Phase C
+                             if((PWM_CMP_c>=PWM_nextSeg_min+cross_margin))
+                                 // Horizontal crossing (set EPWM low) or crossing occurs later (no action because MS_CMPA_a>MS_TBPRD)
+                                 MS_CMPA_c=PWM_CMP_c-PWM_nextSeg_min;
+                             else
+                                 // Vertical crossing (set EPWM low immediately) or crossing already happened (no action)
+                                 MS_CMPA_c=cross_margin; // Cross margin to ensure CMP loading before compare event
+                         }
+                         else // The last interrupt during virtual carrier up count
+                         {
+                              // Phase A
+                              MS_CMPA_a=MS_TBPRD+1; // Do not set EPWM low (in the next interrupt virtual carrier will be in down count mode)
+                              MS_CMPB_a=PWM_TBPRD-PWM_CMP_a; // There can be no vertical crossing here, due to the duty cycle upper limitation
+
+                              // Phase B
+                              MS_CMPA_b=MS_TBPRD+1; // Do not set EPWM low (in the next interrupt virtual carrier will be in down count mode)
+                              MS_CMPB_b=PWM_TBPRD-PWM_CMP_b; // There can be no vertical crossing here, due to the duty cycle upper limitation
+
+                              // Phase C
+                              MS_CMPA_c=MS_TBPRD+1; // Do not set EPWM low (in the next interrupt virtual carrier will be in down count mode)
+                              MS_CMPB_c=PWM_TBPRD-PWM_CMP_c; // There can be no vertical crossing here, due to the duty cycle upper limitation
+                         }
+                     }
+                else // Virtual carrier down count (during this time set EPWM high)
                  {
-                     // Maximum value of the virtual carrier in the following control period (n_seg + 1)
-                     PWM_nextSeg_max=(n_seg)*(MS_TBPRD+1)+MS_TBPRD;
-                     // Minimum value of the virtual carrier in the following control period (n_seg + 1)
-                     PWM_nextSeg_min=(n_seg)*(MS_TBPRD+1);
+                    // Never set EPWM low on down count (except for the last interrupt during virtual carrier down count);
+                     MS_CMPA_a=MS_TBPRD+1; // Phase A
+                     MS_CMPA_b=MS_TBPRD+1; // Phase B
+                     MS_CMPA_c=MS_TBPRD+1; // Phase C
 
-                     // Phase A
-                     if((PWM_CMP_a>=PWM_nextSeg_min+cross_margin))
-                         // Horizontal crossing (set EPWM low) or crossing occurs later (no action because MS_CMPA_a>MS_TBPRD)
-                         MS_CMPA_a=PWM_CMP_a-PWM_nextSeg_min;
-                     else
-                         // Vertical crossing (set EPWM low immediately) or crossing already happened (no action)
-                         MS_CMPA_a=cross_margin; // Cross margin to ensure CMP loading before compare event
+                     if (n_seg!=UR) // Not the last interrupt during virtual carrier down count
+                         {
+                             // Maximum value of the virtual carrier in the following control period (n_seg + 1)
+                             PWM_nextSeg_max=PWM_TBPRD-(n_seg-UR/2)*(MS_TBPRD+1);
+                             // Minimum value of the virtual carrier in the following control period (n_seg + 1)
+                             PWM_nextSeg_min=PWM_TBPRD-(n_seg-UR/2)*(MS_TBPRD+1)-MS_TBPRD;
 
-                     // Phase B
-                     if((PWM_CMP_b>=PWM_nextSeg_min+cross_margin))
-                         // Horizontal crossing (set EPWM low) or crossing occurs later (no action because MS_CMPA_a>MS_TBPRD)
-                         MS_CMPA_b=PWM_CMP_b-PWM_nextSeg_min;
-                     else
-                         // Vertical crossing (set EPWM low immediately) or crossing already happened (no action)
-                         MS_CMPA_b=cross_margin; // Cross margin to ensure CMP loading before compare event
+                             // Phase A
+                             if((PWM_CMP_a<=PWM_nextSeg_max-cross_margin))
+                                 // Horizontal crossing (set EPWM high) or crossing occurs later (no action because MS_CMPB_a>MS_TBPRD)
+                                 MS_CMPB_a=PWM_nextSeg_max-PWM_CMP_a;
+                             else
+                                 // Vertical crossing (set EPWM high immediately) or crossing already happened (no action)
+                                 MS_CMPB_a=cross_margin;
 
-                     // Phase C
-                     if((PWM_CMP_c>=PWM_nextSeg_min+cross_margin))
-                         // Horizontal crossing (set EPWM low) or crossing occurs later (no action because MS_CMPA_a>MS_TBPRD)
-                         MS_CMPA_c=PWM_CMP_c-PWM_nextSeg_min;
-                     else
-                         // Vertical crossing (set EPWM low immediately) or crossing already happened (no action)
-                         MS_CMPA_c=cross_margin; // Cross margin to ensure CMP loading before compare event
+                             // Phase B
+                             if((PWM_CMP_b<=PWM_nextSeg_max-cross_margin))
+                                 // Horizontal crossing (set EPWM high) or crossing occurs later (no action because MS_CMPB_a>MS_TBPRD)
+                                 MS_CMPB_b=PWM_nextSeg_max-PWM_CMP_b;
+                             else
+                                 // Vertical crossing (set EPWM high immediately) or crossing already happened (no action)
+                                 MS_CMPB_b=cross_margin;
+
+                             // Phase C
+                             if((PWM_CMP_c<=PWM_nextSeg_max-cross_margin))
+                                 // Horizontal crossing (set EPWM high) or crossing occurs later (no action because MS_CMPB_a>MS_TBPRD)
+                                 MS_CMPB_c=PWM_nextSeg_max-PWM_CMP_c;
+                             else
+                                 // Vertical crossing (set EPWM high immediately) or crossing already happened (no action)
+                                 MS_CMPB_c=cross_margin;
+                         }
+                     else // The last interrupt during virtual carrier down count
+                         {
+                             // Phase A
+                             MS_CMPB_a=MS_TBPRD+1; // Do not set EPWM high (in the next interrupt virtual carrier will be in up count mode)
+                             MS_CMPA_a=PWM_CMP_a; // There can be no vertical crossing here, due to the duty cycle lower limitation
+
+                             // Phase B
+                             MS_CMPB_b=MS_TBPRD+1; // Do not set EPWM high (in the next interrupt virtual carrier will be in up count mode)
+                             MS_CMPA_b=PWM_CMP_b; // There can be no vertical crossing here, due to the duty cycle lower limitation
+
+                             // Phase C
+                             MS_CMPB_c=MS_TBPRD+1; // Do not set EPWM high (in the next interrupt virtual carrier will be in up count mode)
+                             MS_CMPA_c=PWM_CMP_c; // There can be no vertical crossing here, due to the duty cycle lower limitation
+                         }
                  }
-                 else // The last interrupt during virtual carrier up count
-                 {
-                      // Phase A
-                      MS_CMPA_a=MS_TBPRD+1; // Do not set EPWM low (in the next interrupt virtual carrier will be in down count mode)
-                      MS_CMPB_a=PWM_TBPRD-PWM_CMP_a; // There can be no vertical crossing here, due to the duty cycle upper limitation
+            #else
 
-                      // Phase B
-                      MS_CMPA_b=MS_TBPRD+1; // Do not set EPWM low (in the next interrupt virtual carrier will be in down count mode)
-                      MS_CMPB_b=PWM_TBPRD-PWM_CMP_b; // There can be no vertical crossing here, due to the duty cycle upper limitation
+                // Phase A
+                MS_CMPA_a = PWM_CMP_a;
+                MS_CMPB_a = MS_TBPRD + 1 - PWM_CMP_a;
 
-                      // Phase C
-                      MS_CMPA_c=MS_TBPRD+1; // Do not set EPWM low (in the next interrupt virtual carrier will be in down count mode)
-                      MS_CMPB_c=PWM_TBPRD-PWM_CMP_c; // There can be no vertical crossing here, due to the duty cycle upper limitation
-                 }
-             }
-        else // Virtual carrier down count (during this time set EPWM high)
-         {
-            // Never set EPWM low on down count (except for the last interrupt during virtual carrier down count);
-             MS_CMPA_a=MS_TBPRD+1; // Phase A
-             MS_CMPA_b=MS_TBPRD+1; // Phase B
-             MS_CMPA_c=MS_TBPRD+1; // Phase C
+                // Phase B
+                MS_CMPA_b = PWM_CMP_b;
+                MS_CMPB_b = MS_TBPRD + 1 - PWM_CMP_b;
 
-             if (n_seg!=UR) // Not the last interrupt during virtual carrier down count
-                 {
-                     // Maximum value of the virtual carrier in the following control period (n_seg + 1)
-                     PWM_nextSeg_max=PWM_TBPRD-(n_seg-UR/2)*(MS_TBPRD+1);
-                     // Minimum value of the virtual carrier in the following control period (n_seg + 1)
-                     PWM_nextSeg_min=PWM_TBPRD-(n_seg-UR/2)*(MS_TBPRD+1)-MS_TBPRD;
+                // Phase C
+                MS_CMPA_c = PWM_CMP_c;
+                MS_CMPB_c = MS_TBPRD + 1 - PWM_CMP_c;
 
-                     // Phase A
-                     if((PWM_CMP_a<=PWM_nextSeg_max-cross_margin))
-                         // Horizontal crossing (set EPWM high) or crossing occurs later (no action because MS_CMPB_a>MS_TBPRD)
-                         MS_CMPB_a=PWM_nextSeg_max-PWM_CMP_a;
-                     else
-                         // Vertical crossing (set EPWM high immediately) or crossing already happened (no action)
-                         MS_CMPB_a=cross_margin;
-
-                     // Phase B
-                     if((PWM_CMP_b<=PWM_nextSeg_max-cross_margin))
-                         // Horizontal crossing (set EPWM high) or crossing occurs later (no action because MS_CMPB_a>MS_TBPRD)
-                         MS_CMPB_b=PWM_nextSeg_max-PWM_CMP_b;
-                     else
-                         // Vertical crossing (set EPWM high immediately) or crossing already happened (no action)
-                         MS_CMPB_b=cross_margin;
-
-                     // Phase C
-                     if((PWM_CMP_c<=PWM_nextSeg_max-cross_margin))
-                         // Horizontal crossing (set EPWM high) or crossing occurs later (no action because MS_CMPB_a>MS_TBPRD)
-                         MS_CMPB_c=PWM_nextSeg_max-PWM_CMP_c;
-                     else
-                         // Vertical crossing (set EPWM high immediately) or crossing already happened (no action)
-                         MS_CMPB_c=cross_margin;
-                 }
-             else // The last interrupt during virtual carrier down count
-                 {
-                     // Phase A
-                     MS_CMPB_a=MS_TBPRD+1; // Do not set EPWM high (in the next interrupt virtual carrier will be in up count mode)
-                     MS_CMPA_a=PWM_CMP_a; // There can be no vertical crossing here, due to the duty cycle lower limitation
-
-                     // Phase B
-                     MS_CMPB_b=MS_TBPRD+1; // Do not set EPWM high (in the next interrupt virtual carrier will be in up count mode)
-                     MS_CMPA_b=PWM_CMP_b; // There can be no vertical crossing here, due to the duty cycle lower limitation
-
-                     // Phase C
-                     MS_CMPB_c=MS_TBPRD+1; // Do not set EPWM high (in the next interrupt virtual carrier will be in up count mode)
-                     MS_CMPA_c=PWM_CMP_c; // There can be no vertical crossing here, due to the duty cycle lower limitation
-                 }
-         }
-    #else
-
-        // Phase A
-        MS_CMPA_a = PWM_CMP_a;
-        MS_CMPB_a = MS_TBPRD + 1 - PWM_CMP_a;
-
-        // Phase B
-        MS_CMPA_b = PWM_CMP_b;
-        MS_CMPB_b = MS_TBPRD + 1 - PWM_CMP_b;
-
-        // Phase C
-        MS_CMPA_c = PWM_CMP_c;
-        MS_CMPB_c = MS_TBPRD + 1 - PWM_CMP_c;
-
-    #endif
+            #endif
 
 
-    // Phase A
-    EPwm1Regs.CMPA.bit.CMPA = MS_CMPA_a;    // Set CMPA
-    EPwm1Regs.CMPB.bit.CMPB = MS_CMPB_a;    // Set CMPB
+            // Phase A
+            EPwm1Regs.CMPA.bit.CMPA = MS_CMPA_a;    // Set CMPA
+            EPwm1Regs.CMPB.bit.CMPB = MS_CMPB_a;    // Set CMPB
 
-    // Phase B
-    EPwm2Regs.CMPA.bit.CMPA = MS_CMPA_b;    // Set CMPA
-    EPwm2Regs.CMPB.bit.CMPB = MS_CMPB_b;    // Set CMPB
+            // Phase B
+            EPwm2Regs.CMPA.bit.CMPA = MS_CMPA_b;    // Set CMPA
+            EPwm2Regs.CMPB.bit.CMPB = MS_CMPB_b;    // Set CMPB
 
-    // Phase C
-    EPwm3Regs.CMPA.bit.CMPA = MS_CMPA_c;    // Set CMPA
-    EPwm3Regs.CMPB.bit.CMPB = MS_CMPB_c;    // Set CMPB
+            // Phase C
+            EPwm3Regs.CMPA.bit.CMPA = MS_CMPA_c;    // Set CMPA
+            EPwm3Regs.CMPB.bit.CMPB = MS_CMPB_c;    // Set CMPB
+        }
 
     PrintData();                                      // Data storage (JUST FOR DEBUGGING)
 

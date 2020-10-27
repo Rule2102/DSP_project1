@@ -38,7 +38,7 @@ SETTINGS_DIR = get_settings_dir_path()
                     <width>120</width>
                     <height>120</height>
                     <appearance><![CDATA[Flat]]></appearance>
-                    <state>Capture</state>
+                    <state>Scope</state>
                     <layout>None</layout>
                     <presets>
                         <active_capture_preset>Default</active_capture_preset>
@@ -112,8 +112,8 @@ SETTINGS_DIR = get_settings_dir_path()
                             <layout>Grid</layout>
                             <legend>True</legend>
                             <show_viewports>2</show_viewports>
-                            <decimation>100</decimation>
-                            <time_base>0.1</time_base>
+                            <decimation>21</decimation>
+                            <time_base>0.02</time_base>
                             <analog_signals>
                             <analog>
                             <channel>0</channel>
@@ -296,7 +296,7 @@ SETTINGS_DIR = get_settings_dir_path()
                     </capture>
 
                     <scope>
-                        <time_base>0.1 </time_base>
+                        <time_base>0.02 </time_base>
                         <background_color>white</background_color>
                         <layout>Grid</layout>
                         <legend>True</legend>
