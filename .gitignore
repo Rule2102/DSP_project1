@@ -1,7 +1,7 @@
 /Debug/
 
 
-
+*.launch
 *.fig
 
 #########
@@ -256,3 +256,4 @@ RemoteSystemsTempFiles
 RemoteSystemsTempFiles
 Debug
 *.ccsproject
+*.launch
