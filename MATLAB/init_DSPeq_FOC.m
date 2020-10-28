@@ -2,8 +2,8 @@
 clear all
 clc
 
-ur = 2;             % update rate
-OVERSAMPLING = 0;   % logic variable to determine with/without oversampling
+ur = 8;             % update rate
+OVERSAMPLING = 1;   % logic variable to determine with/without oversampling
 
 Id_ref = 0;                 % reference current in d axis 
 Iq_ref = 2;                 % reference current in q axis
@@ -44,10 +44,12 @@ emf = psi*we;               % machine electromotive force
 ph = pi;                    % phase of the load when modeled with 3phase sine source (so that Ed=0)
 
 % IREG parameters
+% will be automatically adjusted if ur=8 (below)
 alpha = 0.2;                % gain
 K1 = alpha*L/Ts;            % constant for IREG
 K2 = exp(-Ts/taus);         % parameter that desxcribes system dynamics
 Udq_max = E/2;              % saturation level in dq (for IREG)
+d = 0;
 
 % open loop dq voltages
 Udol = 0;                   % d axis voltage
@@ -77,7 +79,8 @@ tend = dmacnt_end*Ts;               % simulation duration
 MAX_data_count = dmacnt_end - dmacnt_prnt;   % array length for DSP's RAM export
 
 if(ur==8)
-    alpha = 0.084;
+    alpha = 0.095; %0.385/4; %0.087;
+    d = 1.776; %0.5*Tpwm/Ts;
     dmacnt_prnt = 3000;
     MAX_data_count = 850;
     dmacnt_end = MAX_data_count + dmacnt_prnt;
