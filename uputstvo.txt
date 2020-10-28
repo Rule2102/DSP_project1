@@ -1,0 +1,29 @@
+Uputstvo za testiranje FOC koda sa HIL-om, Ruzica 28.10.2020.
+
+Uputstva za testiranje DSP&HIL:
+
+HIL
+
+Open bldc.tse in schematic editor
+
+Load model to scada
+
+Open bldc.cpd in scada
+
+Load model settings from bldc.runx
+
+Run (motor se vrti zadatom brzinom)
+
+CCS
+
+Debug -> Run
+
+reg_ enabled = 1 (reference su podesene na 0, ali prekostrujna zastita na vrednost vecu od one koju mozemo da merimo pa nece biti trigerovana kad regualcija postane aktivna uprkos tome sto imamo ems i kratko spajamo masinu prakticno (nije IREG dovoljno brz, da stigne da ispegla struje na 0 pre negos to zastita odreaguje, pa sam zato stavila IMAX preveliko, da mogu hil domah da pokrecem na zadatoj brzini))
+
+Iq_ref = 7
+
+canPrint = 1 (ovo krene da pakuje Id i Iq u nizove dataOut_1 i 2 i spuisti Iq_ref na 2 nakon odredjenog broja count-ova da snimi step i onda vrati ref na 0)
+
+Export from memory browser
+
+Imort&plot in MATLAB
