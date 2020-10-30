@@ -34,6 +34,7 @@ rtds_write 0x00810411 0x3C6C8000
 rtds_write 0x00800001 5e-07
 rtds_write 0x00800011 0.04838709677419355
 rtds_write 0x00800012 0.3333333333333333
+rtds_write 0x00800017 2.0
 rtds_write 0x00800005 0x00000000
 rtds_write 0x00800020 0x00000000
 rtds_write 0x0080001E 0.0
@@ -51,10 +52,6 @@ rtds_write 0x0080002D 0x00000000
 rtds_write 0x0080002E 0x00000000
 rtds_write 0x00800026 0.0
 rtds_write 0x00800027 1.0
-rtds_write 0x00800040 6.283185307179586
-rtds_write 0x00800041 0.0
-rtds_write 0x00800044 6.283185307179586
-rtds_write 0x00800045 0.0
 
 REM LUT solver inputs...
 rtds_write 0x01000000 0x00000000
@@ -78,18 +75,18 @@ rtds_write 0x08100024 0x00000000
 rtds_write 0x08100025 0x00000000
 rtds_write 0x08100026 0x00000000
 rtds_write 0x08100027 0x00000000
-rtds_write 0x0810002E 0x00000000
-rtds_write 0x0810002F 0x00000000
 rtds_write 0x08100030 0x00000000
 rtds_write 0x08100031 0x00000000
-rtds_write 0x08100032 0x00000001
-rtds_write 0x08100033 0x00000001
-rtds_write 0x08100034 0x00000000
-rtds_write 0x08100035 0x00000000
+rtds_write 0x08100032 0x00000000
+rtds_write 0x08100033 0x00000000
+rtds_write 0x08100034 0x00000001
+rtds_write 0x08100035 0x00000001
 rtds_write 0x08100036 0x00000000
 rtds_write 0x08100037 0x00000000
 rtds_write 0x08100038 0x00000000
 rtds_write 0x08100039 0x00000000
+rtds_write 0x0810003A 0x00000000
+rtds_write 0x0810003B 0x00000000
 rtds_file_write 0x08140000 igbt_leg_imem.txt
 rtds_file_write 0x08142000 igbt_leg_lut.txt
 rtds_write 0x08100040 0x00000004
@@ -99,18 +96,18 @@ rtds_write 0x08100044 0x00000000
 rtds_write 0x08100045 0x00000000
 rtds_write 0x08100046 0x00000000
 rtds_write 0x08100047 0x00000000
-rtds_write 0x0810004E 0x00000000
-rtds_write 0x0810004F 0x00000000
 rtds_write 0x08100050 0x00000000
 rtds_write 0x08100051 0x00000000
-rtds_write 0x08100052 0x00000001
-rtds_write 0x08100053 0x00000001
-rtds_write 0x08100054 0x00000000
-rtds_write 0x08100055 0x00000000
+rtds_write 0x08100052 0x00000000
+rtds_write 0x08100053 0x00000000
+rtds_write 0x08100054 0x00000001
+rtds_write 0x08100055 0x00000001
 rtds_write 0x08100056 0x00000000
 rtds_write 0x08100057 0x00000000
 rtds_write 0x08100058 0x00000000
 rtds_write 0x08100059 0x00000000
+rtds_write 0x0810005A 0x00000000
+rtds_write 0x0810005B 0x00000000
 rtds_file_write 0x08148000 igbt_leg_imem.txt
 rtds_file_write 0x0814A000 igbt_leg_lut.txt
 rtds_write 0x08100060 0x00000004
@@ -120,18 +117,18 @@ rtds_write 0x08100064 0x00000000
 rtds_write 0x08100065 0x00000000
 rtds_write 0x08100066 0x00000000
 rtds_write 0x08100067 0x00000000
-rtds_write 0x0810006E 0x00000000
-rtds_write 0x0810006F 0x00000000
 rtds_write 0x08100070 0x00000000
 rtds_write 0x08100071 0x00000000
-rtds_write 0x08100072 0x00000001
-rtds_write 0x08100073 0x00000001
-rtds_write 0x08100074 0x00000000
-rtds_write 0x08100075 0x00000000
+rtds_write 0x08100072 0x00000000
+rtds_write 0x08100073 0x00000000
+rtds_write 0x08100074 0x00000001
+rtds_write 0x08100075 0x00000001
 rtds_write 0x08100076 0x00000000
 rtds_write 0x08100077 0x00000000
 rtds_write 0x08100078 0x00000000
 rtds_write 0x08100079 0x00000000
+rtds_write 0x0810007A 0x00000000
+rtds_write 0x0810007B 0x00000000
 rtds_file_write 0x08150000 igbt_leg_imem.txt
 rtds_file_write 0x08152000 igbt_leg_lut.txt
 
@@ -166,21 +163,21 @@ rtds_write 0x0810002A 0x00000000
 rtds_write 0x0810002B 0x00000000
 rtds_write 0x0810002C 0x00000000
 rtds_write 0x0810002D 0x00000001
-rtds_write 0x08100022 0x00000000
+rtds_write 0x08100022 0x00000003
 rtds_write 0x08100048 0x00000000
 rtds_write 0x08100049 0x00000000
 rtds_write 0x0810004A 0x00000000
 rtds_write 0x0810004B 0x00000000
 rtds_write 0x0810004C 0x00000002
 rtds_write 0x0810004D 0x00000003
-rtds_write 0x08100042 0x00000000
+rtds_write 0x08100042 0x00000003
 rtds_write 0x08100068 0x00000000
 rtds_write 0x08100069 0x00000000
 rtds_write 0x0810006A 0x00000000
 rtds_write 0x0810006B 0x00000000
 rtds_write 0x0810006C 0x00000004
 rtds_write 0x0810006D 0x00000005
-rtds_write 0x08100062 0x00000000
+rtds_write 0x08100062 0x00000003
 
 REM SPC0 Comparators initialization...
 
@@ -200,8 +197,6 @@ rtds_write 0x08500024 0x00000000
 rtds_write 0x08500025 0x00000000
 rtds_write 0x08500026 0x00000000
 rtds_write 0x08500027 0x00000000
-rtds_write 0x0850002E 0x00000000
-rtds_write 0x0850002F 0x00000000
 rtds_write 0x08500030 0x00000000
 rtds_write 0x08500031 0x00000000
 rtds_write 0x08500032 0x00000000
@@ -212,6 +207,8 @@ rtds_write 0x08500036 0x00000000
 rtds_write 0x08500037 0x00000000
 rtds_write 0x08500038 0x00000000
 rtds_write 0x08500039 0x00000000
+rtds_write 0x0850003A 0x00000000
+rtds_write 0x0850003B 0x00000000
 rtds_file_write 0x08540000 trivial_imem.txt
 rtds_file_write 0x08542000 trivial_lut.txt
 rtds_write 0x08500040 0x00000000
@@ -221,8 +218,6 @@ rtds_write 0x08500044 0x00000000
 rtds_write 0x08500045 0x00000000
 rtds_write 0x08500046 0x00000000
 rtds_write 0x08500047 0x00000000
-rtds_write 0x0850004E 0x00000000
-rtds_write 0x0850004F 0x00000000
 rtds_write 0x08500050 0x00000000
 rtds_write 0x08500051 0x00000000
 rtds_write 0x08500052 0x00000000
@@ -233,6 +228,8 @@ rtds_write 0x08500056 0x00000000
 rtds_write 0x08500057 0x00000000
 rtds_write 0x08500058 0x00000000
 rtds_write 0x08500059 0x00000000
+rtds_write 0x0850005A 0x00000000
+rtds_write 0x0850005B 0x00000000
 rtds_file_write 0x08548000 trivial_imem.txt
 rtds_file_write 0x0854A000 trivial_lut.txt
 rtds_write 0x08500060 0x00000000
@@ -242,8 +239,6 @@ rtds_write 0x08500064 0x00000000
 rtds_write 0x08500065 0x00000000
 rtds_write 0x08500066 0x00000000
 rtds_write 0x08500067 0x00000000
-rtds_write 0x0850006E 0x00000000
-rtds_write 0x0850006F 0x00000000
 rtds_write 0x08500070 0x00000000
 rtds_write 0x08500071 0x00000000
 rtds_write 0x08500072 0x00000000
@@ -254,6 +249,8 @@ rtds_write 0x08500076 0x00000000
 rtds_write 0x08500077 0x00000000
 rtds_write 0x08500078 0x00000000
 rtds_write 0x08500079 0x00000000
+rtds_write 0x0850007A 0x00000000
+rtds_write 0x0850007B 0x00000000
 rtds_file_write 0x08550000 trivial_imem.txt
 rtds_file_write 0x08552000 trivial_lut.txt
 
@@ -286,107 +283,6 @@ REM SPC1 FSM digital input pin assignments...
 REM SPC1 Comparators initialization...
 
 REM SPC1 DTSM initialization...
-
-REM *****************************************:
-REM * SPC2 entries:
-REM *****************************************:
-
-REM SPC2 Topology Selector (TS) initialization...
-rtds_file_write 0x08980000 SPC2_red_table.txt
-
-rtds_write 0x08900020 0x00000000
-rtds_write 0x08900021 0x00000000
-rtds_write 0x08900023 0x00000000
-rtds_write 0x08900024 0x00000000
-rtds_write 0x08900025 0x00000000
-rtds_write 0x08900026 0x00000000
-rtds_write 0x08900027 0x00000000
-rtds_write 0x0890002E 0x00000000
-rtds_write 0x0890002F 0x00000000
-rtds_write 0x08900030 0x00000000
-rtds_write 0x08900031 0x00000000
-rtds_write 0x08900032 0x00000000
-rtds_write 0x08900033 0x00000000
-rtds_write 0x08900034 0x00000000
-rtds_write 0x08900035 0x00000000
-rtds_write 0x08900036 0x00000000
-rtds_write 0x08900037 0x00000000
-rtds_write 0x08900038 0x00000000
-rtds_write 0x08900039 0x00000000
-rtds_file_write 0x08940000 trivial_imem.txt
-rtds_file_write 0x08942000 trivial_lut.txt
-rtds_write 0x08900040 0x00000000
-rtds_write 0x08900041 0x00000000
-rtds_write 0x08900043 0x00000000
-rtds_write 0x08900044 0x00000000
-rtds_write 0x08900045 0x00000000
-rtds_write 0x08900046 0x00000000
-rtds_write 0x08900047 0x00000000
-rtds_write 0x0890004E 0x00000000
-rtds_write 0x0890004F 0x00000000
-rtds_write 0x08900050 0x00000000
-rtds_write 0x08900051 0x00000000
-rtds_write 0x08900052 0x00000000
-rtds_write 0x08900053 0x00000000
-rtds_write 0x08900054 0x00000000
-rtds_write 0x08900055 0x00000000
-rtds_write 0x08900056 0x00000000
-rtds_write 0x08900057 0x00000000
-rtds_write 0x08900058 0x00000000
-rtds_write 0x08900059 0x00000000
-rtds_file_write 0x08948000 trivial_imem.txt
-rtds_file_write 0x0894A000 trivial_lut.txt
-rtds_write 0x08900060 0x00000000
-rtds_write 0x08900061 0x00000000
-rtds_write 0x08900063 0x00000000
-rtds_write 0x08900064 0x00000000
-rtds_write 0x08900065 0x00000000
-rtds_write 0x08900066 0x00000000
-rtds_write 0x08900067 0x00000000
-rtds_write 0x0890006E 0x00000000
-rtds_write 0x0890006F 0x00000000
-rtds_write 0x08900070 0x00000000
-rtds_write 0x08900071 0x00000000
-rtds_write 0x08900072 0x00000000
-rtds_write 0x08900073 0x00000000
-rtds_write 0x08900074 0x00000000
-rtds_write 0x08900075 0x00000000
-rtds_write 0x08900076 0x00000000
-rtds_write 0x08900077 0x00000000
-rtds_write 0x08900078 0x00000000
-rtds_write 0x08900079 0x00000000
-rtds_file_write 0x08950000 trivial_imem.txt
-rtds_file_write 0x08952000 trivial_lut.txt
-
-REM SPC2 Variable Delay initialization...
-rtds_write 0x08900001 0x0
-
-REM SPC2 Output voltage compare mode...
-rtds_write 0x08900005 0x00000000
-
-REM SPC2 Matrix multiplier initialization...
-rtds_file_write 0x08800000 SPC2_Com_Word.txt
-rtds_file_write 0x08820000 SPC2_Com_LUT.txt
-rtds_file_write 0x08880000 SPC2_MAC0.txt
-rtds_file_write 0x08882000 SPC2_MAC1.txt
-rtds_file_write 0x08884000 SPC2_MAC2.txt
-rtds_file_write 0x08886000 SPC2_MAC3.txt
-
-rtds_write 0x08900004 0x00000000
-REM SPC2 Contactors initialization...
-
-REM SPC2 GDS compensation settings...
-rtds_write 0x088C0000 0x00000000
-rtds_write 0x088C0001 0x00000000
-rtds_write 0x088C0004 0x00000000
-rtds_write 0x088C0005 0x00000000
-rtds_write 0x08900000 0x00000000
-
-REM SPC2 FSM digital input pin assignments...
-
-REM SPC2 Comparators initialization...
-
-REM SPC2 DTSM initialization...
 
 *****************************************:
 

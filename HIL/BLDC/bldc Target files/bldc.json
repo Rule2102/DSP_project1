@@ -2,7 +2,7 @@
     "ver": "1.0",
     "_cls": "Model",
     "name": "bldc",
-    "core_model_id": "b65c1290-19f1-11eb-aab1-f8597183d839",
+    "core_model_id": "c4456d33-19f5-11eb-83d6-54ee757040d7",
     "vars": {
         "pi": 3.141592653589793,
         "p": 3,
@@ -17,7 +17,6 @@
             "dev_settings": {
                 "hil_descr": {
                     "general": {
-                        "hw_device": true,
                         "calibration": true,
                         "cmd_executor": true,
                         "standalone_boot": true,
@@ -36,7 +35,7 @@
                         "gps_pps_support": false,
                         "gpio_width": 0,
                         "fw_mng_update_time": 4,
-                        "fw_mng_st_chk_time": 30,
+                        "fw_mng_st_chk_time": 15,
                         "active_fuses": true,
                         "sys_clk_freq": 160000000.0,
                         "cop_dmem_addr": 1426063616,
@@ -44,14 +43,14 @@
                         "common_phys_baseaddr": 1073741824
                     },
                     "fpga_solver": {
-                        "spc_num": 3,
+                        "spc_num": 2,
                         "topology_selector": true,
-                        "mvm_mem_map_id": 1,
+                        "mvm_mem_map_id": 2,
                         "sg_ch_num": 12,
                         "lt_ch_num": 8,
                         "mchn_num": 1,
-                        "dtsm_per_spc": 0,
-                        "tve_per_spc": 0,
+                        "dtsm_per_spc": 32,
+                        "tve_per_spc": 16,
                         "ctc_per_spc": 6,
                         "cmp_per_spc": 6,
                         "pwm_channels_num": 12,
@@ -59,11 +58,10 @@
                         "gds_per_fsm": 6,
                         "gds_oversampling": true,
                         "gds_var_del": true,
-                        "pwr_loss_calc": false,
+                        "pwr_loss_calc": true,
                         "mac_num": 4,
                         "mmem_size": 4096,
                         "mchn_3d_lut": false,
-                        "mchn_3d_lut_size": 0,
                         "mchn_absenc": false,
                         "forward_voltage_drop": true,
                         "clk_freq": 160000000.0,
@@ -98,8 +96,7 @@
                         "mchn_mech_latency": 48,
                         "mchn_3d_lut_latency_fixed": 58,
                         "sg_channel_latency": 42,
-                        "sg_max_period": 16777216,
-                        "lut_channel_latency": 54,
+                        "lut_channel_latency": 61,
                         "di_ch_num": 32,
                         "dc_ch_num": 64,
                         "dc_bus_update_period": 1,
@@ -339,7 +336,6 @@
                         "synchro_ki": 46,
                         "synchro_pi_shift": 47,
                         "cu_2_mv_om_init_reset": 48,
-                        "gp_hssl_link_up": 49,
                         "cu_sp_init_timeout": 51,
                         "hil_dev_unit_sum": 52,
                         "cu_before_load": 53,
@@ -349,7 +345,7 @@
                         "sp_init_dur": 65,
                         "sp_init_timeout_modulo": 66,
                         "comm_cpu_timeout_modulo": 67,
-                        "cu_cpu_cfg": 80,
+                        " cu_cpu_cfg": 80,
                         "gp_reg0": 96,
                         "gp_reg1": 97,
                         "gp_reg2": 98,
@@ -468,6 +464,7 @@
                         "enc_ppr": 20,
                         "enc_ppr_int": 21,
                         "enc_ppr_rec": 22,
+                        "lut_angle_seg_max": 23,
                         "const_load": 24,
                         "linear_load": 25,
                         "square_load": 26,
@@ -501,14 +498,8 @@
                         "enc_cnt": 57,
                         "sin_enc_a": 58,
                         "sin_enc_b": 59,
-                        "lut_angle1_max": 64,
-                        "lut_angle1_seg_max": 65,
-                        "lut_angle1": 66,
-                        "lut_angle1_segment": 67,
-                        "lut_angle2_max": 68,
-                        "lut_angle2_seg_max": 69,
-                        "lut_angle2": 70,
-                        "lut_angle2_segment": 71
+                        "lut_angle": 60,
+                        "lut_angle_segment": 61
                     },
                     "MS_RB_MAP_REG": {
                         "mvm_in_addr": 0,
@@ -849,24 +840,22 @@
                         "fsm4_di_addr": 43,
                         "fsm5_di_addr": 44,
                         "fsm6_di_addr": 45,
-                        "fsm_source_sel": 46,
-                        "fsm_sw_gds": 47,
-                        "fsm_sup_ctrl_mode": 48,
-                        "fsm_sup_ctrl_val": 49,
-                        "fsm_gds_disc_en": 50,
-                        "fsm_gds_disc_inv_mask": 51,
-                        "fsm_gds1_disc_mv_addr": 52,
-                        "fsm_gds2_disc_mv_addr": 53,
-                        "fsm_gds3_disc_mv_addr": 54,
-                        "fsm_gds4_disc_mv_addr": 55,
-                        "fsm_gds5_disc_mv_addr": 56,
-                        "fsm_gds6_disc_mv_addr": 57,
-                        "fsm_fvd_val1": 58,
-                        "fsm_fvd_val2": 59,
-                        "fsm_fvd_val3": 60,
-                        "fsm_fvd_val4": 61,
-                        "fsm_fvd_val5": 62,
-                        "fsm_fvd_val6": 63,
+                        "fsm_source_sel": 48,
+                        "fsm_sw_gds": 49,
+                        "fsm_sup_ctrl_mode": 50,
+                        "fsm_sup_ctrl_val": 51,
+                        "fsm_gds_disc_en": 52,
+                        "fsm_gds_disc_inv_mask": 53,
+                        "fsm_gds1_disc_mv_addr": 54,
+                        "fsm_gds2_disc_mv_addr": 55,
+                        "fsm_gds3_disc_mv_addr": 56,
+                        "fsm_gds4_disc_mv_addr": 57,
+                        "fsm_gds5_disc_mv_addr": 58,
+                        "fsm_gds6_disc_mv_addr": 59,
+                        "fsm_fvd_val1": 60,
+                        "fsm_fvd_val2": 61,
+                        "fsm_fvd_val3": 62,
+                        "fsm_fvd_val4": 63,
                         "sw_loss_rd_en": 512,
                         "sw_loss_rd_period": 513,
                         "sw_loss_gds1_on_time": 520,
@@ -940,9 +929,9 @@
                     }
                 },
                 "general": {
-                    "sw_version": "2020.3",
+                    "sw_version": "2020.2",
                     "hil_device": "HIL402",
-                    "hil_configuration_id": 1,
+                    "hil_configuration_id": 4,
                     "simulation_method": "exact",
                     "simulation_time_step": ".5e-6",
                     "simulation_discret_scaling": "1.0",
@@ -963,90 +952,792 @@
                     "sys_sp_rate_2": 0.05,
                     "sys_cpu_optimization": "high",
                     "cpl_dynamics_analysis": false,
-                    "matrix_based_reduction": true,
-                    "export_ss_to_pickle": false,
-                    "cce_platform": "generic",
-                    "cce_custom_type_int": "",
-                    "cce_custom_type_real": "",
-                    "cce_custom_type_uint": "",
-                    "cce_directory": "",
-                    "cce_use_custom_type_int": "int",
-                    "cce_use_custom_type_real": "double",
-                    "cce_use_custom_type_uint": "unsigned int",
-                    "cce_use_relative_names": false
+                    "matrix_based_reduction": true
                 }
             },
             "nodes": [
                 {
                     "_cls": "Node",
-                    "id": 1802436088880,
+                    "id": 3081893888576,
                     "terminals": [
-                        1802392785584,
-                        1802436101360
+                        3081894636680,
+                        3081902568392
                     ]
                 },
                 {
                     "_cls": "Node",
-                    "id": 1802436088976,
+                    "id": 3081893888072,
                     "terminals": [
-                        1802436101408,
-                        1802436041552
+                        3081906334352,
+                        3081902981864
                     ]
                 },
                 {
                     "_cls": "Node",
-                    "id": 1802436089504,
+                    "id": 3081893891712,
                     "terminals": [
-                        1802436101456,
-                        1802436040160
+                        3081902569288,
+                        3081902982088
                     ]
                 },
                 {
                     "_cls": "Node",
-                    "id": 1802436090032,
+                    "id": 3081893595792,
                     "terminals": [
-                        1802410715264,
-                        1802436101312
+                        3081906331888,
+                        3081902981752
                     ]
                 },
                 {
                     "_cls": "Node",
-                    "id": 1802436088496,
+                    "id": 3081893889360,
                     "terminals": [
-                        1802435920032,
-                        1802410697536
+                        3081900055464,
+                        3081902981976
                     ]
                 },
                 {
                     "_cls": "Node",
-                    "id": 1802436089552,
+                    "id": 3081893152640,
                     "terminals": [
-                        1802410466992,
-                        1802435921232
+                        3081906284080,
+                        3081906333792
                     ]
                 },
                 {
                     "_cls": "Node",
-                    "id": 1802436042560,
+                    "id": 3081893154208,
                     "terminals": [
-                        1802436040112,
-                        1802436088160
+                        3081902570632,
+                        3081902586456
                     ]
                 },
                 {
                     "_cls": "Node",
-                    "id": 1802436088304,
+                    "id": 3083666885096,
                     "terminals": [
-                        1802436062128,
-                        1802436061792
+                        3081894634160,
+                        3081893888856
                     ]
                 }
             ],
             "components": [
                 {
                     "_cls": "Component",
-                    "id": 1802410696768,
-                    "name": "Ia3",
+                    "id": 3081902981640,
+                    "name": "Three Phase Inverter1",
+                    "vars": {},
+                    "comp_type": "Three Phase Inverter",
+                    "lib_fqn": "Converters.Three Phase Inverter",
+                    "composite": true,
+                    "properties": [],
+                    "terminals": [
+                        {
+                            "_cls": "Terminal",
+                            "id": 3081906333792,
+                            "name": "a_in",
+                            "kind": "pe",
+                            "dimension": [
+                                1
+                            ],
+                            "direction": null,
+                            "sp_type": null,
+                            "feedthrough": true
+                        },
+                        {
+                            "_cls": "Terminal",
+                            "id": 3081902981752,
+                            "name": "neg_out",
+                            "kind": "pe",
+                            "dimension": [
+                                1
+                            ],
+                            "direction": null,
+                            "sp_type": null,
+                            "feedthrough": true
+                        },
+                        {
+                            "_cls": "Terminal",
+                            "id": 3081902981864,
+                            "name": "pos_out",
+                            "kind": "pe",
+                            "dimension": [
+                                1
+                            ],
+                            "direction": null,
+                            "sp_type": null,
+                            "feedthrough": true
+                        },
+                        {
+                            "_cls": "Terminal",
+                            "id": 3081902981976,
+                            "name": "c_in",
+                            "kind": "pe",
+                            "dimension": [
+                                1
+                            ],
+                            "direction": null,
+                            "sp_type": null,
+                            "feedthrough": true
+                        },
+                        {
+                            "_cls": "Terminal",
+                            "id": 3081902982088,
+                            "name": "b_in",
+                            "kind": "pe",
+                            "dimension": [
+                                1
+                            ],
+                            "direction": null,
+                            "sp_type": null,
+                            "feedthrough": true
+                        }
+                    ],
+                    "masks": [
+                        {
+                            "_cls": "Mask",
+                            "vars": {
+                                "ITEM_PROPERTY": "property",
+                                "config_id": 4,
+                                "combo_values": [
+                                    "Digital input per switch",
+                                    "Digital input per leg",
+                                    "Internal modulator",
+                                    "Model"
+                                ],
+                                "prop_names": [
+                                    "cooling_input"
+                                ],
+                                "ITEM_COMPONENT": "component",
+                                "ctrl_src": "Digital input per switch",
+                                "delay_enabled": false,
+                                "stf_flag_en": false,
+                                "DEFINITION_METHOD_SIMPLE": "Voltage and Resistance",
+                                "losses_estimation": false,
+                                "fvd": false,
+                                "fvd_def_method": "Voltage and Resistance"
+                            },
+                            "properties": [
+                                {
+                                    "_cls": "Property",
+                                    "name": "fixed_delay",
+                                    "value": 1e-06,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "loss_exec_rate",
+                                    "value": 0.0001,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "var_delay_lut",
+                                    "value": [
+                                        -10.0,
+                                        1e-06,
+                                        10.0,
+                                        1e-06
+                                    ],
+                                    "vector": true,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "diode_Cth",
+                                    "value": [
+                                        0.0029,
+                                        0.0097,
+                                        0.1068,
+                                        0.85
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "preview_var_delay",
+                                    "value": "Preview",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "vd_table_out",
+                                    "value": [
+                                        1.2,
+                                        1.2,
+                                        1.2,
+                                        1.2,
+                                        1.2
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "switch_Cth",
+                                    "value": [
+                                        0.0029,
+                                        0.0097,
+                                        0.1068,
+                                        0.85
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sa_bot_logic",
+                                    "value": "active low",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sa_bot_I",
+                                    "value": "False",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sa_top_I",
+                                    "value": "False",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "switch_Rth",
+                                    "value": [
+                                        0.159,
+                                        0.133,
+                                        0.12,
+                                        0.038
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sb_top_I",
+                                    "value": "False",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sb_top",
+                                    "value": "3",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sb_bot_I",
+                                    "value": "False",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "diode_Tth",
+                                    "value": [
+                                        0.11,
+                                        0.0156,
+                                        0.00135,
+                                        0.000151
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "ctrl_src",
+                                    "value": "Digital input per switch",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "diode_Rth",
+                                    "value": [
+                                        0.159,
+                                        0.133,
+                                        0.12,
+                                        0.038
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sc_top_I",
+                                    "value": "False",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "v_sw",
+                                    "value": [
+                                        0.0,
+                                        600.0
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "op_mode",
+                                    "value": "Fixed carrier frequency",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sc_bot_I",
+                                    "value": "False",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "carrier_freq",
+                                    "value": 10000.0,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "switch_Tth",
+                                    "value": [
+                                        0.11,
+                                        0.0156,
+                                        0.00135,
+                                        0.000151
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "fvd",
+                                    "value": false,
+                                    "vector": false,
+                                    "calc_type": "bool"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "carr_ph_offset",
+                                    "value": [
+                                        0.0
+                                    ],
+                                    "vector": true,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "thermal_networks_type",
+                                    "value": "Foster",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "losses_estimation",
+                                    "value": false,
+                                    "vector": false,
+                                    "calc_type": "bool"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "d_time",
+                                    "value": 5e-06,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "fvd_def_method",
+                                    "value": "Voltage and Resistance",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "ref_sig_min_max",
+                                    "value": [
+                                        -1.0,
+                                        1.0
+                                    ],
+                                    "vector": true,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sb_top_logic",
+                                    "value": "active low",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Import_igbt_xml",
+                                    "value": "not selected",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "vce_table_out",
+                                    "value": [
+                                        1.3,
+                                        1.3,
+                                        1.3,
+                                        1.3,
+                                        1.3
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "load_mode",
+                                    "value": "on min",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sb_bot",
+                                    "value": "4",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "pwm_enable_inv",
+                                    "value": "active high",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Import_diode_xml",
+                                    "value": "not selected",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "ed_off_table_out",
+                                    "value": [
+                                        [
+                                            0.0,
+                                            2.75e-05,
+                                            0.00015,
+                                            0.000275,
+                                            0.0003
+                                        ],
+                                        [
+                                            0.00077,
+                                            0.0008800000000000001,
+                                            0.0017600000000000003,
+                                            0.0014960000000000002,
+                                            0.00198
+                                        ],
+                                        [
+                                            0.00143,
+                                            0.00198,
+                                            0.00264,
+                                            0.0033,
+                                            0.0037400000000000003
+                                        ],
+                                        [
+                                            0.00198,
+                                            0.00286,
+                                            0.0037400000000000003,
+                                            0.00418,
+                                            0.00495
+                                        ],
+                                        [
+                                            0.0024200000000000003,
+                                            0.0037400000000000003,
+                                            0.004620000000000001,
+                                            0.00506,
+                                            0.0055000000000000005
+                                        ]
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "execution_rate",
+                                    "value": "inherit",
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sb_bot_logic",
+                                    "value": "active low",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "pwm_enabling",
+                                    "value": false,
+                                    "vector": false,
+                                    "calc_type": "bool"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Vce",
+                                    "value": 1.3,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "et_on_table_out",
+                                    "value": [
+                                        [
+                                            0.0,
+                                            2.75e-05,
+                                            0.00015,
+                                            0.000275,
+                                            0.0003
+                                        ],
+                                        [
+                                            0.00133,
+                                            0.00152,
+                                            0.00304,
+                                            0.0025840000000000004,
+                                            0.00342
+                                        ],
+                                        [
+                                            0.00247,
+                                            0.00342,
+                                            0.00456,
+                                            0.0057,
+                                            0.00646
+                                        ],
+                                        [
+                                            0.00342,
+                                            0.00494,
+                                            0.00646,
+                                            0.00722,
+                                            0.00855
+                                        ],
+                                        [
+                                            0.0041800000000000006,
+                                            0.00646,
+                                            0.007980000000000001,
+                                            0.00874,
+                                            0.0095
+                                        ]
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sa_top",
+                                    "value": "1",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sc_top",
+                                    "value": "5",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "_control_property",
+                                    "value": "all low",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Rce",
+                                    "value": 0.0,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sa_top_logic",
+                                    "value": "active low",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sc_top_logic",
+                                    "value": "active low",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Vd",
+                                    "value": 1.2,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "dtv_flag_en",
+                                    "value": false,
+                                    "vector": false,
+                                    "calc_type": "bool"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sc_bot",
+                                    "value": "6",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sa_bot",
+                                    "value": "2",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Rd",
+                                    "value": 0.0,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "pwm_enable_di",
+                                    "value": "13",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Sc_bot_logic",
+                                    "value": "active low",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "temp_estimation",
+                                    "value": false,
+                                    "vector": false,
+                                    "calc_type": "bool"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "i_sw",
+                                    "value": [
+                                        0.0,
+                                        6.0,
+                                        12.0,
+                                        18.0,
+                                        24.0
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "et_off_table_out",
+                                    "value": [
+                                        [
+                                            0.0,
+                                            2.75e-05,
+                                            0.00015,
+                                            0.000275,
+                                            0.0003
+                                        ],
+                                        [
+                                            0.0007349999999999999,
+                                            0.00084,
+                                            0.00168,
+                                            0.001428,
+                                            0.00189
+                                        ],
+                                        [
+                                            0.001365,
+                                            0.00189,
+                                            0.0025199999999999997,
+                                            0.00315,
+                                            0.00357
+                                        ],
+                                        [
+                                            0.00189,
+                                            0.00273,
+                                            0.00357,
+                                            0.00399,
+                                            0.004725
+                                        ],
+                                        [
+                                            0.00231,
+                                            0.00357,
+                                            0.00441,
+                                            0.004829999999999999,
+                                            0.0052499999999999995
+                                        ]
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "vout_cmp_pullup_mode",
+                                    "value": false,
+                                    "vector": false,
+                                    "calc_type": "bool"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "delay_enabled",
+                                    "value": false,
+                                    "vector": false,
+                                    "calc_type": "bool"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "temp_sw",
+                                    "value": [
+                                        25.0,
+                                        50.0,
+                                        75.0,
+                                        100.0,
+                                        125.0
+                                    ],
+                                    "vector": false,
+                                    "calc_type": "generic"
+                                }
+                            ]
+                        }
+                    ],
+                    "parent_comp_id": null,
+                    "target_cpu": null,
+                    "selected_for_export": false
+                },
+                {
+                    "_cls": "Component",
+                    "id": 3081906285144,
+                    "name": "Ia1",
                     "vars": {},
                     "comp_type": "Current Measurement",
                     "lib_fqn": "Measurements.Current Measurement",
@@ -1055,7 +1746,155 @@
                     "terminals": [
                         {
                             "_cls": "Terminal",
-                            "id": 1802410715264,
+                            "id": 3081894634160,
+                            "name": "n_node",
+                            "kind": "pe",
+                            "dimension": [
+                                1
+                            ],
+                            "direction": null,
+                            "sp_type": null,
+                            "feedthrough": true
+                        },
+                        {
+                            "_cls": "Terminal",
+                            "id": 3081906284080,
+                            "name": "p_node",
+                            "kind": "pe",
+                            "dimension": [
+                                1
+                            ],
+                            "direction": null,
+                            "sp_type": null,
+                            "feedthrough": true
+                        }
+                    ],
+                    "masks": [
+                        {
+                            "_cls": "Mask",
+                            "vars": {
+                                "prop_names": [
+                                    "host_device",
+                                    "output_to_device"
+                                ],
+                                "ITEM_COMPONENT": "component",
+                                "operator": "greater",
+                                "threshold": 0.0,
+                                "cmp_abs_value": "False",
+                                "bw_limit": "True"
+                            },
+                            "properties": [
+                                {
+                                    "_cls": "Property",
+                                    "name": "bw_limit",
+                                    "value": "True",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "execution_rate",
+                                    "value": 0.0001,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "override_signal_name",
+                                    "value": false,
+                                    "vector": false,
+                                    "calc_type": "bool"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "cmp_abs_value",
+                                    "value": "False",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "sig_output",
+                                    "value": "False",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "signal_name",
+                                    "value": "Ia1",
+                                    "vector": false,
+                                    "calc_type": "signal_name"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "feed_forward",
+                                    "value": "true",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "frequency",
+                                    "value": 31831.0,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "operator",
+                                    "value": "greater",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "comparator_enable",
+                                    "value": "False",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "visible",
+                                    "value": true,
+                                    "vector": false,
+                                    "calc_type": "bool"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "addr",
+                                    "value": 0,
+                                    "vector": false,
+                                    "calc_type": "uint"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "threshold",
+                                    "value": 0.0,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                }
+                            ]
+                        }
+                    ],
+                    "parent_comp_id": null,
+                    "target_cpu": null,
+                    "selected_for_export": false
+                },
+                {
+                    "_cls": "Component",
+                    "id": 3081902584048,
+                    "name": "Ia2",
+                    "vars": {},
+                    "comp_type": "Current Measurement",
+                    "lib_fqn": "Measurements.Current Measurement",
+                    "composite": true,
+                    "properties": [],
+                    "terminals": [
+                        {
+                            "_cls": "Terminal",
+                            "id": 3081902569288,
                             "name": "p_node",
                             "kind": "pe",
                             "dimension": [
@@ -1067,7 +1906,7 @@
                         },
                         {
                             "_cls": "Terminal",
-                            "id": 1802410697536,
+                            "id": 3081902586456,
                             "name": "n_node",
                             "kind": "pe",
                             "dimension": [
@@ -1087,13 +1926,16 @@
                                     "output_to_device"
                                 ],
                                 "ITEM_COMPONENT": "component",
-                                "bw_limit": true
+                                "operator": "greater",
+                                "threshold": 0.0,
+                                "cmp_abs_value": "False",
+                                "bw_limit": "True"
                             },
                             "properties": [
                                 {
                                     "_cls": "Property",
-                                    "name": "operator",
-                                    "value": "greater",
+                                    "name": "feed_forward",
+                                    "value": "true",
                                     "vector": false,
                                     "calc_type": "string"
                                 },
@@ -1106,17 +1948,24 @@
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "feed_forward",
-                                    "value": "true",
+                                    "name": "addr",
+                                    "value": 0,
+                                    "vector": false,
+                                    "calc_type": "uint"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "bw_limit",
+                                    "value": "True",
                                     "vector": false,
                                     "calc_type": "string"
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "sig_output",
-                                    "value": false,
+                                    "name": "signal_name",
+                                    "value": "Ia2",
                                     "vector": false,
-                                    "calc_type": "bool"
+                                    "calc_type": "signal_name"
                                 },
                                 {
                                     "_cls": "Property",
@@ -1127,22 +1976,15 @@
                                 },
                                 {
                                     "_cls": "Property",
+                                    "name": "sig_output",
+                                    "value": "False",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
                                     "name": "cmp_abs_value",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "threshold",
-                                    "value": 0.0,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "bw_limit",
-                                    "value": "True",
+                                    "value": "False",
                                     "vector": false,
                                     "calc_type": "string"
                                 },
@@ -1155,31 +1997,10 @@
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "comparator_enable",
-                                    "value": false,
+                                    "name": "operator",
+                                    "value": "greater",
                                     "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "sig_output_filt_and_full_bw",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "addr",
-                                    "value": 0,
-                                    "vector": false,
-                                    "calc_type": "uint"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "signal_name",
-                                    "value": "Ia3",
-                                    "vector": false,
-                                    "calc_type": "signal_name"
+                                    "calc_type": "string"
                                 },
                                 {
                                     "_cls": "Property",
@@ -1187,21 +2008,31 @@
                                     "value": true,
                                     "vector": false,
                                     "calc_type": "bool"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "threshold",
+                                    "value": 0.0,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "comparator_enable",
+                                    "value": "False",
+                                    "vector": false,
+                                    "calc_type": "string"
                                 }
                             ]
                         }
                     ],
                     "parent_comp_id": null,
                     "target_cpu": null,
-                    "selected_for_export": false,
-                    "root_for_export": false,
-                    "supported_platforms": [
-                        "generic"
-                    ]
+                    "selected_for_export": false
                 },
                 {
                     "_cls": "Component",
-                    "id": 1802436040784,
+                    "id": 3081906334520,
                     "name": "Vs1",
                     "vars": {
                         "number_of_terminals": 0
@@ -1210,6 +2041,27 @@
                     "lib_fqn": "Sources.Voltage Source",
                     "composite": false,
                     "properties": [
+                        {
+                            "_cls": "Property",
+                            "name": "addr",
+                            "value": 0,
+                            "vector": false,
+                            "calc_type": "uint"
+                        },
+                        {
+                            "_cls": "Property",
+                            "name": "execution_rate",
+                            "value": 0.0001,
+                            "vector": false,
+                            "calc_type": "real"
+                        },
+                        {
+                            "_cls": "Property",
+                            "name": "param_set",
+                            "value": "1phase",
+                            "vector": false,
+                            "calc_type": "string"
+                        },
                         {
                             "_cls": "Property",
                             "name": "cpd_visible",
@@ -1240,15 +2092,15 @@
                         },
                         {
                             "_cls": "Property",
-                            "name": "L1",
-                            "value": 0.1,
+                            "name": "parent_label",
+                            "value": "",
                             "vector": false,
-                            "calc_type": "real"
+                            "calc_type": "string"
                         },
                         {
                             "_cls": "Property",
-                            "name": "init_const_value",
-                            "value": 520.0,
+                            "name": "L1",
+                            "value": 0.1,
                             "vector": false,
                             "calc_type": "real"
                         },
@@ -1261,8 +2113,22 @@
                         },
                         {
                             "_cls": "Property",
+                            "name": "init_const_value",
+                            "value": 520.0,
+                            "vector": false,
+                            "calc_type": "real"
+                        },
+                        {
+                            "_cls": "Property",
                             "name": "signal_name",
                             "value": "",
+                            "vector": false,
+                            "calc_type": "string"
+                        },
+                        {
+                            "_cls": "Property",
+                            "name": "sig_input",
+                            "value": "False",
                             "vector": false,
                             "calc_type": "string"
                         },
@@ -1275,29 +2141,8 @@
                         },
                         {
                             "_cls": "Property",
-                            "name": "init_phase",
-                            "value": 0.0,
-                            "vector": false,
-                            "calc_type": "real"
-                        },
-                        {
-                            "_cls": "Property",
-                            "name": "sig_input",
-                            "value": "False",
-                            "vector": false,
-                            "calc_type": "string"
-                        },
-                        {
-                            "_cls": "Property",
                             "name": "type",
                             "value": "signal generator",
-                            "vector": false,
-                            "calc_type": "string"
-                        },
-                        {
-                            "_cls": "Property",
-                            "name": "param_set",
-                            "value": "1phase",
                             "vector": false,
                             "calc_type": "string"
                         },
@@ -1307,20 +2152,6 @@
                             "value": 0.0,
                             "vector": false,
                             "calc_type": "real"
-                        },
-                        {
-                            "_cls": "Property",
-                            "name": "parent_label",
-                            "value": "",
-                            "vector": false,
-                            "calc_type": "string"
-                        },
-                        {
-                            "_cls": "Property",
-                            "name": "addr",
-                            "value": 0,
-                            "vector": false,
-                            "calc_type": "uint"
                         },
                         {
                             "_cls": "Property",
@@ -1338,8 +2169,8 @@
                         },
                         {
                             "_cls": "Property",
-                            "name": "execution_rate",
-                            "value": 0.0001,
+                            "name": "init_phase",
+                            "value": 0.0,
                             "vector": false,
                             "calc_type": "real"
                         }
@@ -1347,7 +2178,7 @@
                     "terminals": [
                         {
                             "_cls": "Terminal",
-                            "id": 1802436041552,
+                            "id": 3081906334352,
                             "name": "p_node",
                             "kind": "pe",
                             "dimension": [],
@@ -1357,7 +2188,7 @@
                         },
                         {
                             "_cls": "Terminal",
-                            "id": 1802436040160,
+                            "id": 3081906331888,
                             "name": "n_node",
                             "kind": "pe",
                             "dimension": [],
@@ -1369,16 +2200,12 @@
                     "masks": [],
                     "parent_comp_id": null,
                     "target_cpu": null,
-                    "selected_for_export": false,
-                    "root_for_export": false,
-                    "supported_platforms": [
-                        "generic"
-                    ]
+                    "selected_for_export": false
                 },
                 {
                     "_cls": "Component",
-                    "id": 1802410466368,
-                    "name": "Ia1",
+                    "id": 3081894635896,
+                    "name": "Ia3",
                     "vars": {},
                     "comp_type": "Current Measurement",
                     "lib_fqn": "Measurements.Current Measurement",
@@ -1387,8 +2214,8 @@
                     "terminals": [
                         {
                             "_cls": "Terminal",
-                            "id": 1802392785584,
-                            "name": "p_node",
+                            "id": 3081894636680,
+                            "name": "n_node",
                             "kind": "pe",
                             "dimension": [
                                 1
@@ -1399,8 +2226,8 @@
                         },
                         {
                             "_cls": "Terminal",
-                            "id": 1802410466992,
-                            "name": "n_node",
+                            "id": 3081900055464,
+                            "name": "p_node",
                             "kind": "pe",
                             "dimension": [
                                 1
@@ -1419,15 +2246,18 @@
                                     "output_to_device"
                                 ],
                                 "ITEM_COMPONENT": "component",
-                                "bw_limit": true
+                                "operator": "greater",
+                                "threshold": 0.0,
+                                "cmp_abs_value": "False",
+                                "bw_limit": "True"
                             },
                             "properties": [
                                 {
                                     "_cls": "Property",
                                     "name": "sig_output",
-                                    "value": false,
+                                    "value": "False",
                                     "vector": false,
-                                    "calc_type": "bool"
+                                    "calc_type": "string"
                                 },
                                 {
                                     "_cls": "Property",
@@ -1438,59 +2268,10 @@
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "frequency",
-                                    "value": 31831.0,
+                                    "name": "signal_name",
+                                    "value": "Ia3",
                                     "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "comparator_enable",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "override_signal_name",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "sig_output_filt_and_full_bw",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "bw_limit",
-                                    "value": "True",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "threshold",
-                                    "value": 0.0,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "cmp_abs_value",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "feed_forward",
-                                    "value": "true",
-                                    "vector": false,
-                                    "calc_type": "string"
+                                    "calc_type": "signal_name"
                                 },
                                 {
                                     "_cls": "Property",
@@ -1508,108 +2289,29 @@
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "signal_name",
-                                    "value": "Ia1",
+                                    "name": "frequency",
+                                    "value": 31831.0,
                                     "vector": false,
-                                    "calc_type": "signal_name"
+                                    "calc_type": "real"
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "addr",
-                                    "value": 0,
+                                    "name": "feed_forward",
+                                    "value": "true",
                                     "vector": false,
-                                    "calc_type": "uint"
-                                }
-                            ]
-                        }
-                    ],
-                    "parent_comp_id": null,
-                    "target_cpu": null,
-                    "selected_for_export": false,
-                    "root_for_export": false,
-                    "supported_platforms": [
-                        "generic"
-                    ]
-                },
-                {
-                    "_cls": "Component",
-                    "id": 1802436062464,
-                    "name": "Ia2",
-                    "vars": {},
-                    "comp_type": "Current Measurement",
-                    "lib_fqn": "Measurements.Current Measurement",
-                    "composite": true,
-                    "properties": [],
-                    "terminals": [
-                        {
-                            "_cls": "Terminal",
-                            "id": 1802436040112,
-                            "name": "p_node",
-                            "kind": "pe",
-                            "dimension": [
-                                1
-                            ],
-                            "direction": null,
-                            "sp_type": null,
-                            "feedthrough": true
-                        },
-                        {
-                            "_cls": "Terminal",
-                            "id": 1802436062128,
-                            "name": "n_node",
-                            "kind": "pe",
-                            "dimension": [
-                                1
-                            ],
-                            "direction": null,
-                            "sp_type": null,
-                            "feedthrough": true
-                        }
-                    ],
-                    "masks": [
-                        {
-                            "_cls": "Mask",
-                            "vars": {
-                                "prop_names": [
-                                    "host_device",
-                                    "output_to_device"
-                                ],
-                                "ITEM_COMPONENT": "component",
-                                "bw_limit": true
-                            },
-                            "properties": [
-                                {
-                                    "_cls": "Property",
-                                    "name": "visible",
-                                    "value": true,
-                                    "vector": false,
-                                    "calc_type": "bool"
+                                    "calc_type": "string"
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "signal_name",
-                                    "value": "Ia2",
-                                    "vector": false,
-                                    "calc_type": "signal_name"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "addr",
-                                    "value": 0,
-                                    "vector": false,
-                                    "calc_type": "uint"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "cmp_abs_value",
+                                    "name": "override_signal_name",
                                     "value": false,
                                     "vector": false,
                                     "calc_type": "bool"
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "feed_forward",
-                                    "value": "true",
+                                    "name": "comparator_enable",
+                                    "value": "False",
                                     "vector": false,
                                     "calc_type": "string"
                                 },
@@ -1622,57 +2324,22 @@
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "comparator_enable",
-                                    "value": false,
+                                    "name": "addr",
+                                    "value": 0,
                                     "vector": false,
-                                    "calc_type": "bool"
+                                    "calc_type": "uint"
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "override_signal_name",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "sig_output_filt_and_full_bw",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "frequency",
-                                    "value": 31831.0,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "threshold",
-                                    "value": 0.0,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "sig_output",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "operator",
-                                    "value": "greater",
+                                    "name": "cmp_abs_value",
+                                    "value": "False",
                                     "vector": false,
                                     "calc_type": "string"
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "execution_rate",
-                                    "value": 0.0001,
+                                    "name": "threshold",
+                                    "value": 0.0,
                                     "vector": false,
                                     "calc_type": "real"
                                 }
@@ -1681,15 +2348,11 @@
                     ],
                     "parent_comp_id": null,
                     "target_cpu": null,
-                    "selected_for_export": false,
-                    "root_for_export": false,
-                    "supported_platforms": [
-                        "generic"
-                    ]
+                    "selected_for_export": false
                 },
                 {
                     "_cls": "Component",
-                    "id": 1802410715456,
+                    "id": 3081902571472,
                     "name": "BLDC",
                     "vars": {},
                     "comp_type": "Permanent Magnet Synchronous Machine with Salient Rotor",
@@ -1699,7 +2362,19 @@
                     "terminals": [
                         {
                             "_cls": "Terminal",
-                            "id": 1802435920032,
+                            "id": 3081902570632,
+                            "name": "b_in",
+                            "kind": "pe",
+                            "dimension": [
+                                1
+                            ],
+                            "direction": null,
+                            "sp_type": null,
+                            "feedthrough": true
+                        },
+                        {
+                            "_cls": "Terminal",
+                            "id": 3081902568392,
                             "name": "c_in",
                             "kind": "pe",
                             "dimension": [
@@ -1711,20 +2386,8 @@
                         },
                         {
                             "_cls": "Terminal",
-                            "id": 1802435921232,
+                            "id": 3081893888856,
                             "name": "a_in",
-                            "kind": "pe",
-                            "dimension": [
-                                1
-                            ],
-                            "direction": null,
-                            "sp_type": null,
-                            "feedthrough": true
-                        },
-                        {
-                            "_cls": "Terminal",
-                            "id": 1802436061792,
-                            "name": "b_in",
                             "kind": "pe",
                             "dimension": [
                                 1
@@ -1766,20 +2429,6 @@
                             "properties": [
                                 {
                                     "_cls": "Property",
-                                    "name": "res_carr_source",
-                                    "value": "internal",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "endat_data_di_addr",
-                                    "value": "2",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
                                     "name": "biss_clock_di_addr",
                                     "value": "1",
                                     "vector": false,
@@ -1787,8 +2436,50 @@
                                 },
                                 {
                                     "_cls": "Property",
+                                    "name": "res_int_carr_f",
+                                    "value": 5000.0,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
                                     "name": "ext_mdl_load_type",
                                     "value": "speed",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "pms",
+                                    "value": 3,
+                                    "vector": false,
+                                    "calc_type": "int"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "execution_rate",
+                                    "value": 1e-06,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "enc_ppr",
+                                    "value": 1000,
+                                    "vector": false,
+                                    "calc_type": "int"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Rs",
+                                    "value": 0.47,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "res_carr_source",
+                                    "value": "internal",
                                     "vector": false,
                                     "calc_type": "string"
                                 },
@@ -1801,14 +2492,77 @@
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "ssi_data_di_addr",
+                                    "name": "biss_clock_di_logic",
+                                    "value": "active high",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "absenc_type",
+                                    "value": "None",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Ld",
+                                    "value": 0.0034,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "enb_sig_out",
+                                    "value": "False",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "endat_data_di_addr",
                                     "value": "2",
                                     "vector": false,
                                     "calc_type": "string"
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "ssi_clock_di_addr",
+                                    "name": "Rsnb_stator",
+                                    "value": "inf",
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "Jm",
+                                    "value": 3.1e-05,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "load_ai_gain",
+                                    "value": 1.0,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "endat_data_di_logic",
+                                    "value": "active high",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "theta_ab",
+                                    "value": "0",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "endat_clock_di_addr",
                                     "value": "1",
                                     "vector": false,
                                     "calc_type": "string"
@@ -1822,24 +2576,10 @@
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "res_ai_pin_addr",
-                                    "value": "1",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Jm",
-                                    "value": 3.1e-05,
+                                    "name": "load_ai_offset",
+                                    "value": 0.0,
                                     "vector": false,
                                     "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "biss_clock_di_logic",
-                                    "value": "active high",
-                                    "vector": false,
-                                    "calc_type": "string"
                                 },
                                 {
                                     "_cls": "Property",
@@ -1850,71 +2590,15 @@
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "load_src",
-                                    "value": "SCADA / external",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "load_ai_offset",
-                                    "value": 0.0,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Rsnb_stator",
-                                    "value": "inf",
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "execution_rate",
-                                    "value": 5e-07,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "res_ai_gain",
-                                    "value": 1.0,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "enc_ppr",
-                                    "value": 1000,
+                                    "name": "res_pole_pairs",
+                                    "value": 1,
                                     "vector": false,
                                     "calc_type": "int"
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "pms",
-                                    "value": 3,
-                                    "vector": false,
-                                    "calc_type": "int"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "absenc_type",
-                                    "value": "None",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "theta_ab",
-                                    "value": "0",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "res_ai_offset",
-                                    "value": 0.0,
+                                    "name": "Lq",
+                                    "value": 0.0034,
                                     "vector": false,
                                     "calc_type": "real"
                                 },
@@ -1927,22 +2611,15 @@
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "Lq",
-                                    "value": 0.0034,
+                                    "name": "res_ai_offset",
+                                    "value": 0.0,
                                     "vector": false,
                                     "calc_type": "real"
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "endat_data_di_logic",
+                                    "name": "ssi_clock_di_logic",
                                     "value": "active high",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "enb_sig_out",
-                                    "value": "False",
                                     "vector": false,
                                     "calc_type": "string"
                                 },
@@ -1962,6 +2639,20 @@
                                 },
                                 {
                                     "_cls": "Property",
+                                    "name": "res_ai_gain",
+                                    "value": 1.0,
+                                    "vector": false,
+                                    "calc_type": "real"
+                                },
+                                {
+                                    "_cls": "Property",
+                                    "name": "res_ai_pin_addr",
+                                    "value": "1",
+                                    "vector": false,
+                                    "calc_type": "string"
+                                },
+                                {
+                                    "_cls": "Property",
                                     "name": "load_ai_pin_addr",
                                     "value": "1",
                                     "vector": false,
@@ -1969,546 +2660,22 @@
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "ssi_clock_di_logic",
-                                    "value": "active high",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "load_ai_gain",
-                                    "value": 1.0,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Rs",
-                                    "value": 0.47,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "res_pole_pairs",
-                                    "value": 1,
-                                    "vector": false,
-                                    "calc_type": "int"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "res_int_carr_f",
-                                    "value": 5000.0,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "endat_clock_di_addr",
+                                    "name": "ssi_clock_di_addr",
                                     "value": "1",
                                     "vector": false,
                                     "calc_type": "string"
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "Ld",
-                                    "value": 0.0034,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                }
-                            ]
-                        }
-                    ],
-                    "parent_comp_id": null,
-                    "target_cpu": null,
-                    "selected_for_export": false,
-                    "root_for_export": false,
-                    "supported_platforms": [
-                        "generic"
-                    ]
-                },
-                {
-                    "_cls": "Component",
-                    "id": 1802436101504,
-                    "name": "Three Phase Inverter1",
-                    "vars": {},
-                    "comp_type": "Three Phase Inverter",
-                    "lib_fqn": "Converters.Three Phase Inverter",
-                    "composite": true,
-                    "properties": [],
-                    "terminals": [
-                        {
-                            "_cls": "Terminal",
-                            "id": 1802436101312,
-                            "name": "c_in",
-                            "kind": "pe",
-                            "dimension": [
-                                1
-                            ],
-                            "direction": null,
-                            "sp_type": null,
-                            "feedthrough": true
-                        },
-                        {
-                            "_cls": "Terminal",
-                            "id": 1802436101360,
-                            "name": "a_in",
-                            "kind": "pe",
-                            "dimension": [
-                                1
-                            ],
-                            "direction": null,
-                            "sp_type": null,
-                            "feedthrough": true
-                        },
-                        {
-                            "_cls": "Terminal",
-                            "id": 1802436101408,
-                            "name": "pos_out",
-                            "kind": "pe",
-                            "dimension": [
-                                1
-                            ],
-                            "direction": null,
-                            "sp_type": null,
-                            "feedthrough": true
-                        },
-                        {
-                            "_cls": "Terminal",
-                            "id": 1802436101456,
-                            "name": "neg_out",
-                            "kind": "pe",
-                            "dimension": [
-                                1
-                            ],
-                            "direction": null,
-                            "sp_type": null,
-                            "feedthrough": true
-                        },
-                        {
-                            "_cls": "Terminal",
-                            "id": 1802436088160,
-                            "name": "b_in",
-                            "kind": "pe",
-                            "dimension": [
-                                1
-                            ],
-                            "direction": null,
-                            "sp_type": null,
-                            "feedthrough": true
-                        }
-                    ],
-                    "masks": [
-                        {
-                            "_cls": "Mask",
-                            "vars": {
-                                "ITEM_PROPERTY": "property",
-                                "config_id": 1,
-                                "combo_values": [
-                                    "Digital input per switch",
-                                    "Digital input per leg",
-                                    "Internal modulator",
-                                    "Model"
-                                ],
-                                "prop_names": [
-                                    "cooling_input"
-                                ],
-                                "ITEM_COMPONENT": "component",
-                                "ctrl_src": "Digital input per switch",
-                                "images": {
-                                    "IGBT": "pesb_2l4q3ph.svg",
-                                    "MOSFET": "mosfet.svg"
-                                },
-                                "Switch_type": "IGBT",
-                                "delay_enabled": false,
-                                "stf_flag_en": false,
-                                "DEFINITION_METHOD_SIMPLE": "Voltage and Resistance",
-                                "losses_estimation": false,
-                                "fvd": false,
-                                "fvd_def_method": "LUT"
-                            },
-                            "properties": [
-                                {
-                                    "_cls": "Property",
-                                    "name": "fixed_delay",
-                                    "value": 1e-06,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sc_top_I",
-                                    "value": "False",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "temp_sw",
-                                    "value": [
-                                        25.0,
-                                        50.0,
-                                        75.0,
-                                        100.0,
-                                        125.0
-                                    ],
-                                    "vector": false,
-                                    "calc_type": "generic"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sb_top_I",
-                                    "value": "False",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "carr_ph_offset",
-                                    "value": [
-                                        0.0
-                                    ],
-                                    "vector": true,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "vce_table_out",
-                                    "value": [
-                                        1.3,
-                                        1.3,
-                                        1.3,
-                                        1.3,
-                                        1.3
-                                    ],
-                                    "vector": false,
-                                    "calc_type": "generic"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "op_mode",
-                                    "value": "Fixed carrier frequency",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sc_bot_I",
-                                    "value": "False",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "vd_table_out",
-                                    "value": [
-                                        1.2,
-                                        1.2,
-                                        1.2,
-                                        1.2,
-                                        1.2
-                                    ],
-                                    "vector": false,
-                                    "calc_type": "generic"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "fvd_def_method",
-                                    "value": "LUT",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "loss_exec_rate",
-                                    "value": 0.0001,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "carrier_freq",
-                                    "value": 10000.0,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "vout_cmp_pullup_mode",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "d_time",
-                                    "value": 5e-06,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "i_sw",
-                                    "value": [
-                                        0.0,
-                                        6.0,
-                                        12.0,
-                                        18.0,
-                                        24.0
-                                    ],
-                                    "vector": false,
-                                    "calc_type": "generic"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "_control_property",
-                                    "value": "all high",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "execution_rate",
-                                    "value": "inherit",
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "pwm_enabling",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "load_mode",
-                                    "value": "on min",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "ref_sig_min_max",
-                                    "value": [
-                                        -1.0,
-                                        1.0
-                                    ],
-                                    "vector": true,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "pwm_enable_di",
-                                    "value": "13",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sb_top_logic",
-                                    "value": "active high",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "delay_enabled",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Rce",
-                                    "value": 0.0,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "pwm_enable_inv",
-                                    "value": "active high",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Vd",
-                                    "value": 1.2,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "dtv_flag_en",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sc_bot",
-                                    "value": "6",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sa_top",
-                                    "value": "1",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Rd",
-                                    "value": 0.0,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sa_top_I",
-                                    "value": "False",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sa_top_logic",
-                                    "value": "active high",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sb_bot_I",
-                                    "value": "False",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "fvd",
-                                    "value": false,
-                                    "vector": false,
-                                    "calc_type": "bool"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sa_bot",
+                                    "name": "ssi_data_di_addr",
                                     "value": "2",
                                     "vector": false,
                                     "calc_type": "string"
                                 },
                                 {
                                     "_cls": "Property",
-                                    "name": "Import_igbt_xml",
-                                    "value": "not selected",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sa_bot_logic",
-                                    "value": "active high",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sa_bot_I",
-                                    "value": "False",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sc_bot_logic",
-                                    "value": "active high",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Import_diode_xml",
-                                    "value": "not selected",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sb_top",
-                                    "value": "3",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "ctrl_src",
-                                    "value": "Digital input per switch",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Vce",
-                                    "value": 1.3,
-                                    "vector": false,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sb_bot",
-                                    "value": "4",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Switch_type",
-                                    "value": "IGBT",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "var_delay_lut",
-                                    "value": [
-                                        -10.0,
-                                        1e-06,
-                                        10.0,
-                                        1e-06
-                                    ],
-                                    "vector": true,
-                                    "calc_type": "real"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "preview_var_delay",
-                                    "value": "Preview",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sb_bot_logic",
-                                    "value": "active high",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sc_top",
-                                    "value": "5",
-                                    "vector": false,
-                                    "calc_type": "string"
-                                },
-                                {
-                                    "_cls": "Property",
-                                    "name": "Sc_top_logic",
-                                    "value": "active high",
+                                    "name": "load_src",
+                                    "value": "SCADA / external",
                                     "vector": false,
                                     "calc_type": "string"
                                 }
@@ -2517,11 +2684,7 @@
                     ],
                     "parent_comp_id": null,
                     "target_cpu": null,
-                    "selected_for_export": false,
-                    "root_for_export": false,
-                    "supported_platforms": [
-                        "generic"
-                    ]
+                    "selected_for_export": false
                 }
             ],
             "parent_components": [],

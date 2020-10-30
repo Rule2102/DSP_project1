@@ -18,7 +18,7 @@
 #define MS_TBPRD (2*PWM_TBPRD/UR - 1)               // Counter period of ePWM used to implement multisampling algorithm, up mode;
 #define TS (TPWM/UR)                                // Regulation period
 
-#define E 520.0f                                     // Available DC voltage
+#define E 520.0f                                    // Available DC voltage
 #define EINVERSE (1/E)                              // Inverse of E
 #define D_MAX (PWM_TBPRD - 5)                       // Maximum duty cycle (to avoid unnecessary switching)
 #define D_MIN 5                                     // Minimum duty cycle (to avoid unnecessary switching)
@@ -35,12 +35,11 @@
 #define ISENSE_SCALE 10.0f                          // [A] --> [V] (ISENSE_SCALE)A=1V
 #define ISENSE_OFFSET_A (1.50f + 0.00309f + 0.00013f - 0.00573f - 0.00529f + 0.00028f) // - 0.01443f) //96f                     // 0A --> 1.5V + offset ADC-a
 #define ISENSE_OFFSET_B (1.50f + 0.00448f + 0.00012f - 0.00567f - 0.00563f + 0.00032f) // - 0.01492f)//111f                     // 0A --> 1.5V + offset ADC-a
-float32 IMAX = 25.0f;                                   // Limit for over-current protection
 
 #define MAX_data_count 443 //850                         // Size of an array used for data storage
 #define DATACNT_REF 200
-#define DMACNT_REF 10869  //3478                          // Set reference after DMACNT_REF regulation periods
-#define DMACNT_PRNT 10600  //3000                          // Start printing after DMACNT_PRNT regulation periods
+#define DMACNT_REF 10869  //3478                         // Set reference after DMACNT_REF regulation periods
+#define DMACNT_PRNT 10600  //3000                        // Start printing after DMACNT_PRNT regulation periods
 
 // Defines for IREG
 #define R 0.47f                                     // Motor resistance
@@ -92,6 +91,7 @@ float32 dId[2] = {};                            // Current error in q axis; dId[
 float32 dIq[2] = {};                            // Current error in d axis; dIq[0] -> current, dIq[1] -> previous
 float32 Id_ref = 0.0f;                          // Reference d current
 float32 Iq_ref = 0.0f;                          // Reference q current
+float32 IMAX = 35.0f;                           // Limit for over-current protection
 
 // IREG
 float32 alpha = 0.2f; //0.084f;                            // Gain for IREG
@@ -102,7 +102,7 @@ float32 Ud[2]={};                               // D voltage (IREG output - cont
 float32 Uq[2]={};                               // Q voltage (IREG output - control signal)
 float32 Ualpha, Ubeta;                          // Voltages in alpha/beta frame
 float32 Ua, Ub, Uc;                             // A,B,C voltages
-float32 Udq_max = E/(2.0f);//1.4142f);                // Maximum available voltage
+float32 Udq_max = E/(2.0f);                     // Maximum available voltage
 
 // Angles
 float32 theta[UR+1] = {};                       // Machine electrical angle - theta[0]=current, theta[1]=previous, etc.
@@ -127,17 +127,17 @@ float32 dataOut_2[MAX_data_count] = {};
 //float32 dataOut_6[MAX_data_count] = {};
 Uint16 canPrint = 0;                            // Logic signal used to trigger data storage
 long int data_count = 0;                        // Counter for data storage
-Uint16 reg_enabled = 0;                        // Logic variable used to start output
-Uint16 error_flag = 0;                         // Indicate if an error occurred (overcurrent protection, etc)
+Uint16 reg_enabled = 0;                         // Logic variable used to start output
+Uint16 error_flag = 0;                          // Indicate if an error occurred (overcurrent protection, etc)
 
 // For debugging with f=const
 float32 f_ref = 270.0f;                         // Frequency of electrical quantities
-#define TWOPI_TS (2*PI*TS)              // 2*pi*Ts for angle calculation
+#define TWOPI_TS (2*PI*TS)                      // 2*pi*Ts for angle calculation
 
 float32 pom1, pom2;
 
-long int dma_count = 0;                        // Counter to check dmach1_isr
-//long int adc_count_a = 0;                      // Counter to check adca1_isr
+long int dma_count = 0;                         // Counter to check dmach1_isr
+//long int adc_count_a = 0;                     // Counter to check adca1_isr
 
 void main(void)
 {
@@ -194,8 +194,6 @@ void main(void)
     CpuSysRegs.PCLKCR0.bit.TBCLKSYNC = 1;      // Sync TBCLK with CPU clock
     EDIS;
 
-
-
     StartDMACH1();
 
     while(1)
@@ -213,7 +211,7 @@ void Init_VARS(void)
     //Ud[1] = -16.4304f;
     //Uq[1] = 193.5485f;
 
-    dtheta = 2*PI*f_ref*TS;
+    //dtheta = 2*PI*f_ref*TS;
 
 }
 
@@ -228,38 +226,32 @@ void Configure_GPIO(void)
     // Configure as EPWM1A output (phase A high side)
     GpioCtrlRegs.GPADIR.bit.GPIO0 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO0 = 1;         // Mux to ePWM1A
-    GpioCtrlRegs.GPAPUD.bit.GPIO0 = 1;          // Disable internal pull-up
-    GpioDataRegs.GPASET.bit.GPIO0 = 0;          // Set low, until otherwise specified by control algorithm
+    GpioDataRegs.GPASET.bit.GPIO0 = 1;          // Set high, until otherwise specified by control algorithm
 
     // Configure as EPWM1B output (phase A low side)
     GpioCtrlRegs.GPADIR.bit.GPIO1 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;         // Mux to ePWM1B
-    GpioCtrlRegs.GPAPUD.bit.GPIO1 = 1;          // Disable internal pull-up
-    GpioDataRegs.GPASET.bit.GPIO1 = 0;          // Set low, until otherwise specified by control algorithm
+    GpioDataRegs.GPASET.bit.GPIO1 = 1;          // Set high, until otherwise specified by control algorithm
 
     // Configure as EPWM2A output (phase B high side)
     GpioCtrlRegs.GPADIR.bit.GPIO2 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 1;         // Mux to ePWM2A
-    GpioCtrlRegs.GPAPUD.bit.GPIO2 = 1;          // Disable internal pull-up
-    GpioDataRegs.GPASET.bit.GPIO2 = 0;          // Set low, until otherwise specified by control algorithm
+    GpioDataRegs.GPASET.bit.GPIO2 = 1;          // Set high, until otherwise specified by control algorithm
 
     // Configure as EPWM2B output (phase B low side)
     GpioCtrlRegs.GPADIR.bit.GPIO3 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO3 = 1;         // Mux to ePWM2B
-    GpioCtrlRegs.GPAPUD.bit.GPIO3 = 1;          // Disable internal pull-up
-    GpioDataRegs.GPASET.bit.GPIO3 = 0;          // Set low, until otherwise specified by control algorithm
+    GpioDataRegs.GPASET.bit.GPIO3 = 1;          // Set high, until otherwise specified by control algorithm
 
     // Configure as EPWM3A output (phase C high side)
     GpioCtrlRegs.GPADIR.bit.GPIO4 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO4 = 1;         // Mux to ePWM3A
-    GpioCtrlRegs.GPAPUD.bit.GPIO4 = 1;          // Disable internal pull-up
-    GpioDataRegs.GPASET.bit.GPIO4 = 0;          // Set low, until otherwise specified by control algorithm
+    GpioDataRegs.GPASET.bit.GPIO4 = 1;          // Set high, until otherwise specified by control algorithm
 
     // Configure as EPWM3B output (phase C low side)
     GpioCtrlRegs.GPADIR.bit.GPIO5 = 1;          // Configure as output
     GpioCtrlRegs.GPAMUX1.bit.GPIO5 = 1;         // Mux to ePWM3B
-    GpioCtrlRegs.GPAPUD.bit.GPIO5 = 1;          // Disable internal pull-up
-    GpioDataRegs.GPASET.bit.GPIO5 = 0;          // Set low, until otherwise specified by control algorithm
+    GpioDataRegs.GPASET.bit.GPIO5 = 1;          // Set high, until otherwise specified by control algorithm
 
     // GPIOs for debugging/measurements
 
@@ -323,13 +315,15 @@ void Configure_ePWM(void)
     EPwm1Regs.AQCTLA.bit.CAU = 1;               // Set EPWMA low on TBCTR=CMPA during up count
     EPwm1Regs.AQCTLA.bit.CBU = 2;               // Set EPWMA high on TBCTR=CMPB during up count
 
-    EPwm1Regs.DBCTL.bit.POLSEL = 2;             // Active high complementary - EPWMxB is inverted.
+    EPwm1Regs.DBCTL.bit.POLSEL = 1;             // Active low complementary - EPWMxB is inverted.
     EPwm1Regs.DBCTL.bit.OUT_MODE = 3;           // DBM is fully enabled
     EPwm1Regs.DBFED.bit.DBFED = DEADTIME;       // Set delay for rising edge (DBRED)
     EPwm1Regs.DBRED.bit.DBRED = DEADTIME;       // Set delay for falling edge (DBFED)
 
-    EPwm1Regs.TZCTL.bit.TZA = 2;                // Set EPWMA low when the trip-zone is triggered
-    EPwm1Regs.TZCTL.bit.TZB = 2;                // Set EPWMB low when the trip-zone is triggered
+    EALLOW;
+    EPwm1Regs.TZCTL.bit.TZA = 1;                // Set EPWMA high when the trip-zone is triggered
+    EPwm1Regs.TZCTL.bit.TZB = 1;                // Set EPWMB high when the trip-zone is triggered
+    EDIS;
 
     // EPWM2 as a multisampling carrier for phase B
 
@@ -339,26 +333,28 @@ void Configure_ePWM(void)
     EPwm2Regs.TBCTR = 0x0000;                  // Clear counter
     EPwm2Regs.TBCTL.bit.PHSEN = 0;             // Phasing disabled
 
-    EPwm2Regs.TBPRD = MS_TBPRD;                // Counter period
+    EPwm2Regs.TBPRD = MS_TBPRD;                 // Counter period
 
     EPwm2Regs.CMPCTL.bit.SHDWAMODE = 0;         // Shadow mode active for CMPA
     EPwm2Regs.CMPCTL.bit.SHDWBMODE = 0;         // Shadow mode active for CMPB
     EPwm2Regs.CMPCTL.bit.LOADAMODE = 0;         // Load on TBCTR=0
     EPwm2Regs.CMPCTL.bit.LOADBMODE = 0;         // Load on TBCTR=0
 
-    EPwm2Regs.CMPA.bit.CMPA = MS_TBPRD + 1;               // Value of the CMPA at the beginning (action never happens)
-    EPwm2Regs.CMPB.bit.CMPB = MS_TBPRD + 1;               // Value of the CMPB at the beginning (action never happens)
+    EPwm2Regs.CMPA.bit.CMPA = MS_TBPRD + 1;     // Value of the CMPA at the beginning (action never happens)
+    EPwm2Regs.CMPB.bit.CMPB = MS_TBPRD + 1;     // Value of the CMPB at the beginning (action never happens)
 
     EPwm2Regs.AQCTLA.bit.CAU = 1;               // Set EPWMA low on TBCTR=CMPA during up count
     EPwm2Regs.AQCTLA.bit.CBU = 2;               // Set EPWMA high on TBCTR=CMPB during up count
 
-    EPwm2Regs.DBCTL.bit.POLSEL = 2;             // Active high complementary - EPWMxB is inverted.
+    EPwm2Regs.DBCTL.bit.POLSEL = 1;             // Active low complementary - EPWMxB is inverted.
     EPwm2Regs.DBCTL.bit.OUT_MODE = 3;           // DBM is fully enabled
     EPwm2Regs.DBFED.bit.DBFED = DEADTIME;       // Set delay for rising edge (DBRED)
     EPwm2Regs.DBRED.bit.DBRED = DEADTIME;       // Set delay for falling edge (DBFED)
 
-    EPwm2Regs.TZCTL.bit.TZA = 2;                // Set EPWMA low when the trip-zone is triggered
-    EPwm2Regs.TZCTL.bit.TZB = 2;                // Set EPWMB low when the trip-zone is triggered
+    EALLOW;
+    EPwm2Regs.TZCTL.bit.TZA = 1;                // Set EPWMA high when the trip-zone is triggered
+    EPwm2Regs.TZCTL.bit.TZB = 1;                // Set EPWMB high when the trip-zone is triggered
+    EDIS;
 
     // EPWM3 as a multisampling carrier for phase C
 
@@ -375,19 +371,29 @@ void Configure_ePWM(void)
     EPwm3Regs.CMPCTL.bit.LOADAMODE = 0;         // Load on TBCTR=0
     EPwm3Regs.CMPCTL.bit.LOADBMODE = 0;         // Load on TBCTR=0
 
-    EPwm3Regs.CMPA.bit.CMPA = MS_TBPRD + 1;               // Value of the CMPA at the beginning (action never happens)
-    EPwm3Regs.CMPB.bit.CMPB = MS_TBPRD + 1;               // Value of the CMPB at the beginning (action never happens)
+    EPwm3Regs.CMPA.bit.CMPA = MS_TBPRD + 1;      // Value of the CMPA at the beginning (action never happens)
+    EPwm3Regs.CMPB.bit.CMPB = MS_TBPRD + 1;      // Value of the CMPB at the beginning (action never happens)
 
     EPwm3Regs.AQCTLA.bit.CAU = 1;               // Set EPWMA low on TBCTR=CMPA during up count
     EPwm3Regs.AQCTLA.bit.CBU = 2;               // Set EPWMA high on TBCTR=CMPB during up count
 
-    EPwm3Regs.DBCTL.bit.POLSEL = 2;             // Active high complementary - EPWMxB is inverted.
+    EPwm3Regs.DBCTL.bit.POLSEL = 1;             // Active low complementary - EPWMxB is inverted.
     EPwm3Regs.DBCTL.bit.OUT_MODE = 3;           // DBM is fully enabled
     EPwm3Regs.DBFED.bit.DBFED = DEADTIME;       // Set delay for rising edge (DBRED)
     EPwm3Regs.DBRED.bit.DBRED = DEADTIME;       // Set delay for falling edge (DBFED)
 
-    EPwm3Regs.TZCTL.bit.TZA = 2;                // Set EPWMA low when the trip-zone is triggered
-    EPwm3Regs.TZCTL.bit.TZB = 2;                // Set EPWMB low when the trip-zone is triggered
+    EALLOW;
+    EPwm3Regs.TZCTL.bit.TZA = 1;                // Set EPWMA high when the trip-zone is triggered
+    EPwm3Regs.TZCTL.bit.TZB = 1;                // Set EPWMB high when the trip-zone is triggered
+    EDIS;
+
+    // Clear trip zone flags for switching EPWMs
+
+    EALLOW;
+    EPwm1Regs.TZCLR.bit.OST = 1;
+    EPwm2Regs.TZCLR.bit.OST = 1;
+    EPwm3Regs.TZCLR.bit.OST = 1;
+    EDIS;
 
     // EPWM4 to notify multisampling carrier TBCTR=0 (JUST FOR DEBUGGING)
 
@@ -418,12 +424,6 @@ void Configure_ePWM(void)
     // Set PWM output to notify SOCA (JUST FOR DEBUGGING)
     EPwm5Regs.AQCTLA.bit.ZRO = 2;              // Set PWM A high on TBCTR=0
     EPwm5Regs.AQCTLA.bit.PRD = 1;              // Set PWM A low on TBCTR=TBPRD
-
-    EALLOW;
-    EPwm1Regs.TZCLR.bit.OST = 1;
-    EPwm2Regs.TZCLR.bit.OST = 1;
-    EPwm3Regs.TZCLR.bit.OST = 1;
-    EDIS;
 }
 
 void Configure_ADC(void)
@@ -751,9 +751,9 @@ __interrupt void dmach1_isr(void)
 
                     #endif
 
-                    // Current error
-                    dId[0] = Id_ref - Id;
-                    dIq[0] = Iq_ref - Iq;
+                    // Current error (- added for active low logic)
+                    dId[0] = - (Id_ref - Id);
+                    dIq[0] = - (Iq_ref - Iq);
 
                     // IMC based IREG
                     Ud[0] = Ud[1] + K1*(dId[0]*_cos[3]-dIq[0]*_sin[3]-K2*(dId[1]*_cos[2]-dIq[1]*_sin[2]));
@@ -810,10 +810,10 @@ __interrupt void dmach1_isr(void)
                     else if (PWM_CMP_c<D_MIN)PWM_CMP_c=D_MIN;
                 */
 
-                    // Modulation signals
-                    PWM_CMP_a = (Uint16)(PWM_TBPRD*(0.5f + Ua*EINVERSE));
-                    PWM_CMP_b = (Uint16)(PWM_TBPRD*(0.5f + Ub*EINVERSE));
-                    PWM_CMP_c = (Uint16)(PWM_TBPRD*(0.5f + Uc*EINVERSE));
+                    // Modulation signals (1-d added for active low logic)
+                    PWM_CMP_a = (Uint16)(PWM_TBPRD*(1.0f - (0.5f + Ua*EINVERSE)));
+                    PWM_CMP_b = (Uint16)(PWM_TBPRD*(1.0f - (0.5f + Ub*EINVERSE)));
+                    PWM_CMP_c = (Uint16)(PWM_TBPRD*(1.0f - (0.5f + Uc*EINVERSE)));
                 }
 
             else
@@ -975,7 +975,6 @@ __interrupt void dmach1_isr(void)
     PrintData();                                      // Data storage (JUST FOR DEBUGGING)
 
     GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;             // Notify dmach1_isr end
-
 
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP7;           // Clear acknowledge register
 

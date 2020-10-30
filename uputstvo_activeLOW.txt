@@ -1,0 +1,26 @@
+In order to adapt the code & HIL simulation for active low logic the following has been changed:
+- PWM_CMP_x = 1-d;
+- error is calculated as Ifb - Iref
+- DBCTL.bit.POLASEL changed to 1 (active low complementary)
+- TZ forces EPWMs high
+- inverter in HIL simulation is configured to be active low
+- running procedure changed from the one in uputsvto.txt (changes are UPPERCASE):
+
+	1. HIL
+		- open bldc.tse in schematic editor
+		- load model to scada
+		- open bldc.cus
+		- load bldc.runx
+		- SET MOTOR SPEED TO ZERO
+	2. CCS
+		- build &run
+		- reg_enabled = 1;
+	3. HIL
+		- SET MOTOR SPEED TO 565.4867 rad/s
+	4. CCS
+		- Iqref = 7:
+		- canPrint = 1 to collect step response results (Idq)
+		- export from memory browser
+	5. MATLAB
+		- import & plot results
+		

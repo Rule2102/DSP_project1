@@ -1,14 +1,14 @@
 
 <model_description>
-    <sw_version>2020.3</sw_version>
+    <sw_version>2020.2</sw_version>
     <hw_properties>
         <revision>3</revision>
         <product_id>HIL402</product_id>
-        <configuration_id>1</configuration_id>
+        <configuration_id>4</configuration_id>
         <device_ao_limit_enable>False</device_ao_limit_enable>
         <device_id>0</device_id>
-        <spc_out_mem_size>256</spc_out_mem_size>
-        <fw_support_limit>132385281</fw_support_limit>
+        <spc_out_mem_size>512</spc_out_mem_size>
+        <fw_support_limit>132384520</fw_support_limit>
     </hw_properties>
     <sim_setup>
         <sim_time_step>5e-07</sim_time_step>
@@ -66,21 +66,21 @@
             <address>0</address>
             <type>current</type>
             <initial_condition>0.0</initial_condition>
-            <visible>False</visible>
+            <visible>True</visible>
         </cell>
         <cell>
             <name>Ia2.Lf_Ia</name>
             <address>1</address>
             <type>current</type>
             <initial_condition>0.0</initial_condition>
-            <visible>False</visible>
+            <visible>True</visible>
         </cell>
         <cell>
             <name>Ia3.Lf_Ia</name>
             <address>2</address>
             <type>current</type>
             <initial_condition>0.0</initial_condition>
-            <visible>False</visible>
+            <visible>True</visible>
         </cell>
         <cell>
             <name>v_ab</name>
@@ -112,42 +112,42 @@
         </cell>
         <cell>
             <name>Three Phase Inverter1.IGBT Leg1.v1</name>
-            <address>129</address>
+            <address>385</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
             <name>Three Phase Inverter1.IGBT Leg1.v2</name>
-            <address>130</address>
+            <address>386</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
             <name>Three Phase Inverter1.IGBT Leg2.v1</name>
-            <address>137</address>
+            <address>393</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
             <name>Three Phase Inverter1.IGBT Leg2.v2</name>
-            <address>138</address>
+            <address>394</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
             <name>Three Phase Inverter1.IGBT Leg3.v1</name>
-            <address>145</address>
+            <address>401</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
             <name>Three Phase Inverter1.IGBT Leg3.v2</name>
-            <address>146</address>
+            <address>402</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
@@ -188,11 +188,11 @@
             <visible>True</visible>
         </cell>
         <cell>
-            <name>Ia1_full_bandwidth</name>
+            <name>Ia1.Ia1</name>
             <address>12</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
-            <visible>True</visible>
+            <visible>False</visible>
         </cell>
         <cell>
             <name>Ia1</name>
@@ -202,11 +202,11 @@
             <visible>True</visible>
         </cell>
         <cell>
-            <name>Ia2_full_bandwidth</name>
+            <name>Ia2.Ia1</name>
             <address>14</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
-            <visible>True</visible>
+            <visible>False</visible>
         </cell>
         <cell>
             <name>Ia2</name>
@@ -216,11 +216,11 @@
             <visible>True</visible>
         </cell>
         <cell>
-            <name>Ia3_full_bandwidth</name>
+            <name>Ia3.Ia1</name>
             <address>16</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
-            <visible>True</visible>
+            <visible>False</visible>
         </cell>
         <cell>
             <name>Ia3</name>
@@ -231,259 +231,259 @@
         </cell>
         <cell>
             <name>Three Phase Inverter1.IGBT Leg1.il</name>
-            <address>128</address>
+            <address>384</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
             <name>Three Phase Inverter1.IGBT Leg2.il</name>
-            <address>136</address>
+            <address>392</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
             <name>Three Phase Inverter1.IGBT Leg3.il</name>
-            <address>144</address>
+            <address>400</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
             <name>Vs1</name>
-            <address>16640</address>
+            <address>33280</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>i_als</name>
-            <address>16384</address>
+            <address>32768</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>i_bes</name>
-            <address>16385</address>
+            <address>32769</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>i_ds</name>
-            <address>16386</address>
+            <address>32770</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>i_qs</name>
-            <address>16387</address>
+            <address>32771</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>psi_als</name>
-            <address>16388</address>
+            <address>32772</address>
             <type>flux</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>psi_bes</name>
-            <address>16389</address>
+            <address>32773</address>
             <type>flux</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>psi_ds</name>
-            <address>16390</address>
+            <address>32774</address>
             <type>flux</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>psi_qs</name>
-            <address>16391</address>
+            <address>32775</address>
             <type>flux</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>machine electrical torque</name>
-            <address>16392</address>
+            <address>32776</address>
             <type>torque</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>machine mechanical torque</name>
-            <address>16393</address>
+            <address>32777</address>
             <type>torque</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>machine mechanical speed</name>
-            <address>16394</address>
+            <address>32778</address>
             <type>angular speed</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>machine mechanical angle</name>
-            <address>16395</address>
+            <address>32779</address>
             <type>angle</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>machine sine encoder A</name>
-            <address>16396</address>
+            <address>32780</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>machine sine encoder B</name>
-            <address>16397</address>
+            <address>32781</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>machine resolver A</name>
-            <address>16398</address>
+            <address>32782</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>machine resolver B</name>
-            <address>16399</address>
+            <address>32783</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>const_0V</name>
-            <address>17152</address>
+            <address>34304</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 1</name>
-            <address>17408</address>
+            <address>34816</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 2</name>
-            <address>17409</address>
+            <address>34817</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 3</name>
-            <address>17410</address>
+            <address>34818</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 4</name>
-            <address>17411</address>
+            <address>34819</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 5</name>
-            <address>17412</address>
+            <address>34820</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 6</name>
-            <address>17413</address>
+            <address>34821</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 7</name>
-            <address>17414</address>
+            <address>34822</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 8</name>
-            <address>17415</address>
+            <address>34823</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 9</name>
-            <address>17416</address>
+            <address>34824</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 10</name>
-            <address>17417</address>
+            <address>34825</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 11</name>
-            <address>17418</address>
+            <address>34826</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 12</name>
-            <address>17419</address>
+            <address>34827</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 13</name>
-            <address>17420</address>
+            <address>34828</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 14</name>
-            <address>17421</address>
+            <address>34829</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 15</name>
-            <address>17422</address>
+            <address>34830</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>HIL0 analog input 16</name>
-            <address>17423</address>
+            <address>34831</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
@@ -643,40 +643,16 @@
             <address>543</address>
         </cell>
         <cell>
-            <name>Three Phase Inverter1.Sa_top</name>
-            <address>512</address>
-        </cell>
-        <cell>
-            <name>Three Phase Inverter1.Sa_bot</name>
-            <address>513</address>
-        </cell>
-        <cell>
-            <name>Three Phase Inverter1.Sb_top</name>
-            <address>514</address>
-        </cell>
-        <cell>
-            <name>Three Phase Inverter1.Sb_bot</name>
-            <address>515</address>
-        </cell>
-        <cell>
-            <name>Three Phase Inverter1.Sc_top</name>
-            <address>516</address>
-        </cell>
-        <cell>
-            <name>Three Phase Inverter1.Sc_bot</name>
-            <address>517</address>
-        </cell>
-        <cell>
             <name>Three Phase Inverter1.IGBT Leg1_vout_cmp</name>
-            <address>828</address>
+            <address>816</address>
         </cell>
         <cell>
             <name>Three Phase Inverter1.IGBT Leg2_vout_cmp</name>
-            <address>829</address>
+            <address>817</address>
         </cell>
         <cell>
             <name>Three Phase Inverter1.IGBT Leg3_vout_cmp</name>
-            <address>830</address>
+            <address>818</address>
         </cell>
     </do_var_list>
     <sources>
@@ -705,8 +681,6 @@
                             <value>0.132213</value>
                         </cell>
                 </constants>
-                <lut_angle1_max>6.283185307179586</lut_angle1_max>
-                <lut_angle2_max>6.283185307179586</lut_angle2_max>
             </init>
             <mch_speed>machine mechanical speed</mch_speed>
             <mch_torque>machine electrical torque</mch_torque>
