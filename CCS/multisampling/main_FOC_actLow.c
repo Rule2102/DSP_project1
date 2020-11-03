@@ -94,7 +94,7 @@ float32 Iq_ref = 0.0f;                          // Reference q current
 float32 IMAX = 35.0f;                           // Limit for over-current protection
 
 // IREG
-float32 alpha = 0.2f; //0.084f;                            // Gain for IREG
+float32 alpha = 0.2f; //0.087f;                            // Gain for IREG
 float32 K1, K2;                                  // Constants used for IREG
 
 // Voltages
