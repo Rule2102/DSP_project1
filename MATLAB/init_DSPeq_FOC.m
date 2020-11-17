@@ -45,7 +45,7 @@ ph = pi;                    % phase of the load when modeled with 3phase sine so
 
 % IREG parameters
 % will be automatically adjusted if ur=8 (below)
-alpha = 0.2;                % gain
+alpha = 0.25; %2;                % gain
 K1 = alpha*L/Ts;            % constant for IREG
 K2 = exp(-Ts/taus);         % parameter that desxcribes system dynamics
 Udq_max = E/2;              % saturation level in dq (for IREG)
@@ -71,20 +71,22 @@ Uab0 = [real(Uab0_c); imag(Uab0_c)];
 Uabc0 = [1,0;-1/2,sqrt(3)/2;-1/2,-sqrt(3)/2]*Uab0;
 
 % time steps of interest
-dmacnt_ref = round(6*taus/Ts);      % regulation period in which reference step change occurs
+dmacnt_ref = round(15*taus/Ts);      % regulation period in which reference step change occurs
 tref = dmacnt_ref*Ts;               % reference step 
-dmacnt_prnt = round(0.69*dmacnt_ref);                  % start printing in DSP (600 for ur=2)
-dmacnt_end = round(dmacnt_ref*1.2);        % number of regulation periods for simulation to run
+dmacnt_prnt = round(0.75*dmacnt_ref);                  % start printing in DSP (600 for ur=2)
+dmacnt_end = round(dmacnt_ref*1.1);        % number of regulation periods for simulation to run
 tend = dmacnt_end*Ts;               % simulation duration
 MAX_data_count = dmacnt_end - dmacnt_prnt;   % array length for DSP's RAM export
 
 if(ur==8)
-    alpha = 0.095; %0.385/4; %0.087;
-    d = 1.776; %0.5*Tpwm/Ts;
-    dmacnt_prnt = 3000;
-    MAX_data_count = 850;
+    alpha = 0.0636;
+    d = 0; %0.5*Tpwm/Ts;
+    %{
+    dmacnt_prnt = 4000; %4*600; %
+    MAX_data_count = 850; %4*443; %
     dmacnt_end = MAX_data_count + dmacnt_prnt;
     tend = dmacnt_end*Ts;
+    %}
 end
 
 % frequency response analysis settings
@@ -94,6 +96,11 @@ z=tf('z',Ts);
 W1 = alpha/(z^2-z+alpha);
 tfra = 0.33; % required experiment length based on f_test (see FRA block)
 
+% tuning PI IREG
+wc = ur/2*3.01e3;
+pm = 77.1*pi/180;
+Kp = R*sqrt(1+(wc*L/R)^2);
+Ki = wc*Kp/(tan(-pi/2+pm+2*atan(wc*Ts/4)+atan(wc*L/R)));
 
 
 
