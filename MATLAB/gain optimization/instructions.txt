@@ -1,0 +1,29 @@
+Ivan's modification of Vuksa's script for optimization
+
+1.) Optimization init script: 
+Define limits for optimization (in script I believe they are relative to Ts, 
+because z with Ts = 1 is taken, I forgot).
+bw_min - minimum required -3dB bandwidth
+bw_target - what I want to achieve
+weight_speed - not sure if I use this check in getperf.m
+peak_target - peak of sensitivity TF (something to indicate robustness, overshoot related)
+
+2.) searchnew.m - do not modify 
+
+3.) VMall.m - do not modify
+
+4.) getperf.m:
+Here you need to define z=domain transfer function (as arrays of denominator and numerator),
+based on a (alpha) and d.
+There are several examples there already - you need to put the one for our case 
+(MAF in feedback)
+Later u use criteria to make some sort of optimization (weighting...)
+I use limit that I must have bw > bw_min, settle time < 30 steps.
+Then I optimize based on perf1: how lcose am I to bandwidth; perf2: how close am I to resoant peak
+
+What you can do:
+See for vuksa's gains what does he get regarding resonant peak and -3dB bandwidth.
+Put same values in your optimization (but now bandwidth is relative to N = 8 do not forget this!)
+Also, remember that vuksa uses transfer function, without calculational delay. So transfer functions
+will be slightly different.
+Place target bandwidth for example 10% higher than his, and see if you can achieve it
