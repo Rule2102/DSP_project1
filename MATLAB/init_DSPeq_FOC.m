@@ -45,11 +45,11 @@ ph = pi;                    % phase of the load when modeled with 3phase sine so
 
 % IREG parameters
 % will be automatically adjusted if ur=8 (below)
-alpha = 0.25; %2;                % gain
+alpha = 0.1275; %2;                % gain
 K1 = alpha*L/Ts;            % constant for IREG
 K2 = exp(-Ts/taus);         % parameter that desxcribes system dynamics
 Udq_max = E/2;              % saturation level in dq (for IREG)
-d = 0;
+d = 0.8505;
 
 % open loop dq voltages
 Udol = 0;                   % d axis voltage
@@ -79,8 +79,8 @@ tend = dmacnt_end*Ts;               % simulation duration
 MAX_data_count = dmacnt_end - dmacnt_prnt;   % array length for DSP's RAM export
 
 if(ur==8)
-    alpha = 0.0636;
-    d = 0; %0.5*Tpwm/Ts;
+    alpha = 0.091; % 0.12038;
+    d = 0.78975; %2.1948; 0.5*Tpwm/Ts;
     %{
     dmacnt_prnt = 4000; %4*600; %
     MAX_data_count = 850; %4*443; %
