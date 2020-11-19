@@ -2,7 +2,7 @@
 clear all
 clc
 
-ur = 8;             % update rate
+ur = 2;             % update rate
 OVERSAMPLING = 1;   % logic variable to determine with/without oversampling
 
 Id_ref = 0;                 % reference current in d axis 
@@ -27,6 +27,11 @@ Tadc = Tpwm/Nos;
 % simulation step size
 Tsim = gcd(gcd(Ttbclk*1e9,Tadc*1e9),Ts*1e9)/1e9;
 
+% scheduling
+Ts_cmp = Ts;
+Ts_exe = Ts; %[Ts Ts-1230*Tsim];
+Tadc_exe = Tadc; %[Tadc mod(Ts-1230*Tsim,Tadc)];
+
 % inverter parameters
 E = 520;                   % available voltage
 DEADTIME = 100;            % deadtime in multiples of Tpwm
@@ -45,11 +50,11 @@ ph = pi;                    % phase of the load when modeled with 3phase sine so
 
 % IREG parameters
 % will be automatically adjusted if ur=8 (below)
-alpha = 0.1275; %2;                % gain
+alpha = 0.380; %2;                % gain
 K1 = alpha*L/Ts;            % constant for IREG
 K2 = exp(-Ts/taus);         % parameter that desxcribes system dynamics
 Udq_max = E/2;              % saturation level in dq (for IREG)
-d = 0.8505;
+d = 0.444;
 
 % open loop dq voltages
 Udol = 0;                   % d axis voltage
@@ -101,6 +106,5 @@ wc = ur/2*3.01e3;
 pm = 77.1*pi/180;
 Kp = R*sqrt(1+(wc*L/R)^2);
 Ki = wc*Kp/(tan(-pi/2+pm+2*atan(wc*Ts/4)+atan(wc*L/R)));
-
 
 
