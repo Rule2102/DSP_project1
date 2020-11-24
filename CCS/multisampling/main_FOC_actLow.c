@@ -3,7 +3,7 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 2                                        // Update rate (UR>2 -> multisampling algorithm)
+#define UR 8                                        // Update rate (UR>2 -> multisampling algorithm)
 #define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
@@ -588,7 +588,7 @@ __interrupt void adca1_isr(void)
 
 __interrupt void dmach1_isr(void)
 {
-    GpioDataRegs.GPCSET.bit.GPIO66 = 1;                       // Notify dmach1_isr start
+
 
 
     theta_enc[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;        // Capture position
@@ -824,6 +824,7 @@ __interrupt void dmach1_isr(void)
                     PWM_CMP_c = (Uint16)(PWM_TBPRD*0.5f);
                 }
 
+            GpioDataRegs.GPCSET.bit.GPIO66 = 1;                       // Notify dmach1_isr start
             #if (UR!=1)
 
                  n_seg++; // Indicates a current segment of the virtual carrier
