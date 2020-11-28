@@ -2,7 +2,7 @@
 clear all
 clc
 
-ur = 2;             % update rate
+ur = 8;             % update rate
 OVERSAMPLING = 1;   % logic variable to determine with/without oversampling
 
 Id_ref = 0;                 % reference current in d axis 
@@ -50,11 +50,11 @@ ph = pi;                    % phase of the load when modeled with 3phase sine so
 
 % IREG parameters
 % will be automatically adjusted if ur=8 (below)
-alpha = 0.380; %2;                % gain
+alpha = 0.25; %0.350;                % gain
 K1 = alpha*L/Ts;            % constant for IREG
 K2 = exp(-Ts/taus);         % parameter that desxcribes system dynamics
 Udq_max = E/2;              % saturation level in dq (for IREG)
-d = 0.444;
+d = 0; %0.4
 
 % open loop dq voltages
 Udol = 0;                   % d axis voltage
@@ -84,8 +84,8 @@ tend = dmacnt_end*Ts;               % simulation duration
 MAX_data_count = dmacnt_end - dmacnt_prnt;   % array length for DSP's RAM export
 
 if(ur==8)
-    alpha = 0.091; % 0.12038;
-    d = 0.78975; %2.1948; 0.5*Tpwm/Ts;
+    alpha = 0.0636; %0.12038; %0.15; %0.0636; %0.091; %;
+    d = 0; %2.1948; %0.78975; % 0.5*Tpwm/Ts;
     %{
     dmacnt_prnt = 4000; %4*600; %
     MAX_data_count = 850; %4*443; %
@@ -100,6 +100,7 @@ f_test = 400:50:fmax;
 z=tf('z',Ts);
 W1 = alpha/(z^2-z+alpha);
 tfra = 0.33; % required experiment length based on f_test (see FRA block)
+%tend = tref + tfra;
 
 % tuning PI IREG
 wc = ur/2*3.01e3;
