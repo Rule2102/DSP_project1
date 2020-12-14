@@ -558,13 +558,13 @@ void PrintData()
 
         if(data_count == DATACNT_REF)
         {
-            Iq_ref = 2.0f;
+            Iq_ref = 0.0f;
         }
 
         if (data_count >= MAX_data_count)
         {
             data_count = 0;
-            Iq_ref = 0.0f;
+            Iq_ref = 2.0f;
             canPrint = 0;
         }
 
@@ -589,7 +589,7 @@ __interrupt void adca1_isr(void)
 __interrupt void dmach1_isr(void)
 {
 
-
+    GpioDataRegs.GPCSET.bit.GPIO66 = 1;                       // Notify dmach1_isr start
 
     theta_enc[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;        // Capture position
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
@@ -824,7 +824,10 @@ __interrupt void dmach1_isr(void)
                     PWM_CMP_c = (Uint16)(PWM_TBPRD*0.5f);
                 }
 
-            GpioDataRegs.GPCSET.bit.GPIO66 = 1;                       // Notify dmach1_isr start
+
+            //GpioDataRegs.GPCCLEAR.bit.GPIO66 = 1;
+            //GpioDataRegs.GPCSET.bit.GPIO66 = 1;
+
             #if (UR!=1)
 
                  n_seg++; // Indicates a current segment of the virtual carrier
