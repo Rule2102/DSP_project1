@@ -6,7 +6,7 @@
         <product_id>402</product_id>
         <hardware_id>3</hardware_id>
         <configuration_id>1</configuration_id>
-        <fw_release_date>132384520</fw_release_date>
+        <fw_release_date>132385281</fw_release_date>
     </hw_properties>
     <components>
         <inputs>
@@ -64,7 +64,7 @@
                 <ao_lower_limit>-1.0</ao_lower_limit>
                 <ao_upper_limit>1.0</ao_upper_limit>
                 <analog_signal>
-                	<name>HIL0 analog input 1</name>
+                	<name>Ia1</name>
                 	<show>True</show>
                 	<device>0</device>
                 </analog_signal>
@@ -79,7 +79,7 @@
                 <ao_lower_limit>-1.0</ao_lower_limit>
                 <ao_upper_limit>1.0</ao_upper_limit>
                 <analog_signal>
-                	<name>HIL0 analog input 2</name>
+                	<name>Ia2</name>
                 	<show>True</show>
                 	<device>0</device>
                 </analog_signal>

@@ -45,7 +45,7 @@
 
 // Defines for IREG
 #define R 0.09871f                                     // Motor resistance
-#define L 0.0484f                                   // Motor inductance
+#define L 0.0025f                                   // Motor inductance
 #define INV_TAU (R/L)                               // 1/(L/R)
 
 // defines for slip calculation
@@ -835,10 +835,18 @@ __interrupt void dmach1_isr(void)
 
             else
                 {
+
+                    EALLOW;
+                    EPwm1Regs.TZFRC.bit.OST = 1;
+                    EPwm2Regs.TZFRC.bit.OST = 1;
+                    EPwm3Regs.TZFRC.bit.OST = 1;
+                    EDIS;
+                    /*
                     // Set duty cycle to 0.5 if regulation is disabled and there is no error flag
                     PWM_CMP_a = (Uint16)(PWM_TBPRD*0.5f);
                     PWM_CMP_b = (Uint16)(PWM_TBPRD*0.5f);
                     PWM_CMP_c = (Uint16)(PWM_TBPRD*0.5f);
+                    */
                 }
 
 

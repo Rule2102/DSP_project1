@@ -1,7 +1,7 @@
 figure();
 ur = 2;
 OVERSAMPLING = 1;
-MAX_data_count = 850;
+MAX_data_count = 443;
 data = zeros(MAX_data_count,2);
 %tpom = 0:Ts:(MAX_data_count-1)*Ts;
 
@@ -9,7 +9,7 @@ for i=1:1:2
 s=num2str(i);
 s1=num2str(OVERSAMPLING);
 s2=num2str(ur);
-f=strcat('D:\struka\DSP\MATLAB\dataOut_test',s,'_OS',s1,'_UR',s2,'.dat');
+f=strcat('C:\ti\ccs920\ccs\eclipse\dataOut_',s,'.dat');
 filename = f;
 delimiter = ' ';
 startRox = 2;
