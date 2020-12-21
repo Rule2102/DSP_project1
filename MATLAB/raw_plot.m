@@ -1,7 +1,7 @@
 figure();
 ur = 2;
 OVERSAMPLING = 1;
-MAX_data_count = 443;
+MAX_data_count = 850;
 data = zeros(MAX_data_count,2);
 %tpom = 0:Ts:(MAX_data_count-1)*Ts;
 
@@ -9,7 +9,7 @@ for i=1:1:2
 s=num2str(i);
 s1=num2str(OVERSAMPLING);
 s2=num2str(ur);
-f=strcat('C:\ti\ccs920\ccs\eclipse\dataOut_',s,'.dat');
+f=strcat('C:\Users\ivan5\GIT\DSP_project1\MATLAB\dataOut_',s,'.dat');
 filename = f;
 delimiter = ' ';
 startRox = 2;
@@ -36,8 +36,9 @@ end
 % stairs(pom2);
 
 % for ADC offset measurement
-mean(data(:,1))-4094/2
-mean(data(:,2))-4094/2
+m1 = mean(data(:,1)) %-4094/2
+m2 = mean(data(:,2)) %-4094/2
+
 
 %%
 %import data from figure

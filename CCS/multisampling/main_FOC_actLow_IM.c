@@ -3,7 +3,7 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 2                                        // Update rate (UR>2 -> multisampling algorithm)
+#define UR 8                                        // Update rate (UR>2 -> multisampling algorithm)
 #define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
@@ -23,7 +23,7 @@
 #define D_MAX (PWM_TBPRD - 5)                       // Maximum duty cycle (to avoid unnecessary switching)
 #define D_MIN 5                                     // Minimum duty cycle (to avoid unnecessary switching)
 #define PI 3.141593f                                // PI
-#define DEADTIME 100                                                     // Dead time in number of EPWM clocks (see EPwmXRegs.TBPRD) 100 --> 1us
+#define DEADTIME 1                                                    // Dead time in number of EPWM clocks (see EPwmXRegs.TBPRD) 100 --> 1us
 #define UDT ((float32)(DEADTIME)/(float32)(PWM_TBPRD)*E*4.0f/PI)         // Constant for dead time compensation (4/pi for first harmonic's peak)
 
 // Defines for measurements (position & current)
@@ -33,12 +33,12 @@
 #define INV_UR_1 (1/(float32)(UR+1))                // Used for angle averaging on switching period
 #define ADC_SCALE 0.0007326f                        // ADC scaling: 3.0 --> 4095 (zero ADC offset assumed)
 #define ISENSE_SCALE 10.0f                          // [A] --> [V] (ISENSE_SCALE)A=1V
-#define LSB_offset_a 0
-#define LSB_offset_b 0
-#define ISENSE_OFFSET_A (1.50f + LSB_offset_a*ADC_SCALE) //(1.50f + 0.00309f + 0.00013f - 0.00573f - 0.00529f + 0.00028f) // - 0.01443f) //96f                     // 0A --> 1.5V + offset ADC-a
-#define ISENSE_OFFSET_B (1.50f + LSB_offset_b*ADC_SCALE) //(1.50f + 0.00448f + 0.00012f - 0.00567f - 0.00563f + 0.00032f) // - 0.01492f)//111f                     // 0A --> 1.5V + offset ADC-a
+#define LSB_offset_a 2052.0f
+#define LSB_offset_b 2053.0f
+#define ISENSE_OFFSET_A (LSB_offset_a*ADC_SCALE) ///(1.50f + LSB_offset_a*ADC_SCALE) //(1.50f + 0.00309f + 0.00013f - 0.00573f - 0.00529f + 0.00028f) // - 0.01443f) //96f                     // 0A --> 1.5V + offset ADC-a
+#define ISENSE_OFFSET_B (LSB_offset_b*ADC_SCALE) //(1.50f + LSB_offset_b*ADC_SCALE) //(1.50f + 0.00448f + 0.00012f - 0.00567f - 0.00563f + 0.00032f) // - 0.01492f)//111f                     // 0A --> 1.5V + offset ADC-a
 
-#define MAX_data_count 443 //850                       // Size of an array used for data storage
+#define MAX_data_count 850 //443 //850                       // Size of an array used for data storage
 #define DATACNT_REF 200
 #define DMACNT_REF 10869  //3478                         // Set reference after DMACNT_REF regulation periods
 #define DMACNT_PRNT 10600  //3000                        // Start printing after DMACNT_PRNT regulation periods
@@ -102,7 +102,7 @@ float32 Iq_ref = 0.0f;                          // Reference q current
 float32 IMAX = 35.0f;                           // Limit for over-current protection
 
 // IREG
-float32 alpha = 0.2f; //0.0636f; //0.087f;                            // Gain for IREG
+float32 alpha = 0.0636f; //0.087f;                            // Gain for IREG
 float32 K1, K2;                                  // Constants used for IREG
 
 // Voltages

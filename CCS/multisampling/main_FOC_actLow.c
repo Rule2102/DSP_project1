@@ -4,7 +4,7 @@
 #include <string.h>
 
 #define UR 8                                        // Update rate (UR>2 -> multisampling algorithm)
-#define OVERSAMPLING 0                              // Logic variable to differentiate between case with and without oversampling
+#define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
 #define LOG2_NOS_UR (log2(NOS_UR))                  // Used for averaging on regulation period (if OVERSAMPLING==1)
@@ -33,10 +33,10 @@
 #define INV_UR_1 (1/(float32)(UR+1))                // Used for angle averaging on switching period
 #define ADC_SCALE 0.0007326f                        // ADC scaling: 3.0 --> 4095 (zero ADC offset assumed)
 #define ISENSE_SCALE 10.0f                          // [A] --> [V] (ISENSE_SCALE)A=1V
-#define LSB_offset_a 0
-#define LSB_offset_b 0
-#define ISENSE_OFFSET_A (1.50f + LSB_offset_a*ADC_SCALE) //(1.50f + 0.00309f + 0.00013f - 0.00573f - 0.00529f + 0.00028f) // - 0.01443f) //96f                     // 0A --> 1.5V + offset ADC-a
-#define ISENSE_OFFSET_B (1.50f + LSB_offset_b*ADC_SCALE) //(1.50f + 0.00448f + 0.00012f - 0.00567f - 0.00563f + 0.00032f) // - 0.01492f)//111f                     // 0A --> 1.5V + offset ADC-a
+#define LSB_offset_a 2052.0f
+#define LSB_offset_b 2053.0f
+#define ISENSE_OFFSET_A (LSB_offset_a*ADC_SCALE) //(1.50f + 0.00309f + 0.00013f - 0.00573f - 0.00529f + 0.00028f) // - 0.01443f) //96f                     // 0A --> 1.5V + offset ADC-a
+#define ISENSE_OFFSET_B (LSB_offset_b*ADC_SCALE) //(1.50f + 0.00448f + 0.00012f - 0.00567f - 0.00563f + 0.00032f) // - 0.01492f)//111f                     // 0A --> 1.5V + offset ADC-a
 
 #define MAX_data_count 850 //443                        // Size of an array used for data storage
 #define DATACNT_REF 400
@@ -44,7 +44,7 @@
 #define DMACNT_PRNT 10600  //3000                        // Start printing after DMACNT_PRNT regulation periods
 
 // Defines for IREG
-#define R 0.47f                                     // Motor resistance
+#define R 3*0.47f                                     // Motor resistance
 #define L 0.0034f                                   // Motor inductance
 #define INV_TAU (R/L)                               // 1/(L/R)
 
@@ -96,12 +96,15 @@ float32 Iq_ref = 0.0f;                          // Reference q current
 float32 IMAX = 35.0f;                           // Limit for over-current protection
 
 // IREG
-float32 alpha = 0.2f; //0.0636f; //0.087f;                            // Gain for IREG
+float32 alpha = 0.12038f; //0.0636f; //0.087f;                            // Gain for IREG
+float32 d = 2.1948f;                               // Derivative gain
 float32 K1, K2;                                  // Constants used for IREG
 
 // Voltages
 float32 Ud[2]={};                               // D voltage (IREG output - control signal)
 float32 Uq[2]={};                               // Q voltage (IREG output - control signal)
+float32 Ud_imc[2]={};                               // D voltage (IREG output - control signal)
+float32 Uq_imc[2]={};                               // Q voltage (IREG output - control signal)
 float32 Ualpha, Ubeta;                          // Voltages in alpha/beta frame
 float32 Ua, Ub, Uc;                             // A,B,C voltages
 float32 Udq_max = E/(2.0f);                     // Maximum available voltage
@@ -549,8 +552,8 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_1[data_count] =  AdcaResultRegs.ADCRESULT0;
-        dataOut_2[data_count] =  AdcbResultRegs.ADCRESULT0;
+        dataOut_1[data_count] =  Id; //AdcaResultRegs.ADCRESULT0;
+        dataOut_2[data_count] =  Iq; //AdcbResultRegs.ADCRESULT0;
         //dataOut_3[data_count] =  Id;
         //dataOut_4[data_count] =  Iq;
         //dataOut_5[data_count] =  Id;
@@ -560,7 +563,7 @@ void PrintData()
 
         if(data_count == DATACNT_REF)
         {
-            Iq_ref = 2.0f;
+            Iq_ref = 3.0f;
         }
 
         if (data_count >= MAX_data_count)
@@ -758,17 +761,22 @@ __interrupt void dmach1_isr(void)
                     dIq[0] = - (Iq_ref - Iq);
 
                     // IMC based IREG
-                    Ud[0] = Ud[1] + K1*(dId[0]*_cos[3]-dIq[0]*_sin[3]-K2*(dId[1]*_cos[2]-dIq[1]*_sin[2]));
-                    Uq[0] = Uq[1] + K1*(dIq[0]*_cos[3]+dId[0]*_sin[3]-K2*(dIq[1]*_cos[2]+dId[1]*_sin[2]));
+                    Ud_imc[0] = Ud_imc[1] + K1*(dId[0]*_cos[3]-dIq[0]*_sin[3]-K2*(dId[1]*_cos[2]-dIq[1]*_sin[2]));
+                    Uq_imc[0] = Uq_imc[1] + K1*(dIq[0]*_cos[3]+dId[0]*_sin[3]-K2*(dIq[1]*_cos[2]+dId[1]*_sin[2]));
 
                     // Saturate if necessary (based on the DC link voltage capabilities)
-                    if(Ud[0] > Udq_max) Ud[0] = Udq_max;
-                    else if(Ud[0] < -Udq_max) Ud[0] = Udq_max;
+                    if(Ud_imc[0] > Udq_max) Ud_imc[0] = Udq_max;
+                    else if(Ud_imc[0] < -Udq_max) Ud_imc[0] = Udq_max;
 
-                    if(Uq[0] > Udq_max) Uq[0] = Udq_max;
-                    else if(Uq[0] < -Udq_max) Uq[0] = Udq_max;
+                    if(Uq_imc[0] > Udq_max) Uq_imc[0] = Udq_max;
+                    else if(Uq_imc[0] < -Udq_max) Uq_imc[0] = Udq_max;
+
+                    Ud[0] = Ud_imc[0] + d*(Ud_imc[0]-Ud_imc[1]);
+                    Uq[0] = Uq_imc[0] + d*(Uq_imc[0]-Uq_imc[1]);
 
                     // Remember values for the next dma_isr (store previous)
+                    Ud_imc[1] = Ud_imc[0];
+                    Uq_imc[1] = Uq_imc[0];
                     Ud[1] = Ud[0];
                     Uq[1] = Uq[0];
                     dId[1] = dId[0];
