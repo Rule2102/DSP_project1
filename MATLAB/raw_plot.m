@@ -2,10 +2,10 @@ figure();
 ur = 2;
 OVERSAMPLING = 1;
 MAX_data_count = 850;
-data = zeros(MAX_data_count,2);
+data = zeros(MAX_data_count,3);
 %tpom = 0:Ts:(MAX_data_count-1)*Ts;
 
-for i=1:1:2
+for i=1:1:3
 s=num2str(i);
 s1=num2str(OVERSAMPLING);
 s2=num2str(ur);
@@ -20,8 +20,23 @@ fclose(fileID);
 hold all
 data(:,i) = [dataArray{1:end-1}];
 clearvars filename delimiter startRox formatSpec fileID dataArray ans;
-hold all; stairs(data(:,i));
+% hold all; stairs(data(:,i));
 end
+plot(data(:,1));
+
+%% check for vertical crossings
+load('saw.mat');
+n_seg = data_out(:,3); % to sto ucitas jer je to pocetak narednog u kom se PWM_CMP primenjuje
+
+n_start = n_seg*Ts/Ttbclk;
+% pom2 = pom;
+% pom2(1:n_start-1) = 0;
+% plot(pom2);
+% hold all
+% plot(pom)
+figure();
+plot(pom(n_start:end)); % plot counter
+plot(data_out(:,2)); % plot PWM_cmp
 
 %plot for ur8 without MAF
 % figure()
@@ -36,8 +51,8 @@ end
 % stairs(pom2);
 
 % for ADC offset measurement
-m1 = mean(data(:,1)) %-4094/2
-m2 = mean(data(:,2)) %-4094/2
+% m1 = mean(data(:,1)) %-4094/2
+% m2 = mean(data(:,2)) %-4094/2
 
 
 %%
