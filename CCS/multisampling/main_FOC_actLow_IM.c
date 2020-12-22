@@ -18,7 +18,7 @@
 #define MS_TBPRD (2*PWM_TBPRD/UR - 1)               // Counter period of ePWM used to implement multisampling algorithm, up mode;
 #define TS (TPWM/UR)                                // Regulation period
 
-#define E 550.0f                                    // Available DC voltage
+#define E 550.0f  //295.0f                                  // Available DC voltage
 #define EINVERSE (1/E)                              // Inverse of E
 #define D_MAX (PWM_TBPRD - 5)                       // Maximum duty cycle (to avoid unnecessary switching)
 #define D_MIN 5                                     // Minimum duty cycle (to avoid unnecessary switching)
@@ -44,14 +44,14 @@
 #define DMACNT_PRNT 10600  //3000                        // Start printing after DMACNT_PRNT regulation periods
 
 // Defines for IREG
-#define R 0.09871f                                     // Motor resistance
-#define L 0.0025f                                   // Motor inductance
+#define R 0.09871f //13.0f                                     // Motor resistance
+#define L 0.0025f  //0.05358f                                 // Motor inductance
 #define INV_TAU (R/L)                               // 1/(L/R)
 
 // defines for slip calculation
-#define RR 0.108f                                  // Rotor phase resistance referred to stator
-#define LR 0.0484f                                  // Rotor phase inductance referred to stator (Lr = Llr + Lm)
-#define ID_NOM 18.55f                                 // Nominal d current
+#define RR 0.108f //0.5744f                                // Rotor phase resistance referred to stator
+#define LR 0.0484f //0.472f                                 // Rotor phase inductance referred to stator (Lr = Llr + Lm)
+#define ID_NOM 18.55f //1.6524f                                // Nominal d current
 #define INV_TAUR_ID (RR/LR/ID_NOM)                  // Inverse of rotor time constant (for slip calculation)
 
 #pragma CODE_SECTION(dmach1_isr, ".TI.ramfunc");    // Allocate code (dmach1_isr) in RAM
@@ -103,11 +103,14 @@ float32 IMAX = 35.0f;                           // Limit for over-current protec
 
 // IREG
 float32 alpha = 0.0636f; //0.087f;                            // Gain for IREG
+float32 d = 0.0f;
 float32 K1, K2;                                  // Constants used for IREG
 
 // Voltages
-float32 Ud[2]={};                               // D voltage (IREG output - control signal)
-float32 Uq[2]={};                               // Q voltage (IREG output - control signal)
+float32 Ud[2]={};                               // D voltage (dif. cmp. output - control signal)
+float32 Uq[2]={};                               // Q voltage (dif. cmp. - control signal)
+float32 Ud_imc[2]={};                               // D voltage (IREG output - control signal)
+float32 Uq_imc[2]={};                               // Q voltage (IREG output - control signal)
 float32 Ualpha, Ubeta;                          // Voltages in alpha/beta frame
 float32 Ua, Ub, Uc;                             // A,B,C voltages
 float32 Udq_max = E/(2.0f);                     // Maximum available voltage
@@ -773,17 +776,22 @@ __interrupt void dmach1_isr(void)
                     dIq[0] = - (Iq_ref - Iq);
 
                     // IMC based IREG
-                    Ud[0] = Ud[1] + K1*(dId[0]*_cos[3]-dIq[0]*_sin[3]-K2*(dId[1]*_cos[2]-dIq[1]*_sin[2]));
-                    Uq[0] = Uq[1] + K1*(dIq[0]*_cos[3]+dId[0]*_sin[3]-K2*(dIq[1]*_cos[2]+dId[1]*_sin[2]));
+                    Ud_imc[0] = Ud_imc[1] + K1*(dId[0]*_cos[3]-dIq[0]*_sin[3]-K2*(dId[1]*_cos[2]-dIq[1]*_sin[2]));
+                    Uq_imc[0] = Uq_imc[1] + K1*(dIq[0]*_cos[3]+dId[0]*_sin[3]-K2*(dIq[1]*_cos[2]+dId[1]*_sin[2]));
 
                     // Saturate if necessary (based on the DC link voltage capabilities)
-                    if(Ud[0] > Udq_max) Ud[0] = Udq_max;
-                    else if(Ud[0] < -Udq_max) Ud[0] = Udq_max;
+                    if(Ud_imc[0] > Udq_max) Ud_imc[0] = Udq_max;
+                    else if(Ud_imc[0] < -Udq_max) Ud_imc[0] = Udq_max;
 
-                    if(Uq[0] > Udq_max) Uq[0] = Udq_max;
-                    else if(Uq[0] < -Udq_max) Uq[0] = Udq_max;
+                    if(Uq_imc[0] > Udq_max) Uq_imc[0] = Udq_max;
+                    else if(Uq_imc[0] < -Udq_max) Uq_imc[0] = Udq_max;
+
+                    Ud[0] = Ud_imc[0] + d*(Ud_imc[0]-Ud_imc[1]);
+                    Uq[0] = Uq_imc[0] + d*(Uq_imc[0]-Uq_imc[1]);
 
                     // Remember values for the next dma_isr (store previous)
+                    Ud_imc[1] = Ud_imc[0];
+                    Uq_imc[1] = Uq_imc[0];
                     Ud[1] = Ud[0];
                     Uq[1] = Uq[0];
                     dId[1] = dId[0];

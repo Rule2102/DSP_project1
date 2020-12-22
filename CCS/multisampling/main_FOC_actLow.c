@@ -97,12 +97,12 @@ float32 IMAX = 35.0f;                           // Limit for over-current protec
 
 // IREG
 float32 alpha = 0.2f; //0.12038f; //0.0636f; //0.087f;                            // Gain for IREG
-float32 d = 0; //2.1948f;                               // Derivative gain
+float32 d = 0.0f; //2.1948f;                               // Derivative gain
 float32 K1, K2;                                  // Constants used for IREG
 
 // Voltages
-float32 Ud[2]={};                               // D voltage (IREG output - control signal)
-float32 Uq[2]={};                               // Q voltage (IREG output - control signal)
+float32 Ud[2]={};                               // D voltage (dif. cmp. output - control signal)
+float32 Uq[2]={};                               // Q voltage (dif. cmp. - control signal)
 float32 Ud_imc[2]={};                               // D voltage (IREG output - control signal)
 float32 Uq_imc[2]={};                               // Q voltage (IREG output - control signal)
 float32 Ualpha, Ubeta;                          // Voltages in alpha/beta frame

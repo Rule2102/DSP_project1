@@ -2,7 +2,7 @@ version = 4.2
 
 //
 // Saved by sw version: 2020.2
-// Save timestamp: 22-Dec-2020 @ 07:38:28 AM
+// Save timestamp: 22-Dec-2020 @ 09:20:48 AM
 //
 
 model "im" {
@@ -99,8 +99,8 @@ model "im" {
             Jm = "0.0054"
             Llr = "0.02679"
             Lls = "0.02679"
-            Lm = "2.27"
-            Rr = "2.7955"
+            Lm = "0.445"
+            Rr = "0.574"
             Rs = "13"
             Rsnb_stator = "49365.85852733768"
             enc_ppr = "1000"
