@@ -38,7 +38,7 @@
 #define ISENSE_OFFSET_A (LSB_offset_a*ADC_SCALE) //(1.50f + 0.00309f + 0.00013f - 0.00573f - 0.00529f + 0.00028f) // - 0.01443f) //96f                     // 0A --> 1.5V + offset ADC-a
 #define ISENSE_OFFSET_B (LSB_offset_b*ADC_SCALE) //(1.50f + 0.00448f + 0.00012f - 0.00567f - 0.00563f + 0.00032f) // - 0.01492f)//111f                     // 0A --> 1.5V + offset ADC-a
 
-#define MAX_data_count 850 //443                        // Size of an array used for data storage
+#define MAX_data_count 1000 //443                        // Size of an array used for data storage
 #define DATACNT_REF 400
 #define DMACNT_REF 10869  //3478                         // Set reference after DMACNT_REF regulation periods
 #define DMACNT_PRNT 10600  //3000                        // Start printing after DMACNT_PRNT regulation periods

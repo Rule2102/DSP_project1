@@ -1,7 +1,7 @@
 figure();
 ur = 2;
 OVERSAMPLING = 1;
-MAX_data_count = 850;
+MAX_data_count = 1000;
 data = zeros(MAX_data_count,3);
 %tpom = 0:Ts:(MAX_data_count-1)*Ts;
 
@@ -20,23 +20,28 @@ fclose(fileID);
 hold all
 data(:,i) = [dataArray{1:end-1}];
 clearvars filename delimiter startRox formatSpec fileID dataArray ans;
-% hold all; stairs(data(:,i));
+%hold all; stairs(data(:,i));
 end
+
+% figure();
 plot(data(:,1));
 
 %% check for vertical crossings
 load('saw.mat');
-n_seg = data_out(:,3); % to sto ucitas jer je to pocetak narednog u kom se PWM_CMP primenjuje
+n_seg1 = data(:,3); % to sto ucitas jer je to pocetak narednog u kom se PWM_CMP primenjuje
+n_seg = n_seg1(1,1);
 
 n_start = n_seg*Ts/Ttbclk;
-% pom2 = pom;
-% pom2(1:n_start-1) = 0;
-% plot(pom2);
-% hold all
-% plot(pom)
+pwm_cmp_a = data(:,2);
+saw_shift = pom(n_start:1:end);
 figure();
-plot(pom(n_start:end)); % plot counter
-plot(data_out(:,2)); % plot PWM_cmp
+tpom=0:Ttbclk:(length(saw_shift)-1)*Ttbclk;
+stairs(tpom,saw_shift); % plot counter
+hold all
+tpom2 = 0:Ts:(length(pwm_cmp_a)-1)*Ts;
+stairs(tpom2,pwm_cmp_a); % plot PWM_cmp
+
+figure(); stairs(tpom2,data(:,1));
 
 %plot for ur8 without MAF
 % figure()
