@@ -38,7 +38,7 @@
 #define ISENSE_OFFSET_A (LSB_offset_a*ADC_SCALE) //(1.50f + 0.00309f + 0.00013f - 0.00573f - 0.00529f + 0.00028f) // - 0.01443f) //96f                     // 0A --> 1.5V + offset ADC-a
 #define ISENSE_OFFSET_B (LSB_offset_b*ADC_SCALE) //(1.50f + 0.00448f + 0.00012f - 0.00567f - 0.00563f + 0.00032f) // - 0.01492f)//111f                     // 0A --> 1.5V + offset ADC-a
 
-#define MAX_data_count 1000 //443                        // Size of an array used for data storage
+#define MAX_data_count 850 //443                        // Size of an array used for data storage
 #define DATACNT_REF 400
 #define DMACNT_REF 10869  //3478                         // Set reference after DMACNT_REF regulation periods
 #define DMACNT_PRNT 10600  //3000                        // Start printing after DMACNT_PRNT regulation periods
@@ -124,7 +124,7 @@ Uint16 MS_CMPA_a, MS_CMPA_b, MS_CMPA_c;         // CMPA value for the multisampl
 Uint16 MS_CMPB_a, MS_CMPB_b, MS_CMPB_c;         // CMPB value for the multisampling counter
 
 // Data storage
-Uint16 dataOut_1[MAX_data_count] = {};
+float32 dataOut_1[MAX_data_count] = {};
 Uint16 dataOut_2[MAX_data_count] = {};
 Uint16 dataOut_3[MAX_data_count] = {};
 //float32 dataOut_4[MAX_data_count] = {};
@@ -552,7 +552,7 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_1[data_count] =  AdcaResultRegs.ADCRESULT0;
+        dataOut_1[data_count] =  theta[0];
         dataOut_2[data_count] =  PWM_CMP_a; //AdcbResultRegs.ADCRESULT0;
         dataOut_3[data_count] =  n_seg;
         //dataOut_4[data_count] =  Iq;

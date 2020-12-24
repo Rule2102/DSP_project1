@@ -1,11 +1,11 @@
 figure();
 ur = 2;
 OVERSAMPLING = 1;
-MAX_data_count = 1000;
+MAX_data_count = 850;
 data = zeros(MAX_data_count,3);
 %tpom = 0:Ts:(MAX_data_count-1)*Ts;
 
-for i=1:1:3
+for i=1:1:2
 s=num2str(i);
 s1=num2str(OVERSAMPLING);
 s2=num2str(ur);
@@ -23,7 +23,10 @@ clearvars filename delimiter startRox formatSpec fileID dataArray ans;
 %hold all; stairs(data(:,i));
 end
 
-% figure();
+figure();
+plot(data(:,2));
+
+figure();
 plot(data(:,1));
 
 %% check for vertical crossings
