@@ -2,7 +2,7 @@ figure();
 ur = 2;
 OVERSAMPLING = 1;
 MAX_data_count = 850;
-data = zeros(MAX_data_count,3);
+data = zeros(MAX_data_count,2);
 %tpom = 0:Ts:(MAX_data_count-1)*Ts;
 
 for i=1:1:2
@@ -20,14 +20,14 @@ fclose(fileID);
 hold all
 data(:,i) = [dataArray{1:end-1}];
 clearvars filename delimiter startRox formatSpec fileID dataArray ans;
-%hold all; stairs(data(:,i));
+hold all; stairs(data(:,i));
 end
 
-figure();
-plot(data(:,2));
-
-figure();
-plot(data(:,1));
+% figure();
+% plot(data(:,2));
+% 
+% figure();
+% plot(data(:,1));
 
 %% check for vertical crossings
 load('saw.mat');

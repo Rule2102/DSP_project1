@@ -1,6 +1,6 @@
 
 <model_description>
-    <sw_version>2020.2</sw_version>
+    <sw_version>2020.3</sw_version>
     <hw_properties>
         <revision>3</revision>
         <product_id>HIL402</product_id>
@@ -8,7 +8,7 @@
         <device_ao_limit_enable>False</device_ao_limit_enable>
         <device_id>0</device_id>
         <spc_out_mem_size>256</spc_out_mem_size>
-        <fw_support_limit>132384520</fw_support_limit>
+        <fw_support_limit>132385281</fw_support_limit>
     </hw_properties>
     <sim_setup>
         <sim_time_step>5e-07</sim_time_step>
@@ -66,21 +66,21 @@
             <address>0</address>
             <type>current</type>
             <initial_condition>0.0</initial_condition>
-            <visible>True</visible>
+            <visible>False</visible>
         </cell>
         <cell>
             <name>Ia2.Lf_Ia</name>
             <address>1</address>
             <type>current</type>
             <initial_condition>0.0</initial_condition>
-            <visible>True</visible>
+            <visible>False</visible>
         </cell>
         <cell>
             <name>Ia3.Lf_Ia</name>
             <address>2</address>
             <type>current</type>
             <initial_condition>0.0</initial_condition>
-            <visible>True</visible>
+            <visible>False</visible>
         </cell>
         <cell>
             <name>v_abs</name>
@@ -153,11 +153,11 @@
             <visible>False</visible>
         </cell>
         <cell>
-            <name>Ia1.Ia1</name>
+            <name>Ia1_full_bandwidth</name>
             <address>7</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
-            <visible>False</visible>
+            <visible>True</visible>
         </cell>
         <cell>
             <name>Ia1</name>
@@ -167,11 +167,11 @@
             <visible>True</visible>
         </cell>
         <cell>
-            <name>Ia2.Ia1</name>
+            <name>Ia2_full_bandwidth</name>
             <address>9</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
-            <visible>False</visible>
+            <visible>True</visible>
         </cell>
         <cell>
             <name>Ia2</name>
@@ -181,11 +181,11 @@
             <visible>True</visible>
         </cell>
         <cell>
-            <name>Ia3.Ia1</name>
+            <name>Ia3_full_bandwidth</name>
             <address>11</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
-            <visible>False</visible>
+            <visible>True</visible>
         </cell>
         <cell>
             <name>Ia3</name>
@@ -643,6 +643,30 @@
             <address>543</address>
         </cell>
         <cell>
+            <name>Three Phase Inverter1.Sa_top</name>
+            <address>512</address>
+        </cell>
+        <cell>
+            <name>Three Phase Inverter1.Sa_bot</name>
+            <address>513</address>
+        </cell>
+        <cell>
+            <name>Three Phase Inverter1.Sb_top</name>
+            <address>514</address>
+        </cell>
+        <cell>
+            <name>Three Phase Inverter1.Sb_bot</name>
+            <address>515</address>
+        </cell>
+        <cell>
+            <name>Three Phase Inverter1.Sc_top</name>
+            <address>516</address>
+        </cell>
+        <cell>
+            <name>Three Phase Inverter1.Sc_bot</name>
+            <address>517</address>
+        </cell>
+        <cell>
             <name>Three Phase Inverter1.IGBT Leg1_vout_cmp</name>
             <address>828</address>
         </cell>
@@ -677,6 +701,8 @@
                 <res_pole_pairs>1</res_pole_pairs>
                 <constants>
                 </constants>
+                <lut_angle1_max>6.283185307179586</lut_angle1_max>
+                <lut_angle2_max>6.283185307179586</lut_angle2_max>
             </init>
             <mch_speed>machine mechanical speed</mch_speed>
             <mch_torque>machine electrical torque</mch_torque>

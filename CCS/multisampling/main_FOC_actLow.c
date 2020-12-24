@@ -44,7 +44,7 @@
 #define DMACNT_PRNT 10600  //3000                        // Start printing after DMACNT_PRNT regulation periods
 
 // Defines for IREG
-#define R 3*0.47f                                     // Motor resistance
+#define R 0.47f                                     // Motor resistance
 #define L 0.0034f                                   // Motor inductance
 #define INV_TAU (R/L)                               // 1/(L/R)
 
