@@ -6,7 +6,7 @@
         <product_id>402</product_id>
         <hardware_id>3</hardware_id>
         <configuration_id>1</configuration_id>
-        <fw_release_date>132384520</fw_release_date>
+        <fw_release_date>132385281</fw_release_date>
     </hw_properties>
     <components>
         <inputs>
@@ -16,7 +16,7 @@
             	<input_type>OnePhaseInput</input_type>
                 <waveform_type>Constant</waveform_type>
                 <waveform></waveform>
-                <constant_value>295.0</constant_value>
+                <constant_value>650.0</constant_value>
                 <rms>0.0</rms>
                 <frequency>50.0</frequency>
                 <phase>0.0</phase>

@@ -4,7 +4,7 @@
 #include <string.h>
 
 #define UR 8                                        // Update rate (UR>2 -> multisampling algorithm)
-#define OVERSAMPLING 0                              // Logic variable to differentiate between case with and without oversampling
+#define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
 #define LOG2_NOS_UR (log2(NOS_UR))                  // Used for averaging on regulation period (if OVERSAMPLING==1)
@@ -18,7 +18,7 @@
 #define MS_TBPRD (2*PWM_TBPRD/UR - 1)               // Counter period of ePWM used to implement multisampling algorithm, up mode;
 #define TS (TPWM/UR)                                // Regulation period
 
-#define E 550.0f //295.0f                               // Available DC voltage
+#define E 650.0f   //295.0f                         // Available DC voltage
 #define EINVERSE (1/E)                              // Inverse of E
 #define D_MAX (PWM_TBPRD - 5)                       // Maximum duty cycle (to avoid unnecessary switching)
 #define D_MIN 5                                     // Minimum duty cycle (to avoid unnecessary switching)
@@ -44,14 +44,14 @@
 #define DMACNT_PRNT 10600  //3000                        // Start printing after DMACNT_PRNT regulation periods
 
 // Defines for IREG
-#define R 0.09871f   //13.0f                                  // Motor resistance
-#define L 0.0025f  //0.05358f                                 // Motor inductance
+#define R 13.0f  // 0.09871f                           // Motor resistance
+#define L 0.05358f  //0.0025f                            // Motor inductance
 #define INV_TAU (R/L)                               // 1/(L/R)
 
 // defines for slip calculation
-#define RR 0.108f         //0.5744f                      // Rotor phase resistance referred to stator
-#define LR 0.0484f     //0.472f  //                           // Rotor phase inductance referred to stator (Lr = Llr + Lm)
-#define ID_NOM 18.55f  //1.6524f                            // Nominal d current
+#define RR 0.5744f   //0.108f                       // Rotor phase resistance referred to stator
+#define LR 0.472f    //0.0484f                          // Rotor phase inductance referred to stator (Lr = Llr + Lm)
+#define ID_NOM 1.6524f  //18.55f                        // Nominal d current
 #define INV_TAUR (RR/LR)                  // Inverse of rotor time constant (for slip calculation)
 
 #pragma CODE_SECTION(dmach1_isr, ".TI.ramfunc");    // Allocate code (dmach1_isr) in RAM
@@ -102,8 +102,8 @@ float32 Iq_ref = 0.0f;                          // Reference q current
 float32 IMAX = 35.0f;                           // Limit for over-current protection
 
 // IREG
-float32 alpha = 0.2f; //0.0636f; //0.087f;                            // Gain for IREG
-float32 d = 0.0f;
+float32 alpha = 0.12038f; //0.0636f; //0.087f;                            // Gain for IREG
+float32 d = 2.1948f;
 float32 K1, K2;                                  // Constants used for IREG
 
 // Voltages
