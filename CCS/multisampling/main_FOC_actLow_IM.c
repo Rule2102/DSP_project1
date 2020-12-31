@@ -3,7 +3,7 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 8                                        // Update rate (UR>2 -> multisampling algorithm)
+#define UR 2                                        // Update rate (UR>2 -> multisampling algorithm)
 #define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
@@ -18,7 +18,8 @@
 #define MS_TBPRD (2*PWM_TBPRD/UR - 1)               // Counter period of ePWM used to implement multisampling algorithm, up mode;
 #define TS (TPWM/UR)                                // Regulation period
 
-#define E 650.0f   //295.0f                         // Available DC voltage
+
+#define E 250.0f //650.0f   //295.0f                         // Available DC voltage
 #define EINVERSE (1/E)                              // Inverse of E
 #define D_MAX (PWM_TBPRD - 5)                       // Maximum duty cycle (to avoid unnecessary switching)
 #define D_MIN 5                                     // Minimum duty cycle (to avoid unnecessary switching)
@@ -28,15 +29,15 @@
 
 // Defines for measurements (position & current)
 #define P 2.0f                                      // Machine's number of pole pairs
-#define ENC_LINE 1000                               // Number of encoder lines
+#define ENC_LINE 4096                               // Number of encoder lines
 #define ANG_CNV (2*PI*P/(float32)(4*ENC_LINE))      // Constant for angle calculation (conversion from QEP counter)
 #define INV_UR_1 (1/(float32)(UR+1))                // Used for angle averaging on switching period
-#define ADC_SCALE 0.0007326f                        // ADC scaling: 3.0 --> 4095 (zero ADC offset assumed)
+#define ADC_SCALE 0.0146f //0.0007326f                        // ADC scaling: 3.0 --> 4095 (zero ADC offset assumed)
 #define ISENSE_SCALE 10.0f                          // [A] --> [V] (ISENSE_SCALE)A=1V
-#define LSB_offset_a 2052.0f
+#define LSB_offset_a 2052.0f                        //
 #define LSB_offset_b 2053.0f
-#define ISENSE_OFFSET_A (LSB_offset_a*ADC_SCALE) ///(1.50f + LSB_offset_a*ADC_SCALE) //(1.50f + 0.00309f + 0.00013f - 0.00573f - 0.00529f + 0.00028f) // - 0.01443f) //96f                     // 0A --> 1.5V + offset ADC-a
-#define ISENSE_OFFSET_B (LSB_offset_b*ADC_SCALE) //(1.50f + LSB_offset_b*ADC_SCALE) //(1.50f + 0.00448f + 0.00012f - 0.00567f - 0.00563f + 0.00032f) // - 0.01492f)//111f                     // 0A --> 1.5V + offset ADC-a
+#define ISENSE_OFFSET_A 30.9881f//(LSB_offset_a*ADC_SCALE) ///(1.50f + LSB_offset_a*ADC_SCALE) //(1.50f + 0.00309f + 0.00013f - 0.00573f - 0.00529f + 0.00028f) // - 0.01443f) //96f                     // 0A --> 1.5V + offset ADC-a
+#define ISENSE_OFFSET_B 30.9881f//(LSB_offset_b*ADC_SCALE) //(1.50f + LSB_offset_b*ADC_SCALE) //(1.50f + 0.00448f + 0.00012f - 0.00567f - 0.00563f + 0.00032f) // - 0.01492f)//111f                     // 0A --> 1.5V + offset ADC-a
 
 #define MAX_data_count 850 //443 //850                       // Size of an array used for data storage
 #define DATACNT_REF 200
@@ -102,8 +103,8 @@ float32 Iq_ref = 0.0f;                          // Reference q current
 float32 IMAX = 35.0f;                           // Limit for over-current protection
 
 // IREG
-float32 alpha = 0.12038f; //0.0636f; //0.087f;                            // Gain for IREG
-float32 d = 2.1948f;
+float32 alpha = 0.1f; //0.12038f; //0.0636f; //0.087f;                            // Gain for IREG
+float32 d = 0; //2.1948f;
 float32 K1, K2;                                  // Constants used for IREG
 
 // Voltages
@@ -119,6 +120,7 @@ float32 Udq_max = E/(2.0f);                     // Maximum available voltage
 float32 theta[UR+1] = {};                       // Machine electrical angle - theta[0]=current, theta[1]=previous, etc.
 float32 theta_avg_Ts;                           // Averaged angle on Ts
 float32 theta_enc;                              // Mechanical angle calcualted using QEP counter
+float32 theta_store[2] = {}; ;
 float32 dtheta;                                 // Angle difference used in IREG (w*Ts)
 float32 _sin[4];                                // _sin[0]=sin(theta_avg_Ts), _sin[1]=sin(theta[0]), _sin[2]=sin(dtheta), _sin[3]=sin(2*dtheta)
 float32 _cos[4];                                // _cos[0]=cos(theta_avg_Ts), _cos[1]=sin(theta[0]), _cos[2]=sin(dtheta), _cos[3]=sin(2*dtheta)
@@ -143,9 +145,10 @@ Uint16 canPrint = 0;                            // Logic signal used to trigger 
 long int data_count = 0;                        // Counter for data storage
 Uint16 reg_enabled = 0;                         // Logic variable used to start output
 Uint16 error_flag = 0;                          // Indicate if an error occurred (overcurrent protection, etc)
+Uint16 enable_inverter = 0;
 
 // For debugging with f=const
-float32 f_ref = 270.0f;                         // Frequency of electrical quantities
+float32 f_ref = 0.0f;                         // Frequency of electrical quantities
 #define TWOPI_TS (2*PI*TS)                      // 2*pi*Ts for angle calculation
 
 float32 pom1, pom2;
@@ -290,16 +293,26 @@ void Configure_GPIO(void)
     //GPIOs for QEP
 
     // Configure as EQEP2A input
-    GpioCtrlRegs.GPADIR.bit.GPIO24 = 0;          // Configure as input
-    GpioCtrlRegs.GPAMUX2.bit.GPIO24 = 2;         // Mux to eQEP2A
+    GpioCtrlRegs.GPBDIR.bit.GPIO54 = 0;          // Configure as input 24
+    GpioCtrlRegs.GPBGMUX2.bit.GPIO54 = 1;         // Mux to eQEP2A
+    GpioCtrlRegs.GPBMUX2.bit.GPIO54 = 1;         // Mux to eQEP2A
 
     // Configure as EQEP2B input
-    GpioCtrlRegs.GPADIR.bit.GPIO25 = 0;          // Configure as input
-    GpioCtrlRegs.GPAMUX2.bit.GPIO25 = 2;         // Mux to eQEP2B
+    GpioCtrlRegs.GPBDIR.bit.GPIO55 = 0;          // Configure as input 25
+    GpioCtrlRegs.GPBGMUX2.bit.GPIO55 = 1;         // Mux to eQEP2B
+    GpioCtrlRegs.GPBMUX2.bit.GPIO55 = 1;         // Mux to eQEP2B
 
     // Configure as EQEP2I input
-    GpioCtrlRegs.GPADIR.bit.GPIO26 = 0;          // Configure as input
-    GpioCtrlRegs.GPAMUX2.bit.GPIO26 = 2;         // Mux to eQEP2I
+    GpioCtrlRegs.GPBDIR.bit.GPIO57 = 0;          // Configure as input 26
+    GpioCtrlRegs.GPBMUX2.bit.GPIO57 = 2;         // Mux to eQEP2I
+
+    // Configure as enable for turning off rectifier's resistor
+
+    GpioCtrlRegs.GPADIR.bit.GPIO16 = 1;         // Configure as output
+    GpioCtrlRegs.GPAMUX2.bit.GPIO16 = 0;         // Mux to ordinary GPIO
+    GpioDataRegs.GPASET.bit.GPIO16 = 0;          // Set low, until otherwise specified by control algorithm
+
+
 
     EDIS;
 
@@ -628,6 +641,8 @@ __interrupt void dmach1_isr(void)
 
     dma_count++;
 
+    //theta[0] = 0.0f;
+
 /*
  // Set your own theta based on the predefined frequency
     theta[0]+= TWOPI_TS*f_ref;                        // Capture position
@@ -639,8 +654,8 @@ __interrupt void dmach1_isr(void)
                 theta[i_for]-= 2*PI;
             }
         }
-*/
 
+*/
     static int dma_sgn = 1;     // Logic variable to indicate state of the ping pong algorithm
 
     Ia_sum_Ts = 0;
@@ -695,17 +710,25 @@ __interrupt void dmach1_isr(void)
 
     #if (OVERSAMPLING)
         // Averaging on regulation period & scaling ([dig] --> [A])
-        Ia_avg_Ts = ((float32)(Ia_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
-        Ib_avg_Ts = ((float32)(Ib_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET_B)*ISENSE_SCALE;
+        Ia_avg_Ts = ((float32)(Ia_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET_A);//*ISENSE_SCALE;
+        Ib_avg_Ts = ((float32)(Ib_sum_Ts>>((int)LOG2_NOS_UR))*ADC_SCALE - ISENSE_OFFSET_B); //ISENSE_SCALE;
     #else
         // Take last measurement stored in DMA buffer
-        Ia_avg_Ts = ((float32)(Ia_sum_Ts)*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
-        Ib_avg_Ts = ((float32)(Ib_sum_Ts)*ADC_SCALE - ISENSE_OFFSET_B)*ISENSE_SCALE;
+        Ia_avg_Ts = ((float32)(Ia_sum_Ts)*ADC_SCALE - ISENSE_OFFSET_A); //*ISENSE_SCALE;
+        Ib_avg_Ts = ((float32)(Ib_sum_Ts)*ADC_SCALE - ISENSE_OFFSET_B); //*ISENSE_SCALE;
     #endif
 
     Ic_avg_Ts = - Ia_avg_Ts - Ib_avg_Ts;        // Calculate current in phase C
 
     error_flag = abs(Ia_avg_Ts) > IMAX || abs(Ib_avg_Ts) > IMAX || abs(Ic_avg_Ts) > IMAX;       // Check for overcurrent protection
+
+    if (enable_inverter)
+             GpioDataRegs.GPASET.bit.GPIO16 = 1;
+    else
+     {
+         GpioDataRegs.GPACLEAR.bit.GPIO16 = 1;
+         reg_enabled = 0;
+     }
 
     if(error_flag)
         {
@@ -787,8 +810,8 @@ __interrupt void dmach1_isr(void)
                     if(Uq_imc[0] > Udq_max) Uq_imc[0] = Udq_max;
                     else if(Uq_imc[0] < -Udq_max) Uq_imc[0] = Udq_max;
 
-                    Ud[0] = Ud_imc[0] + d*(Ud_imc[0]-Ud_imc[1]);
-                    Uq[0] = Uq_imc[0] + d*(Uq_imc[0]-Uq_imc[1]);
+                    //Ud[0] = Ud_imc[0] + d*(Ud_imc[0]-Ud_imc[1]);
+                    //Uq[0] = Uq_imc[0] + d*(Uq_imc[0]-Uq_imc[1]);
 
                     // Remember values for the next dma_isr (store previous)
                     Ud_imc[1] = Ud_imc[0];
@@ -798,9 +821,10 @@ __interrupt void dmach1_isr(void)
                     dId[1] = dId[0];
                     dIq[1] = dIq[0];
                     theta[1] = theta[0];
+                    theta_store[1] = theta_store[0];
 
                     // Open loop testing
-                    //Ud[0] = 0.0f;
+                    //Ud[0] = 50.0f;
                     //Uq[0] = 0.0f;
 
                     // Inverse Park transform
