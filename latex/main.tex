@@ -90,6 +90,13 @@ This paper analyzes the use of MS-PWM in discrete IMC based current controller, 
 This paper is organized as follows. Section II addresses discrete time machine model, controller structure and analyzes delays introduced by feedback averaging, calculation and DPWM. The multisampling PWM approach, with an outline of its merits and demerits, is explained in Section III. A DSP implementation of the multisampling algorithm is also presented. Exact controller structures and parameter setting procedures for the three aforementioned cases of interest are derived in Section IV. Effectiveness of the derived analytical model is illustrated via simulated current loop step responses and frequency response analyses. Comparison between performance of the proposed methodology and benchmark controllers is also provided. Experimental results are shown in section V. Conclusions are drawn in section VI, along with a proposal for further studies on the presented topic.
  
 \section{Multi-rate control system}
+
+\begin{figure*}[t!]
+    \centerline{\includegraphics[width=0.95\linewidth]{figures/schematic.eps}}
+    \caption{Multisampled control loop of a three-phase inverter.}
+    \label{fig:MSControl}
+\end{figure*}
+
 \subsection{Control system overview and AC machine modeling}
 Ovde imas blok dijagram sa strukturom sistema, i small-signal blok dijagram. Nakon toga imas modelovanje masine sa jednacinama...
 
@@ -104,32 +111,6 @@ G_{DPWM}(s) \approx \frac{1-e^{-sT_c}}{sT_c},
 \end{equation}
 where $s$ is the complex variable of the Laplace transform.
 
-\subsection{DSP algorithm for multisampled modulation}
-
-The results of this paper are obtained using a digital signal processor from Texas Instruments C2000 series, TMS320F28379D. The algorithm is referred to this DSP series, however, the algorithm nature is general and can be implemented regardless of the platform.
-When implementing multisampled control, the important thing is the synchronization between the main PWM carrier, which provides the output gate signal, and the multisampled carrier, which triggers the sampling and control interrupts. This is easily achievable using FPGA, however, in DSP applications additional measures need to be implemented.
-The main problem in DSP applications is that the PWM comparator triggers the switching action when the modulating waveform is equal to the carrier. In multisampled systems, this is not acceptable as vertical crossings between the modulating waveform and the carrier would cause pulse skipping []. In this subsection, an algorithm is proposed to be used in DSPs for multisampling applications. The algorithm is of general nature, and can be used for DC-DC converters as well [compel]. The description below is written for one modulating waveform, which is simply extended when using three-phase modulation.
-
-One PWM module that runs on frequency $f_c = N f_{pwm}$ is used for each inverter leg. This carrier triggers the ADC module to perform sampling and subsequently trigger the interrupt routine. 
-The oversampling factor $N$ is limited by the code execution time and $T_{pwm}$. 
-As for the carrier $c$ that dictates the PWM frequency, it exists only virtually, and its values at the beginning and end of each interrupt is calculated by keeping track of the interrupt number. Due to considerable relative time for code execution, modulating waveform update features one step delay compared. 
-Due to favourable characteristics for the MS-PWM control, triangular counter is used for the virtual carrier $c$. For oversampled carrier, trailing-edge counter is implemented, as this counter has no impact on the converter dynamics.
-
-The controller output, $m[k]$, is used to determine whether the switching action should occur during the following period of the oversampled carrier. This is done by first transforming $m[k]$ to the value of the compare register, relative to the maximal value of the virtual carrier $c_{max}$. The switching actions are determined using two compare registers, $CMPA$ and $CMPB$. The true value of compare action $c = CMPA$ causes turn-on, and $c=CMPB$ causes turn-off of the referent transistor. 
-During the up-count of the virtual carrier $c$, only the turn-off action is allowed, in order to prevent multiple switching. Hence, value of $CMPA$ is set to be higher than the maximum value of the oversampled carrier. Vice versa, the value of $CMPB$ is set to be higher than the maximum value of the oversampled carrier during the down-count of the virtual carrier.
-The value of $CMPA$ and $CMPB$, during respective count-modes, is calculated by keeping track of the interrupt number, relative to the virtual carrier. If the switching action has not yet occured, the valur of $CMPA$ or $CMPB$ will be higher then the maximal value of the oversampled carrier. Once the switching action occurs, 
-
- so, value of the compare register is calculated so that the switching action of the PWM module operating at $f_c$ occurs exactly at the instant where it would occur for the virtual PWM carrier. For cases when the vertical crossing occurs, value of the compare register is set to be loaded to minimal possible value at the beginning of the following interrupt, so that the switching action would coincide with that interrupt instant. Note that this value might not be equal to $0$, as it takes some time for the shadow compare register to be loaded to the active register. If $0$ was used, the condition $c = CMP$ might not be satisfied, and the switching action would skip that interrupt period. Heuristically, this value is set to be equal to $7$ in the implemented code. For the clarity of illustrations, this limit value is shown as equal to $0$. 
-
- 
-
-
-An example for $c_{max} = 8$ and $N=4$ is given in Fig...
-
-\section{Controller and feedback filter design}
-
-\subsection{Discrete IMC controller}
-
 \subsection{Feedback acquisition and $\alpha \beta - dq$ transformation}
 Ovde onaj blok dijagram od ruzice lep sa transformacijama, pa da se objasni da zapravo koristis i DMA i bla bla .... Prethodno negde na pocetku rada prikazi multi-rate sliku i tu ubaci blok koji se zove feedback acquistion, ulaz su alpha beta struje i ugao, izlaz su dq struje, pa iza toga ide filtar u dq sistemu...
 
@@ -142,26 +123,19 @@ fpwm - switching
 fs - sampling (
 fc - control frequency (Nfpwm)
 
-\subsection{Digital filter design}
+\section{Controller and feedback filter design}
+
+\begin{figure}[t!]
+    \centerline{\includegraphics[width=0.95\linewidth]{figures/small_signal.eps}}
+    \caption{Small-signal block diagram of the system from Fig. \ref{fig:MSControl} in discrete-time domain.}
+    \label{fig:MSControl}
+\end{figure}
+
+\subsection{Discrete IMC controller}
 
 \subsection{Total time delay in DSP application}
 Ovde pricaj o zbirnom kasnjenju, itd....
 Mozda nakon price o modelovanju masine...
-
-\subsection{Multisampled control stage of a buck converter}
-
-\begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/nas_step.png}}
-    \caption{Multisampled control loop of a buck converter.}
-    \label{fig:MSControl}
-\end{figure}
-
-
-\begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/nas_clfra.png}}
-    \caption{Modulating signal $m_h(t)$ and carrier $w(t)$ with a) counter-phase and b) in-phase operation.}
-    \label{fig:InCounterPhase}
-\end{figure}
 
 
 
