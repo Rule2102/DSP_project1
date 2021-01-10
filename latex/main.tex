@@ -93,7 +93,7 @@ This paper is organized as follows. Section II addresses discrete time machine m
 
 \begin{figure*}[t!]
     \centerline{\includegraphics[width=0.95\linewidth]{figures/schematic.eps}}
-    \caption{Multisampled control loop of a three-phase inverter.}
+    \caption{Multisampled control loop of a three-phase inverter. ubaci 1/z da bi bio kompatibilan sa tajming dijagramom}
     \label{fig:MSControl}
 \end{figure*}
 
@@ -112,6 +112,13 @@ G_{DPWM}(s) \approx \frac{1-e^{-sT_c}}{sT_c},
 where $s$ is the complex variable of the Laplace transform.
 
 \subsection{Feedback acquisition and $\alpha \beta - dq$ transformation}
+
+\begin{figure}[t!]
+    \centerline{\includegraphics[width=0.95\linewidth]{figures/timing_diagram.eps}}
+    \caption{nothing yet}
+    \label{fig:timings}
+\end{figure}
+
 Ovde onaj blok dijagram od ruzice lep sa transformacijama, pa da se objasni da zapravo koristis i DMA i bla bla .... Prethodno negde na pocetku rada prikazi multi-rate sliku i tu ubaci blok koji se zove feedback acquistion, ulaz su alpha beta struje i ugao, izlaz su dq struje, pa iza toga ide filtar u dq sistemu...
 
 Ovde mozes da kazes: da bi stao ceo kod, ipak ne moze preveliki oversampling faktor. Zbog toga, umesto koriscenja klasicnog koda kao u subsection koji vec, koristi se DMA modul koji sempluje jos n puta brze tako da je ukupan oversampling rate jednak n*N. Nakon tih n odbiraka se zapravo trigeruje interrupt koji je povezan sa N oversamplingom uradi se MAF i decimira se tako da kontrolni kod radi na fc ucestanosti.
@@ -123,12 +130,14 @@ fpwm - switching
 fs - sampling (
 fc - control frequency (Nfpwm)
 
+
+
 \section{Controller and feedback filter design}
 
 \begin{figure}[t!]
     \centerline{\includegraphics[width=0.95\linewidth]{figures/small_signal.eps}}
     \caption{Small-signal block diagram of the system from Fig. \ref{fig:MSControl} in discrete-time domain.}
-    \label{fig:MSControl}
+    \label{fig:SmallSignal}
 \end{figure}
 
 \subsection{Discrete IMC controller}

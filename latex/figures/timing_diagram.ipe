@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70215" creator="Ipe 7.2.15">
-<info created="D:20210110164810" modified="D:20210110180505"/>
+<info created="D:20210110164810" modified="D:20210110205539"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
 0 0 m
 -1 0.333 l
 -1 -0.333 l
+0 0 l
 0 0 l
 0 0 l
 h
@@ -18,6 +19,7 @@ h
 0 0 m
 -1 0.333 l
 -1 -0.333 l
+0 0 l
 0 0 l
 0 0 l
 h
@@ -31,6 +33,7 @@ h
 -1 -0.333 l
 0 0 l
 0 0 l
+0 0 l
 h
 </path>
 </symbol>
@@ -40,6 +43,7 @@ h
 -1 0.333 l
 -0.8 0 l
 -1 -0.333 l
+0 0 l
 0 0 l
 0 0 l
 h
@@ -75,11 +79,13 @@ h
 -0.6 0.6 l
 -0.6 -0.6 l
 -0.6 -0.6 l
+-0.6 -0.6 l
 h
 -0.4 -0.4 m
 0.4 -0.4 l
 0.4 0.4 l
 -0.4 0.4 l
+-0.4 -0.4 l
 -0.4 -0.4 l
 -0.4 -0.4 l
 h
@@ -91,6 +97,7 @@ h
 0.6 -0.6 l
 0.6 0.6 l
 -0.6 0.6 l
+-0.6 -0.6 l
 -0.6 -0.6 l
 -0.6 -0.6 l
 h
@@ -105,6 +112,7 @@ h
 -0.5 0.5 l
 -0.5 -0.5 l
 -0.5 -0.5 l
+-0.5 -0.5 l
 h
 </path>
 <path fill="sym-stroke" fillrule="eofill">
@@ -114,11 +122,13 @@ h
 -0.6 0.6 l
 -0.6 -0.6 l
 -0.6 -0.6 l
+-0.6 -0.6 l
 h
 -0.4 -0.4 m
 0.4 -0.4 l
 0.4 0.4 l
 -0.4 0.4 l
+-0.4 -0.4 l
 -0.4 -0.4 l
 -0.4 -0.4 l
 h
@@ -134,6 +144,7 @@ h
 -0.57 -0.43 l
 -0.43 -0.57 l
 -0.43 -0.57 l
+-0.43 -0.57 l
 h
 </path>
 <path fill="sym-stroke">
@@ -141,6 +152,7 @@ h
 0.57 -0.43 l
 0.43 -0.57 l
 -0.57 0.43 l
+-0.43 0.57 l
 -0.43 0.57 l
 -0.43 0.57 l
 h
@@ -154,6 +166,7 @@ h
 -1 -0.333 l
 0 0 l
 0 0 l
+0 0 l
 h
 </path>
 </symbol>
@@ -165,6 +178,7 @@ h
 -1 -0.333 l
 0 0 l
 0 0 l
+0 0 l
 h
 </path>
 </symbol>
@@ -174,6 +188,7 @@ h
 -1 0.333 l
 -0.8 0 l
 -1 -0.333 l
+0 0 l
 0 0 l
 0 0 l
 h
@@ -193,10 +208,12 @@ h
 -1 -0.333 l
 0 0 l
 0 0 l
+0 0 l
 h
 -1 0 m
 -2 0.333 l
 -2 -0.333 l
+-1 0 l
 -1 0 l
 -1 0 l
 h
@@ -209,10 +226,12 @@ h
 -1 -0.333 l
 0 0 l
 0 0 l
+0 0 l
 h
 -1 0 m
 -2 0.333 l
 -2 -0.333 l
+-1 0 l
 -1 0 l
 -1 0 l
 h
@@ -292,92 +311,57 @@ h
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" stroke="black" pen="heavier">
+<group layer="alpha" clip="44.3004 791.982 m
+44.3004 560.359 l
+337.978 560.359 l
+337.978 791.982 l
+44.3004 791.982 l
+h
+">
+<path stroke="black" pen="heavier">
 64 704 m
 128 768 l
 192 704 l
 256 768 l
 320 704 l
 </path>
-<path matrix="1 0 0 0.5 0 352" stroke="black" arrow="normal/small">
+<path matrix="1 0 0 0.5 0 320" stroke="black" arrow="normal/small">
 64 704 m
 64 736 l
 </path>
-<path matrix="1 0 0 0.5 32 352" stroke="black" arrow="normal/small">
+<path matrix="1 0 0 0.5 32 320" stroke="black" arrow="normal/small">
 64 704 m
 64 736 l
 </path>
-<path matrix="1 0 0 0.5 64 352" stroke="black" arrow="normal/small">
+<path matrix="1 0 0 0.5 64 320" stroke="black" arrow="normal/small">
 64 704 m
 64 736 l
 </path>
-<path matrix="1 0 0 0.5 96 352" stroke="black" arrow="normal/small">
+<path matrix="1 0 0 0.5 96 320" stroke="black" arrow="normal/small">
 64 704 m
 64 736 l
 </path>
-<path matrix="1 0 0 0.5 128 352" stroke="black" arrow="normal/small">
+<path matrix="1 0 0 0.5 128 320" stroke="black" arrow="normal/small">
 64 704 m
 64 736 l
 </path>
-<path matrix="1 0 0 0.5 160 352" stroke="black" arrow="normal/small">
+<path matrix="1 0 0 0.5 160 320" stroke="black" arrow="normal/small">
 64 704 m
 64 736 l
 </path>
-<path matrix="1 0 0 0.5 192 352" stroke="black" arrow="normal/small">
+<path matrix="1 0 0 0.5 192 320" stroke="black" arrow="normal/small">
 64 704 m
 64 736 l
 </path>
-<path matrix="1 0 0 0.5 224 352" stroke="black" arrow="normal/small">
+<path matrix="1 0 0 0.5 224 320" stroke="black" arrow="normal/small">
 64 704 m
 64 736 l
 </path>
-<path matrix="1 0 0 0.5 256 352" stroke="black" arrow="normal/small">
+<path matrix="1 0 0 0.5 256 320" stroke="black" arrow="normal/small">
 64 704 m
 64 736 l
 </path>
-<text matrix="1 0 0 1 0 -16" transformations="translations" pos="112 816" stroke="black" type="label" width="441.401" height="7.473" depth="2.49" valign="baseline">timing diagram and feedback acquisitoin (znaci sve to predstavi ovde, ukljucujuci izlaz kontrolera itd</text>
-<path matrix="0.998863 0 0 1 0.0725159 0" stroke="black">
-63.8008 730.478 m
-96.2272 730.478 l
-96.2272 726.154 l
-127.573 726.154 l
-127.573 733.18 l
-159.999 733.18 l
-159.999 741.017 l
-192.155 741.017 l
-192.155 735.882 l
-223.501 735.882 l
-223.501 730.748 l
-256.197 730.748 l
-256.197 741.017 l
-287.813 741.017 l
-287.813 744.8 l
-320.24 744.8 l
-</path>
-<path matrix="1 0 0 1 0 16" stroke="black" arrow="normal/tiny" rarrow="normal/tiny">
-64 752 m
-96 752 l
-</path>
-<path matrix="4 0 0 1 -192 32" stroke="black" arrow="normal/tiny" rarrow="normal/tiny">
-64 752 m
-96 752 l
-</path>
-<text matrix="1 0 0 1 -2.70399 13.296" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="9.88" height="6.812" depth="1.49" valign="baseline" style="math">T_c</text>
-<text matrix="1 0 0 1 -3.95198 29.5199" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="23.448" height="6.808" depth="2.85" valign="baseline" style="math">T_{pwm}</text>
-<path matrix="1 0 0 1.6 0 -470.4" stroke="black" dash="dashed">
-64 704 m
-64 784 l
-</path>
-<path matrix="1 0 0 1 128 0" stroke="black" dash="dashed">
-64 704 m
-64 784 l
-</path>
-<path matrix="1 0 0 1.6 32 -470.4" stroke="black" dash="dashed">
-64 704 m
-64 784 l
-</path>
-<text matrix="1 0 0 1 -7.38468 6.88562" transformations="translations" pos="229.006 715.004" stroke="black" type="label" width="5.258" height="6.918" depth="0" valign="baseline">k</text>
-<path matrix="0.9 0 0 0.9 -8.00286 69.2977" stroke="black">
+<path matrix="-0.899998 -0.00186829 0.00186829 -0.899998 358.611 1323.22" stroke="black">
 223.953 703.119 m
 30.9468 0 0 30.9468 239.925 729.626 255.99 703.175 a
 </path>
@@ -513,126 +497,38 @@ h
 64 704 m
 64 736 l
 </path>
-<path matrix="1 0 0 1 0 -2.74418" stroke="black" dash="dashed">
+<path matrix="1 0 0 1 16 -2.74418" stroke="black" dash="dashed">
 64 688 m
 64 672 l
 64 672 l
 </path>
-<path matrix="1 0 0 1 0 10.5735" stroke="black" arrow="normal/tiny" rarrow="normal/tiny">
+<path matrix="1 0 0 1 8.03337 10.5735" stroke="black" arrow="normal/tiny" rarrow="normal/tiny">
 63.9819 674.905 m
 72.0124 674.905 l
 </path>
-<text matrix="1 0 0 1 -14.525 -67.158" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="10.08" height="6.812" depth="1.49" valign="baseline" style="math">T_s</text>
+<text matrix="1 0 0 1 -6.88805 -67.158" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="10.08" height="6.812" depth="1.49" valign="baseline" style="math">T_s</text>
 <path matrix="1 0 0 1 8.09054 -2.7444" stroke="black" dash="dashed">
 64 688 m
 64 672 l
 64 672 l
 </path>
-<path matrix="1 0 0 1 -31.8605 -32.3209" stroke="black">
-231.766 687.259 m
-17.7953 0 0 17.7953 243.741 700.423 255.994 687.519 a
-</path>
-<path matrix="1 0 0 1 -63.8973 -32.3211" stroke="black">
-231.766 687.259 m
-17.7953 0 0 17.7953 243.741 700.423 255.994 687.519 a
-</path>
-<path matrix="1 0 0 1 -95.9522 -32.3213" stroke="black">
-231.766 687.259 m
-17.7953 0 0 17.7953 243.741 700.423 255.994 687.519 a
-</path>
-<path matrix="1 0 0 1 -128 -32.3214" stroke="black">
-231.766 687.259 m
-17.7953 0 0 17.7953 243.741 700.423 255.994 687.519 a
-</path>
-<group matrix="1 0 0 1 12.6197 18.9279">
-<text matrix="1 0 0 1 0.562055 6.3095" transformations="translations" pos="208 608" stroke="black" type="label" width="14.944" height="4.297" depth="1.93" valign="baseline">avg</text>
-<path stroke="black">
-208 624 m
-208 608 l
-224 608 l
-224 624 l
-208 624 l
-h
-</path>
-</group>
-<group matrix="1 0 0 1 4.27987 -10.0365">
-<text matrix="1 0 0 1 0.562055 6.3095" transformations="translations" pos="208 608" stroke="black" type="label" width="14.944" height="4.297" depth="1.93" valign="baseline">avg</text>
-<path stroke="black">
-208 624 m
-208 608 l
-224 608 l
-224 624 l
-208 624 l
-208 624 l
-h
-</path>
-</group>
-<path matrix="0.9 0 0 0.9 -40.0027 69.2981" stroke="black">
-223.953 703.119 m
-30.9468 0 0 30.9468 239.925 729.626 255.99 703.175 a
-</path>
-<path matrix="0.9 0 0 0.9 -72.0027 69.2981" stroke="black">
-223.953 703.119 m
-30.9468 0 0 30.9468 239.925 729.626 255.99 703.175 a
-</path>
-<path matrix="0.9 0 0 0.9 -104.003 69.2981" stroke="black">
-223.953 703.119 m
-30.9468 0 0 30.9468 239.925 729.626 255.99 703.175 a
-</path>
-<path matrix="0.6036 0 0 7.47817 79.1306 -4520.92" stroke="black" arrow="normal/tiny">
-207.985 697.917 m
-207.985 685.544 l
-220.012 685.544 l
-</path>
-<path matrix="2.01036 0 0 -2.87065 -214.255 2573.4" stroke="black">
+<path matrix="2.48274 0 0 5.90016 -426.587 -3429.12" stroke="black" arrow="normal/tiny">
 220.315 685.519 m
 236.187 685.519 l
 </path>
-<text matrix="1 0 0 1 -32.7594 -50.4238" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="16.296" height="6.808" depth="2.85" valign="baseline" style="math">\Theta_{dq}</text>
+<text matrix="1 0 0 1 -32.7594 -81.48" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="16.296" height="6.808" depth="2.85" valign="baseline" style="math">\Theta_{dq}</text>
 <text matrix="1 0 0 1 -30.2594 -98.2463" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="13.986" height="6.571" depth="2.85" valign="baseline" style="math">i_{\alpha \beta}</text>
-<text matrix="1 0 0 1 61.7757 3.52052" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="18.747" height="7.473" depth="2.49" valign="baseline" style="math">w(t)</text>
-<text matrix="1 0 0 1 83.0959 -13.0159" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="24.913" height="7.473" depth="2.49" valign="baseline" style="math">m_a (t)</text>
-<path matrix="1.74273 0 0 0.963038 -157.247 24.0292" stroke="black" arrow="normal/tiny">
-211.715 650.097 m
-211.715 633.901 l
-216.674 633.901 l
-</path>
-<text matrix="1 0 0 1 152.65 -148.593" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="27.331" height="8.801" depth="2.85" valign="baseline" style="math">\overline{\Theta_{dq}} [k]</text>
-<text matrix="1 0 0 1 162.088 -115.671" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="25.021" height="8.563" depth="2.85" valign="baseline" style="math">\overline{i_{\alpha \beta}} [k]</text>
-<text matrix="1 0 0 1 -43.6173 6.88573" transformations="translations" pos="229.006 715.004" stroke="black" type="label" width="13.56" height="6.918" depth="0" valign="baseline">k-1</text>
-<text matrix="1 0 0 1 -75.5362 6.88621" transformations="translations" pos="229.006 715.004" stroke="black" type="label" width="13.56" height="6.918" depth="0" valign="baseline">k-2</text>
-<text matrix="1 0 0 1 -108.194 6.88578" transformations="translations" pos="229.006 715.004" stroke="black" type="label" width="13.56" height="6.918" depth="0" valign="baseline">k-3</text>
-<path matrix="1 0 0 1.6 64 -470.4" stroke="black" dash="dashed">
-64 704 m
-64 784 l
-</path>
-<path matrix="1 0 0 1.6 96 -470.4" stroke="black" dash="dashed">
-64 704 m
-64 784 l
-</path>
-<path matrix="1 0 0 1.6 160 -470.4" stroke="black" dash="dashed">
-64 704 m
-64 784 l
-</path>
-<path matrix="1 0 0 1.6 192 -470.4" stroke="black" dash="dashed">
-64 704 m
-64 784 l
-</path>
-<path matrix="1 0 0 1.6 224 -470.4" stroke="black" dash="dashed">
-64 704 m
-64 784 l
-</path>
-<path matrix="1 0 0 1.6 256 -470.4" stroke="black" dash="dashed">
-64 704 m
-64 784 l
-</path>
-<text matrix="1 0 0 1 147.982 -62.4438" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="27.331" height="7.472" depth="2.85" valign="baseline" style="math">\Theta_{dq} [k]</text>
-<group matrix="1 0 0 1 -1.86727 -1.98105">
+<text matrix="1 0 0 1 -0.175082 -20.3458" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="18.747" height="7.473" depth="2.49" valign="baseline" style="math">w(t)</text>
+<text matrix="1 0 0 1 21.5679 -28.0687" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="24.913" height="7.473" depth="2.49" valign="baseline" style="math">m_a (t)</text>
+<text matrix="1 0 0 1 41.5598 -138.252" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="27.331" height="8.801" depth="2.85" valign="baseline" style="math">\overline{\Theta}_{dq} [k]</text>
+<text matrix="1 0 0 1 42.6132 -122.014" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="25.021" height="8.563" depth="2.85" valign="baseline" style="math">\overline{i}_{\alpha \beta} [k]</text>
+<group matrix="1 0 0 1 -111.482 -1.98105">
 <path matrix="0.5 0 0 0.5 135.676 315.764" stroke="black">
 272 640 m
 272 592 l
 320 592 l
 320 640 l
+272 640 l
 272 640 l
 h
 </path>
@@ -643,65 +539,217 @@ h
 <text matrix="0.5 0 0 0.5 233.962 248.542" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="12.571" height="6.926" depth="1.93" valign="baseline" style="math">\alpha \beta</text>
 <text matrix="0.5 0 0 0.5 244.675 235.934" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="9.99" height="6.926" depth="1.93" valign="baseline" style="math">dq</text>
 </group>
-<path matrix="3.83546 0 0 0.963038 -637.727 -66.9563" stroke="black" arrow="normal/tiny">
-211.715 650.097 m
-211.715 633.901 l
-216.674 633.901 l
+<text matrix="1 0 0 1 223.002 -167.1" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="30.047" height="7.472" depth="2.85" valign="baseline" style="math">i_{dq,f} [k]</text>
+<text matrix="1 0 0 1 160.069 -176.054" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="30.718" height="6.918" depth="0" valign="baseline" style="math">MAF?</text>
+<path matrix="0.613251 0 0 1.36808 4.2517 -228.874" stroke="black" arrow="normal/tiny">
+293.922 621.808 m
+319.833 621.808 l
 </path>
-<text matrix="1 0 0 1 97.5307 -209.815" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="52.446" height="7.472" depth="2.85" valign="baseline" style="math">i_{dq,f,MAF} [k]</text>
-<text matrix="1 0 0 1 96.9063 -228.119" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="30.047" height="7.472" depth="2.85" valign="baseline" style="math">i_{dq,f} [k]</text>
-<text matrix="1 0 0 1 193.417 -213.559" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="30.047" height="7.472" depth="2.85" valign="baseline" style="math">i_{dq,f} [k]</text>
-<path matrix="0.659906 0 0 0.538702 51.9908 208.612" stroke="black">
+<path stroke="black" dash="dashed">
+64 688 m
+64 768 l
+</path>
+<path matrix="1 0 0 1 32 0" stroke="black" dash="dashed">
+64 688 m
+64 768 l
+</path>
+<path matrix="1 0 0 1 64 0" stroke="black" dash="dashed">
+64 688 m
+64 768 l
+</path>
+<path matrix="1 0 0 1 96 0" stroke="black" dash="dashed">
+64 688 m
+64 768 l
+</path>
+<path matrix="1 0 0 1 128 0" stroke="black" dash="dashed">
+64 688 m
+64 768 l
+</path>
+<path matrix="1 0 0 1 160 0" stroke="black" dash="dashed">
+64 688 m
+64 768 l
+</path>
+<path matrix="1 0 0 1 192 0" stroke="black" dash="dashed">
+64 688 m
+64 768 l
+</path>
+<path matrix="1 0 0 1 224 0" stroke="black" dash="dashed">
+64 688 m
+64 768 l
+</path>
+<path matrix="1 0 0 1 256 0" stroke="black" dash="dashed">
+64 688 m
+64 768 l
+</path>
+<path matrix="1.0625 0 0 1 -4 -48" stroke="black" arrow="normal/small">
+64 704 m
+320 704 l
+</path>
+<group matrix="1 0 0 1 0 -15.8302">
+<path matrix="1 0 0 1 0 16" stroke="black" arrow="normal/tiny" rarrow="normal/tiny">
+64 752 m
+96 752 l
+</path>
+<text matrix="1 0 0 1 -2.70399 13.296" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="9.88" height="6.812" depth="1.49" valign="baseline" style="math">T_c</text>
+</group>
+<text matrix="1 0 0 1 253.296 -98.704" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="3.598" height="6.128" depth="0" valign="baseline" style="math">t</text>
+<text transformations="translations" pos="96 768" stroke="black" type="label" width="13.56" height="6.918" depth="0" valign="baseline">k-2</text>
+<text matrix="1 0 0 1 -32 0" transformations="translations" pos="96 768" stroke="black" type="label" width="13.56" height="6.918" depth="0" valign="baseline">k-3</text>
+<text matrix="1 0 0 1 96 0" transformations="translations" pos="96 768" stroke="black" type="label" width="17.988" height="6.919" depth="0.83" valign="baseline">k+1</text>
+<text matrix="1 0 0 1 64 0" transformations="translations" pos="96 768" stroke="black" type="label" width="8.579" height="6.918" depth="0" valign="baseline">k
+</text>
+<text matrix="1 0 0 1 160 0" transformations="translations" pos="96 768" stroke="black" type="label" width="17.988" height="6.919" depth="0.83" valign="baseline">k+3</text>
+<text matrix="1 0 0 1 192 0" transformations="translations" pos="96 768" stroke="black" type="label" width="17.988" height="6.919" depth="0.83" valign="baseline">k+4</text>
+<text matrix="1 0 0 1 224 0" transformations="translations" pos="96 768" stroke="black" type="label" width="17.988" height="6.919" depth="0.83" valign="baseline">k+5</text>
+<text matrix="1 0 0 1 128 0" transformations="translations" pos="96 768" stroke="black" type="label" width="17.988" height="6.919" depth="0.83" valign="baseline">k+2</text>
+<text matrix="1 0 0 1 32 0" transformations="translations" pos="96 768" stroke="black" type="label" width="13.56" height="6.918" depth="0" valign="baseline">k-1</text>
+<text matrix="1 0 0 1 124.749 -138.652" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="12.435" height="8.419" depth="4.43" valign="baseline" style="math">\frac{1}{N_c}</text>
+<text matrix="1 0 0 1 176.05 -130.721" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="23.014" height="8.563" depth="2.85" valign="baseline" style="math">\overline{i}_{dq} [k]</text>
+<group matrix="1 0 0 1 -111.141 -46.0311">
+<path matrix="0.5 0 0 0.5 135.676 315.764" stroke="black">
 272 640 m
 272 592 l
 320 592 l
 320 640 l
 272 640 l
 272 640 l
+272 640 l
 h
 </path>
-<text matrix="1 0 0 1 154.521 -221.463" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="30.718" height="6.918" depth="0" valign="baseline" style="math">MAF?</text>
-<path matrix="1.00953 0 0 1.60875 -2.25612 -386.281" stroke="black" arrow="normal/tiny">
-236.823 634.55 m
-259.98 634.55 l
-259.98 630.279 l
-269.254 630.279 l
+<path matrix="0.5 0 0 0.5 135.676 315.764" stroke="black">
+272 592 m
+320 640 l
 </path>
-<path matrix="0.976789 0 0 0.894555 6.24939 63.8457" stroke="black" arrow="normal/tiny">
-260.524 605.49 m
-260.524 616.714 l
-269.237 616.714 l
-</path>
-<path stroke="black" arrow="normal/tiny">
+<text matrix="0.5 0 0 0.5 233.962 248.542" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="12.571" height="6.926" depth="1.93" valign="baseline" style="math">\alpha \beta</text>
+<text matrix="0.5 0 0 0.5 244.675 235.934" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="9.99" height="6.926" depth="1.93" valign="baseline" style="math">dq</text>
+</group>
+<text matrix="1 0 0 1 43.6081 -168.027" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="25.021" height="7.472" depth="2.85" valign="baseline" style="math">i_{\alpha \beta} [k]</text>
+<text matrix="1 0 0 1 43.3764 -184.822" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="27.331" height="7.472" depth="2.85" valign="baseline" style="math">\Theta_{dq} [k]</text>
+<path matrix="3.43093 0 0 1.14898 -823.73 -136.159" stroke="black">
 293.922 621.808 m
 319.833 621.808 l
 </path>
-<text matrix="1 0 0 1 217.645 -130.721" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="23.014" height="8.563" depth="2.85" valign="baseline" style="math">\overline{i_{dq}} [k]</text>
-<text matrix="1 0 0 1 148.228 -77.3558" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="25.021" height="7.472" depth="2.85" valign="baseline" style="math">i_{\alpha \beta} [k]</text>
-<path stroke="black">
-224.492 711.666 m
-227.267 711.666
-231.429 707.503
-236.029 707.503
-238.585 704.948
-238.585 702.465 c
+<text matrix="1 0 0 1 115.309 -174.245" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="23.014" height="7.472" depth="2.85" valign="baseline" style="math">i_{dq} [k]</text>
+<path matrix="1 0 0 1 -34.9846 0" stroke="black" arrow="normal/tiny">
+156.355 585.979 m
+195.248 585.979 l
 </path>
-<path stroke="black" arrow="normal/tiny">
-238.567 702.57 m
-238.567 701.845 l
+<path matrix="1 0 0 1 -34.9848 -16.6956" stroke="black" arrow="normal/tiny">
+156.355 585.979 m
+195.248 585.979 l
 </path>
-<path stroke="black">
-225.206 670.737 m
-227.837 673.168
-234.83 674.001
-235.863 676.831 c
+<path stroke="black" pen="heavier">
+63.9983 730.402 m
+96.0354 730.402 l
+96.0354 726.074 l
+128.016 726.074 l
+128.016 733.229 l
+160.032 733.229 l
+160.032 741.042 l
+191.957 741.042 l
+191.957 735.702 l
+223.981 735.702 l
+223.981 730.766 l
+255.98 730.766 l
+255.98 741.127 l
+288.013 741.127 l
+288.013 744.821 l
+320.023 744.821 l
 </path>
-<path stroke="black" arrow="normal/tiny">
-235.28 675.905 m
-236.133 677.214 l
-</path>
-<text matrix="1 0 0 1 -24.7198 -197.998" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="43.898" height="18.278" depth="14.35" valign="baseline">$\displaystyle \sum_{j=k-N_c+1}^k  $
+<text matrix="1 0 0 1 127.87 -138.036" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="43.898" height="18.278" depth="14.35" valign="baseline">$\displaystyle \sum_{j=k-N_c+1}^k  $
 </text>
-<text matrix="1 0 0 1 -2.90591 22.8426" transformations="translations" pos="86.3176 585.881" stroke="black" type="label" width="22.187" height="8.563" depth="2.85" valign="baseline" style="math">\overline{i_{dq}}[j]</text>
+<path matrix="1.05 0 0 1.05 150.415 16.7352" stroke="black">
+48 592 m
+48 560 l
+96 560 l
+96 592 l
+48 592 l
+h
+</path>
+<path matrix="4 0 0 1 -64 -55.4739" stroke="black" arrow="normal/tiny" rarrow="normal/tiny">
+64 752 m
+96 752 l
+</path>
+<text matrix="1 0 0 1 168.272 -57.2606" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="23.448" height="6.808" depth="2.85" valign="baseline" style="math">T_{pwm}</text>
+<use matrix="1 0 0 1 16.2154 0" name="mark/disk(sx)" pos="256 592" size="normal" stroke="black"/>
+<use matrix="1 0 0 1 16.2154 2.32816" name="mark/disk(sx)" pos="256 576" size="normal" stroke="black"/>
+<use matrix="1 0 0 1 16.2154 8.9422" name="mark/disk(sx)" pos="272 576" size="normal" stroke="black"/>
+<path matrix="1 0 0 1 16.2154 1.78515" stroke="black" arrow="normal/tiny">
+273.441 583.11 m
+319.438 583.11 l
+</path>
+<path matrix="1 0 0 1 16.2154 0" stroke="black">
+235.177 620.963 m
+255.898 620.963 l
+255.898 592.249 l
+</path>
+<text matrix="1 0 0 1 12.9794 -5.20413" transformations="translations" pos="260.589 600.155" stroke="black" type="label" width="7.195" height="6.808" depth="0" valign="baseline">T</text>
+<text matrix="1 0 0 1 8.09668 -32.3434" transformations="translations" pos="260.589 600.155" stroke="black" type="label" width="6.503" height="6.808" depth="0" valign="baseline">F</text>
+<path matrix="1 0 0 1 16.2154 0" stroke="black">
+272.061 584.874 m
+255.994 584.874 l
+</path>
+<path matrix="1 0 0 1 16.2154 0" stroke="black" dash="dashed">
+246.42 607.881 m
+246.42 594.537 l
+218.665 594.537 l
+218.665 564.291 l
+276.844 564.291 l
+276.844 608.237 l
+246.242 608.237 l
+</path>
+<text matrix="1 0 0 1 67.4525 21.2596" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="30.047" height="7.472" depth="2.85" valign="baseline" style="math">i_{dq,f} [k]</text>
+<text matrix="1 0 0 1 -10.4086 -13.6997" transformations="translations" pos="146.942 699.852" stroke="black" type="label" width="15.562" height="4.297" depth="1.93" valign="baseline" style="math">avg</text>
+<text matrix="1 0 0 1 -6.61399 -49.1275" transformations="translations" pos="146.942 699.852" stroke="black" type="label" width="15.562" height="4.297" depth="1.93" valign="baseline" style="math">avg</text>
+<path stroke="black">
+136.022 654.703 m
+12.5895 0 0 12.5895 147.937 658.766 159.959 655.028 a
+</path>
+<path matrix="0.975578 0 0 1 3.6052 0" stroke="black" arrow="normal/tiny">
+147.619 646.011 m
+147.619 628.313 l
+160.124 628.313 l
+</path>
+<path stroke="black">
+159.951 756.197 m
+155.812 760.335
+150.741 765.407
+150.741 770.072
+155.427 774.758
+155.244 774.758 c
+</path>
+<path stroke="black" arrow="normal/tiny">
+153.539 772.688 m
+155.735 775.325 l
+</path>
+<path stroke="black">
+143.989 694.195 m
+138.748 697.705
+127.258 699.772
+121.296 697.32
+117.21 693.282
+117.017 689.436
+117.017 689.147 c
+</path>
+<path stroke="black">
+116.993 689.139 m
+116.993 615.593 l
+120.58 615.593 l
+</path>
+<path stroke="black" arrow="normal/tiny">
+177.27 781.754 m
+181.002 781.754
+184.572 785.324
+191.875 785.324 c
+</path>
+<text matrix="1 0 0 1 115.165 24.9926" transformations="translations" pos="78.0752 758.002" stroke="black" type="label" width="25.285" height="7.47" depth="4.18" valign="baseline" style="math">u^*_{dq} [k]</text>
+<path matrix="1.18238 0 0 1.10223 -39.1687 -79.5869" stroke="black" arrow="normal/tiny">
+208.26 778.477 m
+214.765 771.972
+214.765 763.412
+208.431 757.078
+208.431 742.322 c
+</path>
+</group>
 </page>
 </ipe>
