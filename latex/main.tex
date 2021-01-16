@@ -186,6 +186,33 @@ The model obtained in \ref{eq:modelZdomain} is used for the subsequent derivatio
 \subsection{Discrete IMC controller}
 
 
+\begin{figure}[t!]
+    \centerline{\includegraphics[width=0.95\linewidth]{figures/small_signal.eps}}
+    \caption{Small-signal block diagram of the system from Fig. \ref{fig:MSControl} in discrete-time domain.}
+    \label{fig:SmallSignal}
+\end{figure}
+
+The $dq$ frame discrete-time small signal representation of the control system in Fig. \ref{fig:MSControl} is shown in Fig. \ref{fig:SmallSignal}. In this paper, IMC method is used to obtain the controller structure []. The goal of the method is to inverse the plan model with addition of a integrator with gain $\alpha$ that determines the crossover frequency []. For the sake of causality, due to digital delays, additional factor of $\frac{1}{z^2}$ is added to the controller structure, which results in the following transfer function:
+
+\begin{equation}
+\begin{aligned}
+G_{c}(z) = \alpha \frac{1}{z^2} G^{-1}_{p,dq}(z)  =  \alpha XXX,
+\label{eq:Controller} 
+\end{aligned}    
+\end{equation}
+where $XXX = xxx$.
+
+By implementing controller from \eqref{eq:Controller}, without any feedback filters, open-loop transfer function is obtained:
+
+\begin{equation}
+\begin{aligned}
+W_{ol,1}(z) = \alpha \frac{z}{z-1}
+\label{eq:Controller} 
+\end{aligned}    
+\end{equation}
+
+This kind of open-loop structure is the state-of-the-art when it comes to DS-DU-PWM methods, often used in industry. In [vuksa] it is shown that relying on two samples per $T_{pwm}$ often results in unacceptable feedback signal deterioration in industrial applications. This is due to the unalignement between the voltage impulse and sampling instants due to limited current sensor bandwidths, analog feedback filters, delays in driver circuits, ADC conversion time, etc. Furthermore, feedback signal often comprises oscillations due to the $LC$ parasitics of long cables that are often present in industrial drives. This is a motivation behind the implementation of MS-DU-PWM, and in this paper MS-MU-PWM methods, where the signal is highly oversampled and than averaged over $T_{pwm}$.
+
 \section{Feedback acquisition, coordinate frame transformation, and filtering}
 
 \subsection{Feedback acquisition and $\alpha \beta - dq$ transformation}
@@ -207,11 +234,6 @@ fpwm - switching
 fs - sampling (
 fc - control frequency (Nfpwm)
 
-\begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/small_signal.eps}}
-    \caption{Small-signal block diagram of the system from Fig. \ref{fig:MSControl} in discrete-time domain.}
-    \label{fig:SmallSignal}
-\end{figure}
 
 
 
