@@ -29,8 +29,8 @@ Tsim = gcd(gcd(Ttbclk*1e9,Tadc*1e9),Ts*1e9)/1e9;
 
 % scheduling
 Ts_cmp = Ts;
-Ts_exe = Ts; %[Ts Ts-1230*Tsim];
-Tadc_exe = Tadc; %[Tadc mod(Ts-1230*Tsim,Tadc)];
+Ts_exe = Ts; %[Ts Ts-1000*Tsim]; %[Ts Ts-1230*Tsim];
+Tadc_exe = Tadc; %[Tadc mod(Ts-1000*Tsim,Tadc)]; %[Tadc mod(Ts-1230*Tsim,Tadc)];
 
 % inverter parameters
 E = 520;                   % available voltage
@@ -50,11 +50,11 @@ ph = pi;                    % phase of the load when modeled with 3phase sine so
 
 % IREG parameters
 % will be automatically adjusted if ur=8 (below)
-alpha = 0.25; %0.350;                % gain
+alpha = 0.25; %0.17; %0.38; %0.350;                % gain
 K1 = alpha*L/Ts;            % constant for IREG
 K2 = exp(-Ts/taus);         % parameter that desxcribes system dynamics
 Udq_max = E/2;              % saturation level in dq (for IREG)
-d = 0; %0.4
+d = 0; %0.444; %0.4
 
 % open loop dq voltages
 Udol = 0;                   % d axis voltage

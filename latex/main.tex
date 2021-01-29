@@ -218,7 +218,7 @@ By implementing controller from \eqref{eq:Controller}, without any feedback filt
 
 \begin{equation}
 \begin{aligned}
-W_{ol,1}(z) = G_c(z) G_p(z) =  \alpha \frac{z}{z-1}
+W_{ol,1}(z) = G_c(z) G_p(z) =  \frac{\alpha}{z(z-1)}
 \label{eq:OpenLoop} 
 \end{aligned}    
 \end{equation}
@@ -291,284 +291,107 @@ From above the following can be concluded. First of all, MS-DU-PWM features sign
 Finally, from \eqref{eq:tauMSMUMAF} it can be seen that for MS-MU-PWM with a MAF, starting from $N_c>6$, equivalent time delay is reduced compared to DS-DU-PWM. This is important, as the same kind of filtering as in MS-DU-PWM is used, which results in a high quality feedback signal, while the dynamics is improved compared to traditionally used DS-DU-PWM. By filtering the switching ripple, high nonlinearities due to multi-update control are strongly attenuated. 
 In the end, it should be mentioned that multi-update control always features additional nonlinear advantage compared to DU, as the reference voltage can be modified $N_c$ times per PWM period, which improves large-signal response of the controller. 
 
+\section{Controller parameter design}
+The aim of this section is to introduce different control loop architectures which will be compared in order to illustrate benefits of the proposed MS-MU-PWM methodology. Parameter setting procedure for each controller is also provided. IMC gains are set analytically using the plant and feedback models derived in Sections II and III. \par
+First one to be introduced is the state-of-the-art DS-DU approach with IMC controller from \cite{vuksa2016}. IMC gain for this controller is set to the highest value which results in the step response without an overshoot \cite{vuksa2016}. Even though DS-DU strategy provides satisfactory dynamic performance in case of a noise free feedback signal, it exhibits poor performance when the quality of the feedback signal is deteriorated by various noise sources, which is often the case in industrial applications. Therefore, some type of feedback filtering is usually necessary. \par
+Modification of the previously discussed controller via an addition of MAF in the feedback path eliminates sampling errors caused by the lock-out time and parasitic LC oscillations \cite{vuksa2016}. It however negatively impacts controller dynamic performance. In the analysis that will follow, IMC gain for this MS-DU controller is chosen so that the step response exhibits less than $1\%$ overshoot \cite{vuksa2016}. \par
+Proposed MS-MU IMC controller with MAF based feedback acquisition is considered next. The goal is to show that with this control loop architecture, both DS-DU high-quality dynamic performance and MS-DU robust feedback acquisition can be achieved. IMC gain for the proposed controller is set so that similar cross-over frequency is achieved as in case of DS-DU controller. In this way delays introduced by feedback averaging in MS-DU approach should be eliminated. \par
+For the previously introduced controllers, IMC gains and analytically obtained cross-over frequencies and phase margins are shown in Table \ref{tab:an_param}. These results will be verified in the subsequent sections by means of simulation and experimental results.\par
+
+\begin{table}[h!]
+			  \caption{Analytical controllers' characteristics}
+              \label{tab:an_param}
+              \centering
+              \begin{tabular}{llll}
+                           \midrule\midrule
+        MS-MU+MAF & label & value   & unit\\
+        \midrule               
+                  IMC gain	& $\alpha_{MS-MU+MAF}$ & 0.0636 & /\\  
+                  Cross-over frequency  & $f_{c,MS-MU+MAF}$ & 798.5845 & Hz   \\
+                  Phase margin  & $pm_{MS-MU+MAF}$ & 70.2667 &  $^\circ$  \\
+                  \midrule\midrule
+        DS-DU & label & value   & unit\\
+        \midrule               
+                  IMC gain	& $\alpha_{DS-DU}$ & 0.25 & /\\  
+                  Cross-over frequency  & $f_{c,DS-DU}$ & 799.1594 & Hz   \\
+                  Phase margin  & $pm_{DS-DU}$ & 68.4572 &  $^\circ$  \\
+                  \midrule\midrule
+        MS-DU & label & value   & unit\\
+        \midrule               
+                  IMC gain	& $\alpha_{MS-DU}$ & 0.17 & /\\  
+                  Cross-over frequency  & $f_{c,MS-DU}$ & 538.7873 & Hz   \\
+                  Phase margin  & $pm_{MS-DU}$ & 65.7934 &  $^\circ$  \\
+                  \midrule\midrule
+                                                        
+              \end{tabular}
+\end{table}
 
 \section{Simulation results}
+Performance of the previously introduced three control loop architectures is evaluated by means of computer simulations in MATLAB/Simulink. Results of the simulated step responses and open-loop frequency response analyses are provided. In addition to this, analytically obtained results are compared with those from simulation, with the aim of verifying modelling approach explained in Sections II and III. \par
+Simulation is organized as follows. Current controller is modelled in discrete domain whereas all relevant delays are taken into account. Detailed model of DPWM, which resembles action qualifier module realization within DSP EPWM peripheral, is implemented. Load is modeled in continuous time domain using Simulink abc machine model. Simulation results presented in this section are obtained with BLDC motor from \cite{vuksa2016}. Switching frequency is set to 10kHz. For the proposed MS-MU controller, multi-update factor is set to eight, i.e. acquiring the control variables and updating the modulating waveform is done eight times per switching period. MAF, when used for the feedback acquisition, assumes averaging of 16 samples per switching period. Prior to sampling, motor currents are filtered via small low pas filter ($\tau_{fil} = 5 \mu s$) as in \cite{vuksa2016}. \par
+The dq current loop step responses, for the three previously discussed controllers, are simulated and compared to the step response of the closed loop transfer functions obtained via modelling approach described in Sections II and III. Simulations are run with the controller parameters from Table \ref{tab:an_param}. The results are shown in Fig. \ref{fig:MSMUmaf_step}-\ref{fig:MSDU_step}. Presented step responses are obtained at $270 Hz$ electrical frequency with $1 \mu s$ dead-time. A slight mismatch between the analytical and simulated MS-MU + MAF step responses exist, wheres DS-DU and MS-DU analytical and simulated results are in excellent agreement. No coupling between axis is present for either of the controllers. The derived plant model for the proposed MS-MU controller will be further examined via FRA simulation. \par
+The same simulation model which is used to simulate step responses is used to perform FRA. However, when running FRA simulations  dead-time is set to $0$, so that non-linear effects which could mask FRA responses are avoided. Open loop FRA simulations are organized in the following manner. For the analyzed axis, sinusoidal perturbation of $0.1 A$ is used as an excitation signal. Error in the other axis is set to zero. The perturbation frequencies are an arithmetic sequence from $400 Hz$ to $5000 Hz$, with a step of $50 Hz$. Q axis open loop FRA results for the three control loop architectures of interest are shown in Fig. \ref{fig:MSMUmaf_olfra}-\ref{fig:MSDU_olfra}. Simulated results are compared to the analytically obtained ones. Summary of the simulation results is provided in Table \ref{tab:sym_param}. The results in Fig. \ref{fig:MSMUmaf_olfra} validate the derived control loop model, since mismatch between analytical and simulated waveforms is hardly noticeable and exists only in the higher frequency range. In addition to this, cross-over frequency and phase margin of the simulated MS-MU + MAF control loop are similar to those provided in Table \ref{tab:an_param}. When compared to DS-DU controller, MS-MU + MAF achieves the same cross over frequency and phase margin, which is as expected, taking into account parameter setting procedure used for the proposed controller. Therefore, the proposed MS-MU approach offers MAF based feedback acquisition without degrading control loop dynamic performance. In this way, the noise and sampling errors in the feedback path are successfully eliminated due to MAF based feedback acquisition as in MS-DU, but also the dynamic performance is kept as high as in case of state-of-the-art DS-DU controller. \par
 
-In order to illustrate benefits of the proposed MS-PWM methodology, three different control loop architectures are examined in this section and their performance is evaluated by means of computer simulations in MATLAB/Simulink.  It is distinguished between different MS-PWM control loop architectures based on current controller structure (IMC with or without differential compensator) and feedback acquisition (with or without MAF). For each architecture of interest, at first, an appropriate benchmark controller is determined. Then, parameter setting procedure for the proposed MS-PWM controllers is explained. Finally, a comparison between proposed and benchmark controllers is illustrated by performance evaluation of the simulated step responses and open-loop frequency response analyses. In addition to this, analytically obtained results are compared with those from simulation, with the aim of verifying modelling approach explained in Section III. \par
-Simulation is organized as follows. Current controller is modelled in discrete domain whereas all relevant delays are taken into account. Detailed model of DPWM, which resembles action qualifier module realization within DSP EPWM peripheral, is implemented.  Load is modeled in continuous time domain using Simulink abc machine model. Simulation is developed so that it is easily adjustable for different update rates, controller structures and feedback acquisition paths. Simulation results presented in this section are obtained with BLDC motor from \cite{vuksa2016}.  Switching frequency is set to 10kHz. For the proposed MS-PWM controllers, update rate is set to eight, i.e. acquiring the control variables and updating the modulating waveform is done eight times per switching period. MAF, when used for the feedback acquisition, assumes averaging of 16 samples per switching period. \par
-The same simulation model is used to simulate step responses and perform FRA. However, the presented step responses are obtained with $1\mu s$ dead-time, whereas dead-time is set to $0$ when running FRA simulations, so that non-linear effects which could mask FRA responses are avoided. Step responses are obtained at 270Hz electrical frequency. Open loop FRA simulations are organized in the following manner. For the analyzed axis, sinusoidal perturbation of 0.1 A is used as an excitation signal. Error in the other axis is set to zero. The perturbation frequencies are an arithmetic sequence starting from 400 Hz to 5000 Hz, with a step of 50 Hz.\par
-
-\subsection{Control loop architecture 1: N=8 with MAF, IMC}
-MS-PWM control loop architecture analyzed in this subsection (further on denoted as C1) assumes IMC controller from \cite{vuksa2016} with MAF in the feedback path. The benchmark for this case (further on denoted as B1) is the state-of-the art double update rate controller with the same IMC and standard synchronous sampling based feedback acquisition, with IMC gain $\alpha$ set to the highest value which results in the response without an overshoot \cite{vuksa2016}. The main advantage of C1, compared to B1, is a considerably enhanced noise suppression capability and a slightly improved dynamic response. IMC gain for C1 is set analytically so that the same cross-over frequency is obtained as for B1. Parameters for B1 and C1 are shown in Table \ref{tab: case 1}. Results presented within this subsection are denoted as test case 1 results. \par
-
-
-\begin{table}[h!]
-			  \caption{Parameters of controllers C1 and B1}
-              \label{tab: case 1}
-              \centering
-              \begin{tabular}{lll}
-                           \midrule\midrule
-        C1 parameters     & label           & value\\
-        \midrule               
-                  Update rate   	& $N$      & 8\\  
-                  IMC gain    & $\alpha$      & 0.0636    \\
-                  Feedback acquisition    & $/$      & MAF\\
-                  \midrule\midrule
-        B1 parameters & label           & value\\
-                  \midrule
-                  Update rate   	& $N$      & 2\\  
-                  IMC gain    & $\alpha$      & 0.25    \\
-                  Feedback acquisition    & $/$      & sync. sampl.\\                                                         
-                  \midrule\midrule
-              \end{tabular}
-\end{table}
-
-Q current step responses for C1 and B1 are shown in Fig. \ref{fig:C1_step}-\ref{fig:B1_step}. Presented waveforms are dq currents obtained by sampling and transformation process described in Section II. Acc. to the results in Fig. \ref{fig:C1_step} no coupling between axes is present. Even though step response itself is insufficient to fully describe dynamic behaviour of the control loop, it might be useful to get an insight and a rough estimate of the controller performance. Simulated and analytical step response characteristics for C1 and B1 are listed in Table \ref{tab:C1_step}. Note that analytical rise time is calculated as $\pi/(10*f_{bw-3dB}^{an})$. According to the results in Table \ref{tab:C1_step}, C1 offers slightly improved dynamic performance compared to B1, which is expected, taking into account parameter setting procedure for the proposed controller. A slight mismatch between analytically calculated and simulated rise times both for C1 and B1, might be a consequence of the unmodelled dead-time non-linearities and an approximation used when deriving a feedback averaging model. \par
 
 \begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/C1_step.eps}}
-    \caption{Simulated step response for C1.}
-    \label{fig:C1_step} 
+    \centerline{\includegraphics[width=0.95\linewidth]{figures/MSMUmaf_step.eps}}
+    \caption{Simulated step response for MS-MU + MAF controller.}
+    \label{fig:MSMUmaf_step} 
+\end{figure}
+\begin{figure}[t!]
+    \centerline{\includegraphics[width=0.95\linewidth]{figures/DSDU_step.eps}}
+    \caption{Simulated step response for DS-DU controller.}
+    \label{fig:DSDU_step} 
+\end{figure}
+\begin{figure}[t!]
+    \centerline{\includegraphics[width=0.95\linewidth]{figures/MSDU_step.eps}}
+    \caption{Simulated step response for MS-DU controller.}
+    \label{fig:MSDU_step} 
 \end{figure}
 
 \begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/B1_step.eps}}
-    \caption{Simulated step response for B1.}
-    \label{fig:B1_step} 
+    \centerline{\includegraphics[width=0.95\linewidth]{figures/MSMUmaf_olfra.eps}}
+    \caption{Simulated open loop FRA results for MS-MU + MAF controller.}
+    \label{fig:MSMUmaf_olfra} 
+\end{figure}
+\begin{figure}[t!]
+    \centerline{\includegraphics[width=0.95\linewidth]{figures/DSDU_olfra.eps}}
+    \caption{Simulated open loop FRA results for DS-DU controller.}
+    \label{fig:DSDU_olfra} 
+\end{figure}
+\begin{figure}[t!]
+    \centerline{\includegraphics[width=0.95\linewidth]{figures/MSDU_olfra.eps}}
+    \caption{Simulated open loop FRA results for MS-DU controller.}
+    \label{fig:MSDU_olfra} 
 \end{figure}
 
 \begin{table}[h!]
-			  \caption{Simulated step response characteristics for test case 1}
-              \label{tab:C1_step}
+			  \caption{Simulated open loop FRA controllers' characteristics}
+              \label{tab:sym_param}
               \centering
               \begin{tabular}{llll}
                            \midrule\midrule
-        C1 characteristics & label & value   & unit\\
+        MS-MU+MAF & label & value   & unit\\
         \midrule               
-                  Analytical 3dB closed loop bandwidth	& $f_{bw-3dB}^{an}$ & 1.3871 &kHz\\  
-                  Analytical rise time  & $t_{rise}^{an}/T{pwm}$ & 2.2685 & /   \\
-                  Simulated rise time  & $t_{rise}^{sim}/T{pwm}$ & 2.75 & /   \\
+                  Cross-over frequency  & $f_{c,MS-MU+MAF}$ & 800 & Hz   \\
+                  Phase margin  & $pm_{MS-MU+MAF}$ & 70 &  $^\circ$  \\
                   \midrule\midrule
-        B1 characteristics & label           & value    & unit\\
-                  \midrule
-                  Analytical 3dB closed loop bandwidth	& $f_{bw-3dB}^{an}$ & 1.4607 &kHz\\  
-                  Analytical rise time  & $t_{rise}^{an}/T{pwm}$ & 2.1542 & /   \\
-                  Simulated rise time  & $t_{rise}^{sim}/T{pwm}$ & 2.4 & /   \\
-                  \midrule\midrule
-                                                        
-              \end{tabular}
-\end{table}
-
-Q axis open loop FRA results for test case 1 are shown in Fig. \ref{fig:tc1_olfra}.  Comparison between simulated and analytical C1 FRA performance, as well as analytical B1 performance are listed in Table \ref{tab:tc1_olfra}. These results validate derived MS-PWM control loop analytical model, since mismatch between analytical and simulated C1 waveforms is hardly noticeable and exists only in the higher frequency range. In addition to this, cross-over frequency and phase margin of the simulated C1 control loop are similar to those of B1, which is in agreement with the parameter setting procedure described above. Therefore, test case 1 illustrates that MS-PWM approach offers MAF based feedback acquisition without degrading control loop dynamic performance. In this way, the noise and sampling errors in the feedback path are successfully eliminated due to MAF based feedback acquisition, but also the dynamic performance is kept high. \par
-
-\begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/tc1_olfra.eps}}
-    \caption{Simulated open loop FRA for test case 1.}
-    \label{fig:tc1_olfra} 
-\end{figure}
-
-\begin{table}[h!]
-			  \caption{Open loop FRA performance for test case 1}
-              \label{tab:tc1_olfra}
-              \centering
-              \begin{tabular}{llll}
-                           \midrule\midrule
-        C1 characteristics & label & value   & unit\\
+        DS-DU & label & value   & unit\\
         \midrule               
-                  Analytical cross-over frequency	& $f_{c}^{an}$ & 798.5845 &Hz\\
-                  Simulated cross-over frequency	& $f_{c}^{sim}$ & 800 &Hz\\ 
-                  Analytical phase margin  & $pm^{an}$ & 70.2667 &  $^\circ$   \\
-                  Simulated phase margin  & $pm^{sim}$ & 70 &  $^\circ$   \\
+                  Cross-over frequency  & $f_{c,DS-DU}$ & 800 & Hz   \\
+                  Phase margin  & $pm_{DS-DU}$ & 68.254 &  $^\circ$  \\
                   \midrule\midrule
-                  B1 characteristics & label  & value    & unit\\
-                  \midrule
-                  Analytical cross-over frequency	& $f_{c}^{an}$ & 799.1594 &Hz\\
-                  Analytical phase margin  & $pm^{an}$ & 68.4572 &  $^\circ$   \\
-                  \midrule\midrule
-                                                        
-              \end{tabular}
-\end{table}
-
-\subsection{Control loop architecture C2: N=8 with MAF, IMC + dif.}
-MS-PWM control loop architecture analyzed in this subsection (further on denoted as C2) assumes IMC controller with differential compensator from \cite{vuksa2017} and MAF in the feedback path. This  case  is  given  to demonstrate  that  MS-PWM  can  offer  even  better  dynamics than  reported  in \cite{vuksa2017}. The benchmark for this case (further on denoted as B2) assumes controller structure proposed in \cite{vuksa2017} - double update rate IMC controller with improved performance indices, differential compensator and MAF based feedback acquisition. In simulations, the advanced scheduling scheme for B2 is implemented without neglecting execution time so that the results are suitable for comparison with standard code implementation which does not assume execution time optimization. Gains for IMC and differential compensator in case of B2 are set to the optimal values from \cite{vuksa2017}. Parameter setting procedure used for C2 is similar to the one proposed in \cite{vuksa2017}. Parameters for B2 and C2 are shown in Table \ref{tab: case 2}. Results presented within this subsection are denoted as test case 2 results. 
-\par
-
-\begin{table}[h!]
-			  \caption{Parameters for controllers C2 and B2}
-              \label{tab: case 2}
-              \centering
-              \begin{tabular}{lll}
-                           \midrule\midrule
-        C2 parameters     & label           & value\\
+        MS-DU & label & value   & unit\\
         \midrule               
-                  Update rate   	& $N$      & 8\\  
-                  IMC gain    & $\alpha$      & 0.12038    \\
-                  Differential gain    & $d$      & 2.1948    \\
-                  Feedback acquisition    & $/$      & MAF\\
-                  \midrule\midrule
-        B2 parameters & label           & value\\
-                  \midrule
-                  Update rate   	& $N$      & 2\\  
-                  IMC gain    & $\alpha$      & 0.38    \\
-                  Differential gain    & $d$      & 0.444    \\
-                  Feedback acquisition    & $/$      & MAF\\                                                         
-                  \midrule\midrule
-              \end{tabular}
-\end{table}
-
-Q current step responses for C2 and B2 are shown in Fig. \ref{fig:C2_step}-\ref{fig:B2_step}. Presented waveforms are dq currents obtained by sampling and transformation process described in Section II. Oscillations at the fundamental frequency are visible in C2 step response (Fig. \ref{fig:C2_step_sub1}). Poor disturbance rejection capability due to small phase resistance might be the root cause of these oscillations, since with 5 times larger stator phase resistance oscillations are not present (Fig. \ref{fig:C2_step_sub2}). In Fig. \ref{fig:B2_step}, two different step responses are shown to illustrate that oscillations at the fundamental frequency exist in the benchmark response too, but are of smaller amplitude and present only in case step reference change is larger.  Source of the aforementioned oscillations needs to examined in more detail and will be considered as part of the future work. Addition of an active resistance feedback  could be considered \cite{vuksa2018} if insufficient disturbance rejection capability of the proposed MS-PWM controller proves to be an issue.\par
-Simulated and analytical step response characteristics for C1 and B1 are listed in Table \ref{tab:C2_step}. Note that analytical transfer function for B2 assumed zero delay i.e. neglected execution time as in \cite{vuksa2017}, since analytical representation of execution time which is smaller than regulation period would require modified Z transform. According to the results in Table \ref{tab:C2_step}, C2 offers better dynamic performance than B2. \par
-
-\begin{figure}[t!]
-\centering
-\begin{subfigure}{0.5\textwidth}
-  \centering
-  \includegraphics[width=0.95\linewidth, height = 45mm]{figures/C2_step.eps}
-  \caption{}
-  \label{fig:C2_step_sub1}
-\end{subfigure}\\
-\begin{subfigure}{0.5\textwidth}
-  \centering
-  \includegraphics[width=0.95\linewidth, height = 45mm]{figures/C2_step_5Rs.eps}
-  \caption{}
-  \label{fig:C2_step_sub2}
-\end{subfigure}\\
-\caption{Simulated step response for C2: (a) original phase resistance; (b) 5 times larger phase resistance.}
-\label{fig:C2_step}
-\end{figure}
-
-\begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/B2_step.eps}}
-    \caption{Simulated step response for B2.}
-    \label{fig:B2_step} 
-\end{figure}
-
-\begin{table}[h!]
-			  \caption{Simulated step response characteristics for test case 2}
-              \label{tab:C2_step}
-              \centering
-              \begin{tabular}{llll}
-                           \midrule\midrule
-        C2 characteristics & label & value   & unit\\
-        \midrule               
-                  Analytical 3dB closed loop bandwidth	& $f_{bw-3dB}^{an}$ & 3.9846
-  &kHz\\  
-                  Analytical rise time  & $t_{rise}^{an}/T{pwm}$ & 0.7897 & /   \\
-                  Simulated rise time  & $t_{rise}^{sim}/T{pwm}$ & 1.125 & /   \\
-                  \midrule\midrule
-        B2 characteristics & label & value    & unit\\
-                  \midrule
-                  Analytical 3dB closed loop bandwidth	& $f_{bw-3dB}^{an}$ & 3.5105 &kHz\\  
-                  Analytical rise time  & $t_{rise}^{an}/T{pwm}$ & 0.8964  & /   \\
-                  Simulated rise time  & $t_{rise}^{sim}/T{pwm}$ & 1.25 & /   \\
-                  \midrule\midrule
-                                                        
-              \end{tabular}
-\end{table}
-
-Q axis open loop FRA results for test case 2 are shown in Fig. \ref{fig:tc2_olfra}.  Comparison between simulated and analytical C2 FRA performance, as well as analytical B2 performance are listed in Table \ref{tab:tc2_olfra}. Analytical and simulated waveforms for C2 are in good agreement, despite in the high frequency range  where the MS-PWM control loop modelling approach described in Section II is of lower precision. C2 results in $1.5kHz$ cross-over frequency which is $25\%$ higher than that of B2, whereas phase margin remains around $66^\circ$ for both control loop architectures. Thus, the test case 2 illustrates that the MS-PWM approach offers better dynamic performance than the controller proposed in  \cite{vuksa2017}.\par
-
-\begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/tc2_olfra.eps}}
-    \caption{Simulated open loop FRA  for test case 2.}
-    \label{fig:tc2_olfra} 
-\end{figure}
-
-\begin{table}[h!]
-			  \caption{Open loop FRA performance for test case 2}
-              \label{tab:tc2_olfra}
-              \centering
-              \begin{tabular}{llll}
-                           \midrule\midrule
-        C2 characteristics & label & value   & unit\\
-        \midrule               
-                  Analytical cross-over frequency	& $f_{c}^{an}$ & 1.5209 &kHz\\
-                  Simulated cross-over frequency	& $f_{c}^{sim}$ & 1.55 &kHz\\ 
-                  Analytical phase margin  & $pm^{an}$ & 66.838 &  $^\circ$   \\
-                  Simulated phase margin  & $pm^{sim}$ & 65.135 &  $^\circ$   \\
-                  \midrule\midrule
-                  B2 characteristics & label  & value    & unit\\
-                  \midrule
-                  Analytical cross-over frequency	& $f_{c}^{an}$ & 1.2283 &kHz\\
-                  Analytical phase margin  & $pm^{an}$ & 66.068 &  $^\circ$   \\
-                  \midrule\midrule
-                                                        
-              \end{tabular}
-\end{table}
-
-\subsection{Control loop architecture C3: N=8 without MAF, IMC}
-MS-PWM control loop architecture analyzed in this subsection (further on denoted as C3) consists of IMC controller without any filters in the feedback. A benchmark for this case is the same as the benchmark for the previously analyzed case. C3
-is expected to provide the dynamics better than B2, using discrete IMC
-without differential compensator. IMC gain for C3 is set analytically so
-that higher -3dB bandwidth is achieved than in case of the benchmark. Parameters for C3 are shown in Table \ref{tab: case 3}. Results presented within this subsection are denoted as test case 3 results. 
-
-\begin{table}[h!]
-			  \caption{Parameters for controller C3}
-              \label{tab: case 3}
-              \centering
-              \begin{tabular}{lll}
-                           \midrule\midrule
-        C3 parameters     & label           & value\\
-        \midrule               
-                  Update rate   	& $N$      & 8\\  
-                  IMC gain    & $\alpha$      & 0.2    \\
-                  Feedback acquisition    & $/$      & no filters\\
-                  \midrule\midrule
-
-              \end{tabular}
-\end{table}
-Q current step response for C3 is shown in Fig. \ref{fig:C3_step}. Presented waveforms are obtained by taking each 4th sample of the dq currents which are result of the sampling and transformation process described in Section II. The aim of such a representation is to avoid plotting switching ripple which, in case of C3, is present in the sampled dq currents, so that the results are comparable with previously presented ones. In this way, represented waveforms are equivalent, in terms of switching ripple magnitude, as those obtained by conventional double update synchronous sampling. Note that no coupling between axis is present in Fig. \ref{fig:C3_step}. Simulated and analytical C3 step response characteristics are listed in Table \ref{tab:C3_step}. According to the results in Table \ref{tab:C2_step} and \ref{tab:C3_step}, C3 offers slightly improved dynamics compared to B2. Further increase of IMC gain for C3 could theoretically result in even faster step response. However, practical implementation aspects of the higher gains without any filters in the feedback have to be carefully examined. 
-
-\begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/C3_step.eps}}
-    \caption{Simulated step response for C3.}
-    \label{fig:C3_step} 
-\end{figure}
-
-\begin{table}[h!]
-			  \caption{Simulated step response characteristics for test case 3}
-              \label{tab:C3_step}
-              \centering
-              \begin{tabular}{llll}
-                           \midrule\midrule
-        C3 characteristics & label & value   & unit\\
-        \midrule               
-                  Analytical 3dB closed loop bandwidth	& $f_{bw-3dB}^{an}$ & 3.9467
-  &kHz\\  
-                  Analytical rise time  & $t_{rise}^{an}/T{pwm}$ & 0.7973 & /   \\
-                  Simulated rise time  & $t_{rise}^{sim}/T{pwm}$ & 0.8594 & /   \\
-                  \midrule\midrule
-                                                        
-              \end{tabular}
-\end{table}
-
-Q axis open loop FRA results for test case 3 are shown in Fig. \ref{fig:tc3_olfra}. Magnitude of the analytical and simulated waveforms for C3 are in good agreement. Simulated C3 phase characteristic, however, is slightly lower the analytical one. Comparison between simulated and analytical C3 FRA performance, as well as analytical B2 performance are listed in Table \ref{tab:tc3_olfra}. According to the results in Table \ref{tab:tc2_olfra} and \ref{tab:tc3_olfra}, C3 offers considerably higher cross-over frequency than B2, whereas phase margin remains the same. Practical implementation of C3 might require addition of a low-pass filter in the feedback path in order to avoid issues which might arise as a consequence of sampling the switching noise. For $N=8$, this is especially pronounced in the vicinity of the duty cycles which are equal to $0.25, 0.5$ and $0.75$ ref?.\par
-
-\begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/tc3_olfra.eps}}
-    \caption{Simulated open loop FRA  for test case 3.}
-    \label{fig:tc3_olfra} 
-\end{figure}
-
-\begin{table}[h!]
-			  \caption{Open loop FRA performance for test case 3}
-              \label{tab:tc3_olfra}
-              \centering
-              \begin{tabular}{llll}
-                           \midrule\midrule
-        C3 characteristics & label & value   & unit\\
-        \midrule               
-                  Analytical cross-over frequency	& $f_{c}^{an}$ & 2.5548 &kHz\\
-                  Simulated cross-over frequency	& $f_{c}^{sim}$ & 2.55 &kHz\\ 
-                  Analytical phase margin  & $pm^{an}$ & 72.7824 &  $^\circ$   \\
-                  Simulated phase margin  & $pm^{sim}$ & 66.5165 &  $^\circ$   \\
+                  Cross-over frequency  & $f_{c,MS-DU}$ & 550 & Hz   \\
+                  Phase margin  & $pm_{MS-DU}$ & 65.181 &  $^\circ$  \\
                   \midrule\midrule
                                                         
               \end{tabular}
 \end{table}
 
 \section{Experimental verification}
-
+Dummy text (just for formatting)...The same simulation model which is used to simulate step responses is used to perform FRA. However, when running FRA simulations  dead-time is set to $0$, so that non-linear effects which could mask FRA responses are avoided. Open loop FRA simulations are organized in the following manner. For the analyzed axis, sinusoidal perturbation of $0.1 A$ is used as an excitation signal. Error in the other axis is set to zero. The perturbation frequencies are an arithmetic sequence from $400 Hz$ to $5000 Hz$, with a step of $50 Hz$. Q axis open loop FRA results for the three control loop architectures of interest are shown in Fig. \ref{fig:MSMUmaf_olfra}-\ref{fig:MSDU_olfra}. Simulated results are compared to the analytically obtained ones. Summary of the simulation results is provided in Table \ref{tab:sym_param}. The results in Fig. \ref{fig:MSMUmaf_olfra} validate the derived control loop model, since mismatch between analytical and simulated waveforms is hardly noticeable and exists only in the higher frequency range. In addition to this, cross-over frequency and phase margin of the simulated MS-MU + MAF control loop are similar to those provided in Table \ref{tab:an_param}. When compared to DS-DU controller, MS-MU + MAF achieves the same cross over frequency and phase margin, which is as expected, taking into account parameter setting procedure used for the proposed controller. Therefore, the proposed MS-MU approach offers MAF based feedback acquisition without degrading control loop dynamic performance. In this way, the noise and sampling errors in the feedback path are successfully eliminated due to MAF based feedback acquisition as in MS-DU, but also the dynamic performance is kept as high as in case of state-of-the-art DS-DU controller. \par
 \section{Conclusion}
 
 
