@@ -18,7 +18,7 @@
 #define MS_TBPRD (2*PWM_TBPRD/UR - 1)               // Counter period of ePWM used to implement multisampling algorithm, up mode;
 #define TS (TPWM/UR)                                // Regulation period
 
-#define E 308.0f //520.0f                                    // Available DC voltage
+#define E 250.0f //520.0f                                    // Available DC voltage
 #define EINVERSE (1/E)                              // Inverse of E
 #define D_MAX (PWM_TBPRD - 5)                       // Maximum duty cycle (to avoid unnecessary switching)
 #define D_MIN 5                                     // Minimum duty cycle (to avoid unnecessary switching)
@@ -91,7 +91,7 @@ float32 dId[2] = {};                            // Current error in q axis; dId[
 float32 dIq[2] = {};                            // Current error in d axis; dIq[0] -> current, dIq[1] -> previous
 float32 Id_ref = 0.0f;                          // Reference d current
 float32 Iq_ref = 0.0f;                          // Reference q current
-float32 IMAX = 35.0f;                           // Limit for over-current protection
+float32 IMAX = 10235.0f;                           // Limit for over-current protection
 
 // IREG
 float32 alpha = 0.2f; //0.084f;                            // Gain for IREG
@@ -132,7 +132,7 @@ Uint16 error_flag = 0;                          // Indicate if an error occurred
 Uint16 enable_inverter = 0;
 
 // For debugging with f=const
-float32 f_ref = 1.0f; //270.0f;                         // Frequency of electrical quantities
+float32 f_ref = 5.0f; //270.0f;                         // Frequency of electrical quantities
 #define TWOPI_TS (2*PI*TS)                      // 2*pi*Ts for angle calculation
 
 float32 pom1, pom2;
@@ -276,17 +276,17 @@ void Configure_GPIO(void)
 
     //GPIOs for QEP
 
-    // Configure as EQEP2A input
-    GpioCtrlRegs.GPADIR.bit.GPIO24 = 0;          // Configure as input
-    GpioCtrlRegs.GPAMUX2.bit.GPIO24 = 2;         // Mux to eQEP2A
+    // Configure as EQEP1A input
+    GpioCtrlRegs.GPADIR.bit.GPIO20 = 0;          // Configure as input
+    GpioCtrlRegs.GPAMUX2.bit.GPIO20 = 1;         // Mux to eQEP1A
 
-    // Configure as EQEP2B input
-    GpioCtrlRegs.GPADIR.bit.GPIO25 = 0;          // Configure as input
-    GpioCtrlRegs.GPAMUX2.bit.GPIO25 = 2;         // Mux to eQEP2B
+    // Configure as EQEP1B input
+    GpioCtrlRegs.GPADIR.bit.GPIO21 = 0;          // Configure as input
+    GpioCtrlRegs.GPAMUX2.bit.GPIO21 = 1;         // Mux to eQEP1B
 
-    // Configure as EQEP2I input
-    GpioCtrlRegs.GPADIR.bit.GPIO26 = 0;          // Configure as input
-    GpioCtrlRegs.GPAMUX2.bit.GPIO26 = 2;         // Mux to eQEP2I
+    // Configure as EQEP1I input
+    GpioCtrlRegs.GPDDIR.bit.GPIO99 = 0;          // Configure as input
+    GpioCtrlRegs.GPDMUX1.bit.GPIO99 = 5;         // Mux to eQEP1I
 
     // Configure as enable for turning off rectifier's resistor
     GpioCtrlRegs.GPADIR.bit.GPIO16 = 1;         // Configure as output
@@ -524,11 +524,11 @@ void Configure_DMA(void)
 void Configure_eQEP(void)
 {
 
-    EQep2Regs.QDECCTL.bit.QSRC = 0;         // Quadrature count mode
-    EQep2Regs.QEPCTL.bit.PCRM = 0;          // 0 --> QPOSCNT reset on index event; 1 --> reset on max CNT
-    EQep2Regs.QEPCTL.bit.QPEN = 1;          // QEP enable
-    EQep2Regs.QCAPCTL.bit.CEN = 1;          // QEP capture Enable
-    EQep2Regs.QPOSMAX = 4*ENC_LINE-1;       // QPOSCNT max (without this QEP does not count)
+    EQep1Regs.QDECCTL.bit.QSRC = 0;         // Quadrature count mode
+    EQep1Regs.QEPCTL.bit.PCRM = 0;          // 0 --> QPOSCNT reset on index event; 1 --> reset on max CNT
+    EQep1Regs.QEPCTL.bit.QPEN = 1;          // QEP enable
+    EQep1Regs.QCAPCTL.bit.CEN = 1;          // QEP capture Enable
+    EQep1Regs.QPOSMAX = 4*ENC_LINE-1;       // QPOSCNT max (without this QEP does not count)
 
 }
 
@@ -597,7 +597,7 @@ __interrupt void dmach1_isr(void)
     GpioDataRegs.GPCSET.bit.GPIO66 = 1;                       // Notify dmach1_isr start
 
 
-    theta_enc[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;        // Capture position
+    theta_enc[0] = ((float32)EQep1Regs.QPOSCNT)*ANG_CNV;        // Capture position
     GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
 
     int i_for = 0;
@@ -785,8 +785,8 @@ __interrupt void dmach1_isr(void)
                     theta[1] = theta[0];
 
                     // Open loop testing
-                    Ud[0] = 1.0f;
-                    Uq[0] = 0.0f;
+                     Ud[0] = 120.0f;
+                     Uq[0] = 0.0f;
 
                     // Inverse Park transform
                     Ualpha = Ud[0] * _cos[1] - Uq[0] * _sin[1];
