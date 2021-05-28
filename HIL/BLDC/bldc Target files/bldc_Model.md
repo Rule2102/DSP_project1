@@ -1,18 +1,34 @@
 Model bldc
 
+
 REM *****************************************:
+
+
 REM * Common entries:
+
+
 REM *****************************************:
+
 
 REM Setting the simulation time step...
 rtds_write 0x00000000 0x00000050
+
+
+REM External SFP Link
+rtds_write 0x00000007 0x00000000
+
+
+REM Reset analog and digital outputs on simulation stop
+rtds_write 0x00C00700 0x00000001
+rtds_write 0x00F00000 0x00000001
+
 
 REM Module block enable
 rtds_write 0x00000003 0x00010001
 rtds_file_write 0x00820000 pmsm_sr_imem.txt
 rtds_file_write 0x00810010 pmsm_sr_gprst.txt
-rtds_write 0x00810000 0x00000004
-rtds_write 0x00810001 0x00000006
+rtds_write 0x00810000 0x00000001
+rtds_write 0x00810001 0x00000003
 rtds_write 0x00810400 0x40900000
 rtds_write 0x00810401 0x00000000
 rtds_write 0x00810402 0x3F7FFB78
@@ -56,21 +72,28 @@ rtds_write 0x00800041 0.0
 rtds_write 0x00800044 6.283185307179586
 rtds_write 0x00800045 0.0
 
+
 REM LUT solver inputs...
 rtds_write 0x01000000 0x00000000
 
+
 REM HSSL configuration files...
+
 
 REM Parallel DTV configuration...
 
 
 REM *****************************************:
+
+
 REM * SPC0 entries:
+
+
 REM *****************************************:
+
 
 REM SPC0 Topology Selector (TS) initialization...
 rtds_file_write 0x08180000 SPC0_red_table.txt
-
 rtds_write 0x08100020 0x00000004
 rtds_write 0x08100021 0x00000003
 rtds_write 0x08100023 0x00000000
@@ -135,11 +158,14 @@ rtds_write 0x08100079 0x00000000
 rtds_file_write 0x08150000 igbt_leg_imem.txt
 rtds_file_write 0x08152000 igbt_leg_lut.txt
 
+
 REM SPC0 Variable Delay initialization...
 rtds_write 0x08100001 0x0
 
+
 REM SPC0 Output voltage compare mode...
 rtds_write 0x08100005 0x00000000
+
 
 REM SPC0 Matrix multiplier initialization...
 rtds_file_write 0x08000000 SPC0_Com_Word.txt
@@ -148,51 +174,65 @@ rtds_file_write 0x08080000 SPC0_MAC0.txt
 rtds_file_write 0x08082000 SPC0_MAC1.txt
 rtds_file_write 0x08084000 SPC0_MAC2.txt
 rtds_file_write 0x08086000 SPC0_MAC3.txt
-
 rtds_write 0x08100004 0x00000000
+
+
 REM SPC0 Contactors initialization...
+
 
 REM SPC0 GDS compensation settings...
 rtds_write 0x080C0000 0x00000001
-rtds_write 0x080C0001 0x00000003
+rtds_write 0x080C0001 0x00000000
 rtds_write 0x080C0004 0x3C4CCCCC
 rtds_write 0x080C0005 0xCCCD0000
 rtds_write 0x08100000 0x00000050
+rtds_write 0x08100006 0x00000000
+
 
 REM SPC0 FSM digital input pin assignments...
 rtds_write 0x08100028 0x00000000
 rtds_write 0x08100029 0x00000000
 rtds_write 0x0810002A 0x00000000
 rtds_write 0x0810002B 0x00000000
-rtds_write 0x0810002C 0x00000000
-rtds_write 0x0810002D 0x00000001
+rtds_write 0x0810002C 0x0000001A
+rtds_write 0x0810002D 0x0000001B
 rtds_write 0x08100022 0x00000003
 rtds_write 0x08100048 0x00000000
 rtds_write 0x08100049 0x00000000
 rtds_write 0x0810004A 0x00000000
 rtds_write 0x0810004B 0x00000000
-rtds_write 0x0810004C 0x00000002
-rtds_write 0x0810004D 0x00000003
+rtds_write 0x0810004C 0x0000001C
+rtds_write 0x0810004D 0x0000001D
 rtds_write 0x08100042 0x00000003
 rtds_write 0x08100068 0x00000000
 rtds_write 0x08100069 0x00000000
 rtds_write 0x0810006A 0x00000000
 rtds_write 0x0810006B 0x00000000
-rtds_write 0x0810006C 0x00000004
-rtds_write 0x0810006D 0x00000005
+rtds_write 0x0810006C 0x0000001E
+rtds_write 0x0810006D 0x0000001F
 rtds_write 0x08100062 0x00000003
+
 
 REM SPC0 Comparators initialization...
 
+
 REM SPC0 DTSM initialization...
 
+
+REM SPC0 Time Varying Elements initialization...
+
+
 REM *****************************************:
+
+
 REM * SPC1 entries:
+
+
 REM *****************************************:
+
 
 REM SPC1 Topology Selector (TS) initialization...
 rtds_file_write 0x08580000 SPC1_red_table.txt
-
 rtds_write 0x08500020 0x00000000
 rtds_write 0x08500021 0x00000000
 rtds_write 0x08500023 0x00000000
@@ -257,11 +297,14 @@ rtds_write 0x08500079 0x00000000
 rtds_file_write 0x08550000 trivial_imem.txt
 rtds_file_write 0x08552000 trivial_lut.txt
 
+
 REM SPC1 Variable Delay initialization...
 rtds_write 0x08500001 0x0
 
+
 REM SPC1 Output voltage compare mode...
 rtds_write 0x08500005 0x00000000
+
 
 REM SPC1 Matrix multiplier initialization...
 rtds_file_write 0x08400000 SPC1_Com_Word.txt
@@ -270,9 +313,11 @@ rtds_file_write 0x08480000 SPC1_MAC0.txt
 rtds_file_write 0x08482000 SPC1_MAC1.txt
 rtds_file_write 0x08484000 SPC1_MAC2.txt
 rtds_file_write 0x08486000 SPC1_MAC3.txt
-
 rtds_write 0x08500004 0x00000000
+
+
 REM SPC1 Contactors initialization...
+
 
 REM SPC1 GDS compensation settings...
 rtds_write 0x084C0000 0x00000000
@@ -280,20 +325,32 @@ rtds_write 0x084C0001 0x00000000
 rtds_write 0x084C0004 0x00000000
 rtds_write 0x084C0005 0x00000000
 rtds_write 0x08500000 0x00000000
+rtds_write 0x08500006 0x00000000
+
 
 REM SPC1 FSM digital input pin assignments...
 
+
 REM SPC1 Comparators initialization...
+
 
 REM SPC1 DTSM initialization...
 
+
+REM SPC1 Time Varying Elements initialization...
+
+
 REM *****************************************:
+
+
 REM * SPC2 entries:
+
+
 REM *****************************************:
+
 
 REM SPC2 Topology Selector (TS) initialization...
 rtds_file_write 0x08980000 SPC2_red_table.txt
-
 rtds_write 0x08900020 0x00000000
 rtds_write 0x08900021 0x00000000
 rtds_write 0x08900023 0x00000000
@@ -358,11 +415,14 @@ rtds_write 0x08900079 0x00000000
 rtds_file_write 0x08950000 trivial_imem.txt
 rtds_file_write 0x08952000 trivial_lut.txt
 
+
 REM SPC2 Variable Delay initialization...
 rtds_write 0x08900001 0x0
 
+
 REM SPC2 Output voltage compare mode...
 rtds_write 0x08900005 0x00000000
+
 
 REM SPC2 Matrix multiplier initialization...
 rtds_file_write 0x08800000 SPC2_Com_Word.txt
@@ -371,9 +431,11 @@ rtds_file_write 0x08880000 SPC2_MAC0.txt
 rtds_file_write 0x08882000 SPC2_MAC1.txt
 rtds_file_write 0x08884000 SPC2_MAC2.txt
 rtds_file_write 0x08886000 SPC2_MAC3.txt
-
 rtds_write 0x08900004 0x00000000
+
+
 REM SPC2 Contactors initialization...
+
 
 REM SPC2 GDS compensation settings...
 rtds_write 0x088C0000 0x00000000
@@ -381,13 +443,19 @@ rtds_write 0x088C0001 0x00000000
 rtds_write 0x088C0004 0x00000000
 rtds_write 0x088C0005 0x00000000
 rtds_write 0x08900000 0x00000000
+rtds_write 0x08900006 0x00000000
+
 
 REM SPC2 FSM digital input pin assignments...
 
+
 REM SPC2 Comparators initialization...
+
 
 REM SPC2 DTSM initialization...
 
+
+REM SPC2 Time Varying Elements initialization...
 *****************************************:
 
 
@@ -437,7 +505,8 @@ REM disable can devices
 sys_command 0x2
 
 
-REM ifconfig eth0 up
+REM ifconfig eth0 down and up
+sys_command 0x0
 sys_command 0x1
 
 

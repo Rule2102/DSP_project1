@@ -1,5 +1,5 @@
 <ui_settings>
-    <version>2.5</version>
+    <version>2.6</version>
     <model_locked>False</model_locked>
     <canvas_bg_color>#ffffff</canvas_bg_color>
     <initialization_code><![CDATA[# NOTE: Variables and functions defined here will be
@@ -27,22 +27,24 @@ SETTINGS_DIR = get_settings_dir_path()
     <components>
         <component_data>
                 <id>4604ddc0070b11eb98e754ee757040d7</id>
-                <name><![CDATA[Capture/Scope]]></name>
+                <name><![CDATA[Capture_Scope]]></name>
                 <type>Capture/Scope</type>
                 <description><![CDATA[]]></description>
-                <hierarchy_position>1</hierarchy_position>
                 <working_mode>windowed</working_mode>
                 <widget_settings>
                     <x>112</x>
                     <y>64</y>
                     <width>120</width>
                     <height>120</height>
+                    <hierarchy_position>1</hierarchy_position>
+                    <label><![CDATA[]]></label>
+                    <use_label>False</use_label>
                     <appearance><![CDATA[Flat]]></appearance>
                     <state>Scope</state>
                     <layout>None</layout>
                     <presets>
-                        <active_capture_preset>Default</active_capture_preset>
-                        <active_scope_preset>Default</active_scope_preset>
+                        <active_capture_preset><![CDATA[Default]]></active_capture_preset>
+                        <active_scope_preset><![CDATA[Default]]></active_scope_preset>
                         <capture name="Default">
                             <time_interval>1.1</time_interval>
                             <sample_rate>2000000.0</sample_rate>
@@ -52,7 +54,7 @@ SETTINGS_DIR = get_settings_dir_path()
                             <analog_signals>
                             <analog>
                             <channel>0</channel>
-                            <name>Ia1</name>
+                            <name><![CDATA[Ia1]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -65,7 +67,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>1</channel>
-                            <name>Ia2</name>
+                            <name><![CDATA[Ia2]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -78,7 +80,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>2</channel>
-                            <name>Ia3</name>
+                            <name><![CDATA[Ia3]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -112,12 +114,12 @@ SETTINGS_DIR = get_settings_dir_path()
                             <layout>Grid</layout>
                             <legend>True</legend>
                             <show_viewports>2</show_viewports>
-                            <decimation>21</decimation>
-                            <time_base>0.02</time_base>
+                            <decimation>1</decimation>
+                            <time_base>0.001</time_base>
                             <analog_signals>
                             <analog>
                             <channel>0</channel>
-                            <name>machine mechanical angle</name>
+                            <name><![CDATA[machine mechanical angle]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -128,7 +130,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>1</channel>
-                            <name>Ia1</name>
+                            <name><![CDATA[Ia1]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -141,7 +143,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>2</channel>
-                            <name>Ia2</name>
+                            <name><![CDATA[Ia2]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -152,7 +154,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>3</channel>
-                            <name>Ia3</name>
+                            <name><![CDATA[Ia3]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -163,7 +165,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>4</channel>
-                            <name>v_ab</name>
+                            <name><![CDATA[v_ab]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -174,7 +176,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>5</channel>
-                            <name>i_qs</name>
+                            <name><![CDATA[i_qs]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -187,20 +189,18 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>6</channel>
-                            <name>i_ds</name>
+                            <name><![CDATA[i_ds]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
                                 
-                                <num_viewport>2</num_viewport>
-                                
                            </viewports>
                         </analog>
                             <analog>
                             <channel>7</channel>
-                            <name>psi_qs</name>
+                            <name><![CDATA[psi_qs]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -213,7 +213,7 @@ SETTINGS_DIR = get_settings_dir_path()
                             <digital_signals>
                             <digital>
                             <channel>0</channel>
-                            <name>machine encoder Z</name>
+                            <name><![CDATA[machine encoder Z]]></name>
                             <is_locked>False</is_locked>
                             <vertical_offset>0.0</vertical_offset>
                             <viewports>
@@ -251,7 +251,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         <analog_signals>
                             <analog>
                             <channel>0</channel>
-                            <name>Ia1</name>
+                            <name><![CDATA[Ia1]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -264,7 +264,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>1</channel>
-                            <name>Ia2</name>
+                            <name><![CDATA[Ia2]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -277,7 +277,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>2</channel>
-                            <name>Ia3</name>
+                            <name><![CDATA[Ia3]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -296,7 +296,7 @@ SETTINGS_DIR = get_settings_dir_path()
                     </capture>
 
                     <scope>
-                        <time_base>0.02 </time_base>
+                        <time_base>0.001 </time_base>
                         <background_color>white</background_color>
                         <layout>Grid</layout>
                         <legend>True</legend>
@@ -312,7 +312,7 @@ SETTINGS_DIR = get_settings_dir_path()
                          <analog_signals>
                             <analog>
                             <channel>0</channel>
-                            <name>machine mechanical angle</name>
+                            <name><![CDATA[machine mechanical angle]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -323,7 +323,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>1</channel>
-                            <name>Ia1</name>
+                            <name><![CDATA[Ia1]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -336,7 +336,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>2</channel>
-                            <name>Ia2</name>
+                            <name><![CDATA[Ia2]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -347,7 +347,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>3</channel>
-                            <name>Ia3</name>
+                            <name><![CDATA[Ia3]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -358,7 +358,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>4</channel>
-                            <name>v_ab</name>
+                            <name><![CDATA[v_ab]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -369,7 +369,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>5</channel>
-                            <name>i_qs</name>
+                            <name><![CDATA[i_qs]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -382,20 +382,18 @@ SETTINGS_DIR = get_settings_dir_path()
                         </analog>
                             <analog>
                             <channel>6</channel>
-                            <name>i_ds</name>
+                            <name><![CDATA[i_ds]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
                             <coupling>False</coupling>
                             <viewports>
                                 
-                                <num_viewport>2</num_viewport>
-                                
                            </viewports>
                         </analog>
                             <analog>
                             <channel>7</channel>
-                            <name>psi_qs</name>
+                            <name><![CDATA[psi_qs]]></name>
                             <is_locked>False</is_locked>
                             <vertical_scale>Auto</vertical_scale>
                             <vertical_offset>0.0</vertical_offset>
@@ -409,7 +407,7 @@ SETTINGS_DIR = get_settings_dir_path()
                         <digital_signals>
                             <digital>
                             <channel>0</channel>
-                            <name>machine encoder Z</name>
+                            <name><![CDATA[machine encoder Z]]></name>
                             <is_locked>False</is_locked>
                             <vertical_offset>0.0</vertical_offset>
                             <viewports>

@@ -1,6 +1,6 @@
 
 <model_description>
-    <sw_version>2020.3</sw_version>
+    <sw_version>2021.2</sw_version>
     <hw_properties>
         <revision>3</revision>
         <product_id>HIL402</product_id>
@@ -8,7 +8,7 @@
         <device_ao_limit_enable>False</device_ao_limit_enable>
         <device_id>0</device_id>
         <spc_out_mem_size>256</spc_out_mem_size>
-        <fw_support_limit>132385281</fw_support_limit>
+        <fw_support_limit>132449282</fw_support_limit>
     </hw_properties>
     <sim_setup>
         <sim_time_step>5e-07</sim_time_step>
@@ -24,37 +24,37 @@
                 <cell>
                     <name>Sa_top</name>
                     <weights>
-                        <cell>1</cell>
+                        <cell>[1]</cell>
                     </weights>
                 </cell>
                 <cell>
                     <name>Sa_bot</name>
                     <weights>
-                        <cell>0</cell>
+                        <cell>[0]</cell>
                     </weights>
                 </cell>
                 <cell>
                     <name>Sb_top</name>
                     <weights>
-                        <cell>7</cell>
+                        <cell>[7]</cell>
                     </weights>
                 </cell>
                 <cell>
                     <name>Sb_bot</name>
                     <weights>
-                        <cell>6</cell>
+                        <cell>[6]</cell>
                     </weights>
                 </cell>
                 <cell>
                     <name>Sc_top</name>
                     <weights>
-                        <cell>13</cell>
+                        <cell>[13]</cell>
                     </weights>
                 </cell>
                 <cell>
                     <name>Sc_bot</name>
                     <weights>
-                        <cell>12</cell>
+                        <cell>[12]</cell>
                     </weights>
                 </cell>
             </switches>
@@ -62,91 +62,70 @@
     </pesb>
     <variables>
         <cell>
-            <name>Ia1.Lf_Ia</name>
-            <address>0</address>
-            <type>current</type>
-            <initial_condition>0.0</initial_condition>
-            <visible>False</visible>
-        </cell>
-        <cell>
-            <name>Ia2.Lf_Ia</name>
-            <address>1</address>
-            <type>current</type>
-            <initial_condition>0.0</initial_condition>
-            <visible>False</visible>
-        </cell>
-        <cell>
-            <name>Ia3.Lf_Ia</name>
-            <address>2</address>
-            <type>current</type>
-            <initial_condition>0.0</initial_condition>
-            <visible>False</visible>
-        </cell>
-        <cell>
             <name>v_ab</name>
-            <address>3</address>
+            <address>0</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>v_al</name>
-            <address>4</address>
+            <address>1</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>v_bc</name>
-            <address>5</address>
+            <address>2</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>v_be</name>
-            <address>6</address>
+            <address>3</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
-            <name>Three Phase Inverter1.IGBT Leg1.v1</name>
+            <name>Three Phase Inverter1.IGBT Leg1.IGBT Leg global gds ovs.v1</name>
             <address>129</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>Three Phase Inverter1.IGBT Leg1.v2</name>
+            <name>Three Phase Inverter1.IGBT Leg1.IGBT Leg global gds ovs.v2</name>
             <address>130</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>Three Phase Inverter1.IGBT Leg2.v1</name>
+            <name>Three Phase Inverter1.IGBT Leg2.IGBT Leg global gds ovs.v1</name>
             <address>137</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>Three Phase Inverter1.IGBT Leg2.v2</name>
+            <name>Three Phase Inverter1.IGBT Leg2.IGBT Leg global gds ovs.v2</name>
             <address>138</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>Three Phase Inverter1.IGBT Leg3.v1</name>
+            <name>Three Phase Inverter1.IGBT Leg3.IGBT Leg global gds ovs.v1</name>
             <address>145</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>Three Phase Inverter1.IGBT Leg3.v2</name>
+            <name>Three Phase Inverter1.IGBT Leg3.IGBT Leg global gds ovs.v2</name>
             <address>146</address>
             <type>voltage</type>
             <initial_condition>None</initial_condition>
@@ -154,97 +133,76 @@
         </cell>
         <cell>
             <name>i_a</name>
-            <address>7</address>
+            <address>4</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>i_al</name>
-            <address>8</address>
+            <address>5</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>i_b</name>
-            <address>9</address>
+            <address>6</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>i_be</name>
-            <address>10</address>
+            <address>7</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>i_c</name>
-            <address>11</address>
-            <type>current</type>
-            <initial_condition>None</initial_condition>
-            <visible>True</visible>
-        </cell>
-        <cell>
-            <name>Ia1_full_bandwidth</name>
-            <address>12</address>
+            <address>8</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>Ia1</name>
-            <address>13</address>
-            <type>current</type>
-            <initial_condition>None</initial_condition>
-            <visible>True</visible>
-        </cell>
-        <cell>
-            <name>Ia2_full_bandwidth</name>
-            <address>14</address>
+            <address>9</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>Ia2</name>
-            <address>15</address>
-            <type>current</type>
-            <initial_condition>None</initial_condition>
-            <visible>True</visible>
-        </cell>
-        <cell>
-            <name>Ia3_full_bandwidth</name>
-            <address>16</address>
+            <address>10</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
             <name>Ia3</name>
-            <address>17</address>
+            <address>11</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>True</visible>
         </cell>
         <cell>
-            <name>Three Phase Inverter1.IGBT Leg1.il</name>
+            <name>Three Phase Inverter1.IGBT Leg1.IGBT Leg global gds ovs.il</name>
             <address>128</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>Three Phase Inverter1.IGBT Leg2.il</name>
+            <name>Three Phase Inverter1.IGBT Leg2.IGBT Leg global gds ovs.il</name>
             <address>136</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
             <visible>False</visible>
         </cell>
         <cell>
-            <name>Three Phase Inverter1.IGBT Leg3.il</name>
+            <name>Three Phase Inverter1.IGBT Leg3.IGBT Leg global gds ovs.il</name>
             <address>144</address>
             <type>current</type>
             <initial_condition>None</initial_condition>
@@ -644,27 +602,27 @@
         </cell>
         <cell>
             <name>Three Phase Inverter1.Sa_top</name>
-            <address>512</address>
+            <address>538</address>
         </cell>
         <cell>
             <name>Three Phase Inverter1.Sa_bot</name>
-            <address>513</address>
+            <address>539</address>
         </cell>
         <cell>
             <name>Three Phase Inverter1.Sb_top</name>
-            <address>514</address>
+            <address>540</address>
         </cell>
         <cell>
             <name>Three Phase Inverter1.Sb_bot</name>
-            <address>515</address>
+            <address>541</address>
         </cell>
         <cell>
             <name>Three Phase Inverter1.Sc_top</name>
-            <address>516</address>
+            <address>542</address>
         </cell>
         <cell>
             <name>Three Phase Inverter1.Sc_bot</name>
-            <address>517</address>
+            <address>543</address>
         </cell>
         <cell>
             <name>Three Phase Inverter1.IGBT Leg1_vout_cmp</name>
@@ -707,6 +665,7 @@
                 </constants>
                 <lut_angle1_max>6.283185307179586</lut_angle1_max>
                 <lut_angle2_max>6.283185307179586</lut_angle2_max>
+                <gp_regs_reset>[[128, 'psi_ds_mem', 0.132213]]</gp_regs_reset>
             </init>
             <mch_speed>machine mechanical speed</mch_speed>
             <mch_torque>machine electrical torque</mch_torque>
@@ -718,6 +677,10 @@
     </batteries>
     <contactors>
     </contactors>
+    <analog_output_settings>
+    </analog_output_settings>
+    <digital_output_settings>
+    </digital_output_settings>
     <dtv>
         <spc_dtv>
             <cell>

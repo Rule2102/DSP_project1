@@ -1,15 +1,15 @@
 figure();
 ur = 2;
-OVERSAMPLING = 1;
-MAX_data_count = 850;
-data = zeros(MAX_data_count,2);
+OVERSAMPLING = 0;
+MAX_data_count = 650;
+data = zeros(MAX_data_count,3);
 %tpom = 0:Ts:(MAX_data_count-1)*Ts;
 
-for i=1:1:2
+for i=1:1:3
 s=num2str(i);
 s1=num2str(OVERSAMPLING);
 s2=num2str(ur);
-f=strcat('C:\Users\ivan5\GIT\DSP_project1\MATLAB\dataOut_',s,'.dat');
+f=strcat('E:\GIT\DSP_project1\MATLAB\dataOut_',s,'.dat');
 filename = f;
 delimiter = ' ';
 startRox = 2;

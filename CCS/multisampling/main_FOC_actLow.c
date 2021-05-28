@@ -33,12 +33,12 @@
 #define INV_UR_1 (1/(float32)(UR+1))                // Used for angle averaging on switching period
 #define ADC_SCALE 0.0007326f                        // ADC scaling: 3.0 --> 4095 (zero ADC offset assumed)
 #define ISENSE_SCALE 10.0f                          // [A] --> [V] (ISENSE_SCALE)A=1V
-#define LSB_offset_a 2052.0f
-#define LSB_offset_b 2053.0f
+#define LSB_offset_a 2062.0f
+#define LSB_offset_b 2064.0f
 #define ISENSE_OFFSET_A (LSB_offset_a*ADC_SCALE) //(1.50f + 0.00309f + 0.00013f - 0.00573f - 0.00529f + 0.00028f) // - 0.01443f) //96f                     // 0A --> 1.5V + offset ADC-a
 #define ISENSE_OFFSET_B (LSB_offset_b*ADC_SCALE) //(1.50f + 0.00448f + 0.00012f - 0.00567f - 0.00563f + 0.00032f) // - 0.01492f)//111f                     // 0A --> 1.5V + offset ADC-a
 
-#define MAX_data_count 850 //443                        // Size of an array used for data storage
+#define MAX_data_count 650 //443                        // Size of an array used for data storage
 #define DATACNT_REF 400
 #define DMACNT_REF 10869  //3478                         // Set reference after DMACNT_REF regulation periods
 #define DMACNT_PRNT 10600  //3000                        // Start printing after DMACNT_PRNT regulation periods
@@ -96,7 +96,7 @@ float32 Iq_ref = 0.0f;                          // Reference q current
 float32 IMAX = 35.0f;                           // Limit for over-current protection
 
 // IREG
-float32 alpha = 0.0636f; //0.2f; //0.12038f; //0.0636f; //0.087f;                            // Gain for IREG
+float32 alpha = 0.0636f; //25f; //0.0636f; //0.2f; //0.12038f; //0.0636f; //0.087f;                            // Gain for IREG
 float32 d = 0.0f; //2.1948f;                               // Derivative gain
 float32 K1, K2;                                  // Constants used for IREG
 
@@ -126,11 +126,11 @@ Uint16 MS_CMPB_a, MS_CMPB_b, MS_CMPB_c;         // CMPB value for the multisampl
 // Data storage
 float32 dataOut_1[MAX_data_count] = {};
 float32 dataOut_2[MAX_data_count] = {};
-//Uint16 dataOut_3[MAX_data_count] = {};
+Uint16 dataOut_3[MAX_data_count] = {};
 //float32 dataOut_4[MAX_data_count] = {};
 //float32 dataOut_5[MAX_data_count] = {};
 //float32 dataOut_6[MAX_data_count] = {};
-Uint16 canPrint = 0;                            // Logic signal used to trigger data storage
+Uint16 canPrint = 1;                            // Logic signal used to trigger data storage
 long int data_count = 0;                        // Counter for data storage
 Uint16 reg_enabled = 0;                         // Logic variable used to start output
 Uint16 error_flag = 0;                          // Indicate if an error occurred (overcurrent protection, etc)
@@ -143,6 +143,8 @@ float32 pom1, pom2;
 
 long int dma_count = 0;                         // Counter to check dmach1_isr
 //long int adc_count_a = 0;                     // Counter to check adca1_isr
+
+float32 Ia_DS, Ib_DS, Ibeta_DS, Id_DS, Iq_DS;
 
 void main(void)
 {
@@ -552,9 +554,9 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_1[data_count] =  Id; //theta[0];
-        dataOut_2[data_count] =  Iq; //PWM_CMP_a; //AdcbResultRegs.ADCRESULT0;
-        //dataOut_3[data_count] =  n_seg;
+        dataOut_1[data_count] =  Id_DS; //AdcaResultRegs.ADCRESULT0; //theta[0];
+        dataOut_2[data_count] =  Iq_DS; //AdcbResultRegs.ADCRESULT0; //PWM_CMP_a; //AdcbResultRegs.ADCRESULT0;
+        dataOut_3[data_count] =  n_seg;
         //dataOut_4[data_count] =  Iq;
         //dataOut_5[data_count] =  Id;
         //dataOut_6[data_count] =  Ud[0];
@@ -654,6 +656,9 @@ __interrupt void dmach1_isr(void)
             Ia_sum_Ts = DMAbuffer1[NOS_UR-1];
             Ib_sum_Ts = DMAbuffer1[NOS_UR-1+NOS_UR];
         #endif
+
+        Ia_DS = (float32)DMAbuffer1[NOS_UR-1];
+        Ib_DS = (float32)DMAbuffer1[NOS_UR-1+NOS_UR];
     }
     else if (dma_sgn==-1)
     {
@@ -675,6 +680,9 @@ __interrupt void dmach1_isr(void)
             Ia_sum_Ts = DMAbuffer2[NOS_UR-1];
             Ib_sum_Ts = DMAbuffer2[NOS_UR-1+NOS_UR];
         #endif
+
+        Ia_DS = (float32)DMAbuffer2[NOS_UR-1];
+        Ib_DS = (float32)DMAbuffer2[NOS_UR-1+NOS_UR];
     }
 
     #if (OVERSAMPLING)
@@ -686,6 +694,9 @@ __interrupt void dmach1_isr(void)
         Ia_avg_Ts = ((float32)(Ia_sum_Ts)*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
         Ib_avg_Ts = ((float32)(Ib_sum_Ts)*ADC_SCALE - ISENSE_OFFSET_B)*ISENSE_SCALE;
     #endif
+
+        Ia_DS = (Ia_DS*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
+        Ib_DS = (Ib_DS*ADC_SCALE - ISENSE_OFFSET_B)*ISENSE_SCALE;
 
     Ic_avg_Ts = - Ia_avg_Ts - Ib_avg_Ts;        // Calculate current in phase C
 
@@ -755,6 +766,11 @@ __interrupt void dmach1_isr(void)
                         Iq = Ibeta_avg_Ts * _cos[1] - Ialpha_avg_Ts * _sin[1];
 
                     #endif
+
+                        Ibeta_DS =  0.57735f * Ia_DS + 1.1547f * Ib_DS;         // Ibeta=1/sqrt(3)*Ia+2/sqrt(3)*Ib
+
+                        Id_DS = Ia_DS * _cos[1] + Ibeta_DS * _sin[1];
+                        Iq_DS = Ibeta_DS * _cos[1] - Ia_DS * _sin[1];
 
                     // Current error (- added for active low logic)
                     dId[0] = - (Id_ref - Id);

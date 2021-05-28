@@ -1,12 +1,12 @@
 <hil_settings>
-    <format_version>2.5</format_version>
+    <format_version>2.6</format_version>
     <number_of_devices>1</number_of_devices>
     <ao_limiting_forced>False</ao_limiting_forced>
     <hw_properties>
         <product_id>402</product_id>
         <hardware_id>3</hardware_id>
-        <configuration_id>4</configuration_id>
-        <fw_release_date>132384520</fw_release_date>
+        <configuration_id>1</configuration_id>
+        <fw_release_date>132449282</fw_release_date>
     </hw_properties>
     <components>
         <inputs>
@@ -57,14 +57,14 @@
             <analog_channel>
                 <number>1</number>
                 <device>0</device>
-                <scale>10.0</scale>
-                <offset>1.5</offset>
+                <scale>100.0</scale>
+                <offset>0.0</offset>
                 <locked>False</locked>
                 <ao_limiting_enabled>False</ao_limiting_enabled>
                 <ao_lower_limit>-1.0</ao_lower_limit>
                 <ao_upper_limit>1.0</ao_upper_limit>
                 <analog_signal>
-                	<name>Ia1</name>
+                	<name>const_0V</name>
                 	<show>True</show>
                 	<device>0</device>
                 </analog_signal>
@@ -72,14 +72,14 @@
             <analog_channel>
                 <number>2</number>
                 <device>0</device>
-                <scale>10.0</scale>
-                <offset>1.5</offset>
+                <scale>100.0</scale>
+                <offset>0.0</offset>
                 <locked>False</locked>
                 <ao_limiting_enabled>False</ao_limiting_enabled>
                 <ao_lower_limit>-1.0</ao_lower_limit>
                 <ao_upper_limit>1.0</ao_upper_limit>
                 <analog_signal>
-                	<name>Ia2</name>
+                	<name>const_0V</name>
                 	<show>True</show>
                 	<device>0</device>
                 </analog_signal>
@@ -132,14 +132,14 @@
             <analog_channel>
                 <number>6</number>
                 <device>0</device>
-                <scale>100.0</scale>
-                <offset>0.0</offset>
+                <scale>10.0</scale>
+                <offset>1.5</offset>
                 <locked>False</locked>
                 <ao_limiting_enabled>False</ao_limiting_enabled>
                 <ao_lower_limit>-1.0</ao_lower_limit>
                 <ao_upper_limit>1.0</ao_upper_limit>
                 <analog_signal>
-                	<name>const_0V</name>
+                	<name>Ia1</name>
                 	<show>True</show>
                 	<device>0</device>
                 </analog_signal>
@@ -147,14 +147,14 @@
             <analog_channel>
                 <number>7</number>
                 <device>0</device>
-                <scale>100.0</scale>
-                <offset>0.0</offset>
+                <scale>10.0</scale>
+                <offset>1.5</offset>
                 <locked>False</locked>
                 <ao_limiting_enabled>False</ao_limiting_enabled>
                 <ao_lower_limit>-1.0</ao_lower_limit>
                 <ao_upper_limit>1.0</ao_upper_limit>
                 <analog_signal>
-                	<name>const_0V</name>
+                	<name>Ia2</name>
                 	<show>True</show>
                 	<device>0</device>
                 </analog_signal>
@@ -737,5 +737,7 @@
         </batteries>
         <scada_inputs>
         </scada_inputs>
+        <tunable_parameters>
+        </tunable_parameters>
     </components>
 </hil_settings>
