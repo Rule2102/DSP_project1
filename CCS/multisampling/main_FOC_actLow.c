@@ -4,7 +4,7 @@
 #include <string.h>
 
 #define UR 8                                        // Update rate (UR>2 -> multisampling algorithm)
-#define OVERSAMPLING 0                              // Logic variable to differentiate between case with and without oversampling
+#define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
 #define LOG2_NOS_UR (log2(NOS_UR))                  // Used for averaging on regulation period (if OVERSAMPLING==1)
@@ -96,7 +96,7 @@ float32 Iq_ref = 0.0f;                          // Reference q current
 float32 IMAX = 35.0f;                           // Limit for over-current protection
 
 // IREG
-float32 alpha = 0.2f; //0.12038f; //0.0636f; //0.087f;                            // Gain for IREG
+float32 alpha = 0.0636f; //0.2f; //0.12038f; //0.0636f; //0.087f;                            // Gain for IREG
 float32 d = 0.0f; //2.1948f;                               // Derivative gain
 float32 K1, K2;                                  // Constants used for IREG
 
@@ -125,8 +125,8 @@ Uint16 MS_CMPB_a, MS_CMPB_b, MS_CMPB_c;         // CMPB value for the multisampl
 
 // Data storage
 float32 dataOut_1[MAX_data_count] = {};
-Uint16 dataOut_2[MAX_data_count] = {};
-Uint16 dataOut_3[MAX_data_count] = {};
+float32 dataOut_2[MAX_data_count] = {};
+//Uint16 dataOut_3[MAX_data_count] = {};
 //float32 dataOut_4[MAX_data_count] = {};
 //float32 dataOut_5[MAX_data_count] = {};
 //float32 dataOut_6[MAX_data_count] = {};
@@ -552,9 +552,9 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_1[data_count] =  theta[0];
-        dataOut_2[data_count] =  PWM_CMP_a; //AdcbResultRegs.ADCRESULT0;
-        dataOut_3[data_count] =  n_seg;
+        dataOut_1[data_count] =  Id; //theta[0];
+        dataOut_2[data_count] =  Iq; //PWM_CMP_a; //AdcbResultRegs.ADCRESULT0;
+        //dataOut_3[data_count] =  n_seg;
         //dataOut_4[data_count] =  Iq;
         //dataOut_5[data_count] =  Id;
         //dataOut_6[data_count] =  Ud[0];
