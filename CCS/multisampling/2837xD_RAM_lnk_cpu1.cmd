@@ -30,20 +30,20 @@ PAGE 1 :
    RAMGS4      : origin = 0x010000, length = 0x001000
    RAMGS5      : origin = 0x011000, length = 0x001000
    RAMGS6      : origin = 0x012000, length = 0x001000
-   RAMGS7      : origin = 0x013000, length = 0x001000
-   RAMGS8      : origin = 0x014000, length = 0x001000
-   RAMGS9      : origin = 0x015000, length = 0x001000
-   RAMGS10     : origin = 0x016000, length = 0x001000
+   RAMGS7      : origin = 0x013000, length = 0x008FF8
+   //RAMGS8      : origin = 0x014000, length = 0x001000
+   //RAMGS9      : origin = 0x015000, length = 0x001000
+   //RAMGS10     : origin = 0x016000, length = 0x001000
 
 //   RAMGS11     : origin = 0x017000, length = 0x000FF8   /* Uncomment for F28374D, F28376D devices */
 
 //   RAMGS11_RSVD : origin = 0x017FF8, length = 0x000008    /* Reserve and do not use for code as per the errata advisory "Memory: Prefetching Beyond Valid Memory" */
 
-   RAMGS11     : origin = 0x017000, length = 0x001000     /* Only Available on F28379D, F28377D, F28375D devices. Remove line on other devices. */
-   RAMGS12     : origin = 0x018000, length = 0x001000     /* Only Available on F28379D, F28377D, F28375D devices. Remove line on other devices. */
-   RAMGS13     : origin = 0x019000, length = 0x001000     /* Only Available on F28379D, F28377D, F28375D devices. Remove line on other devices. */
-   RAMGS14     : origin = 0x01A000, length = 0x001000     /* Only Available on F28379D, F28377D, F28375D devices. Remove line on other devices. */
-   RAMGS15     : origin = 0x01B000, length = 0x000FF8     /* Only Available on F28379D, F28377D, F28375D devices. Remove line on other devices. */
+   //RAMGS11     : origin = 0x017000, length = 0x001000     /* Only Available on F28379D, F28377D, F28375D devices. Remove line on other devices. */
+   //RAMGS12     : origin = 0x018000, length = 0x001000     /* Only Available on F28379D, F28377D, F28375D devices. Remove line on other devices. */
+   //RAMGS13     : origin = 0x019000, length = 0x001000     /* Only Available on F28379D, F28377D, F28375D devices. Remove line on other devices. */
+   //RAMGS14     : origin = 0x01A000, length = 0x001000     /* Only Available on F28379D, F28377D, F28375D devices. Remove line on other devices. */
+   //RAMGS15     : origin = 0x01B000, length = 0x000FF8     /* Only Available on F28379D, F28377D, F28375D devices. Remove line on other devices. */
    
 //   RAMGS15_RSVD : origin = 0x01BFF8, length = 0x000008    /* Reserve and do not use for code as per the errata advisory "Memory: Prefetching Beyond Valid Memory" */
                                                             /* Only on F28379D, F28377D, F28375D devices. Remove line on other devices. */
@@ -109,7 +109,7 @@ SECTIONS
 
 
 	#if !defined(RAM_ROMTABLES)
-    FPUmathTables   : >> RAMGS10 , PAGE = 1
+    FPUmathTables   : >> RAMGS6 , PAGE = 1
 	#endif
 
     /* The following section definition are for SDFM examples */
@@ -118,7 +118,10 @@ SECTIONS
    Filter3_RegsFile : > RAMGS3, PAGE = 1, fill=0x3333
    Filter4_RegsFile : > RAMGS4, PAGE = 1, fill=0x4444
    Difference_RegsFile : >RAMGS5,   PAGE = 1, fill=0x3333
+
+   dataExport : > RAMGS7, PAGE = 1
 }
+
 
 /*
 //===========================================================================

@@ -48,6 +48,8 @@
 #define L 0.0034f                                   // Motor inductance
 #define INV_TAU (R/L)                               // 1/(L/R)
 
+#define exportDMA 1
+
 #pragma CODE_SECTION(dmach1_isr, ".TI.ramfunc");    // Allocate code (dmach1_isr) in RAM
 #pragma CODE_SECTION(adca1_isr, ".TI.ramfunc");     // Allocate code (adca1_isr) in RAM
 
@@ -124,12 +126,26 @@ Uint16 MS_CMPA_a, MS_CMPA_b, MS_CMPA_c;         // CMPA value for the multisampl
 Uint16 MS_CMPB_a, MS_CMPB_b, MS_CMPB_c;         // CMPB value for the multisampling counter
 
 // Data storage
+
+#pragma DATA_SECTION(dataOut_1,"dataExport");
+#pragma DATA_SECTION(dataOut_2,"dataExport");
+#pragma DATA_SECTION(dataOut_3,"dataExport");
+
+#if exportDMA
+Uint16 dataOut_1[MAX_data_count*NOS_UR] = {}; //int16
+Uint16 dataOut_2[MAX_data_count*NOS_UR] = {}; //int32
+Uint16 dataOut_3[MAX_data_count*NOS_UR] = {};
+Uint16 Ia_buf[NOS_UR] = {};
+Uint16 Ib_buf[NOS_UR] = {};
+#else
 float32 dataOut_1[MAX_data_count] = {};
 float32 dataOut_2[MAX_data_count] = {};
 Uint16 dataOut_3[MAX_data_count] = {};
 //float32 dataOut_4[MAX_data_count] = {};
 //float32 dataOut_5[MAX_data_count] = {};
 //float32 dataOut_6[MAX_data_count] = {};
+#endif
+
 Uint16 canPrint = 1;                            // Logic signal used to trigger data storage
 long int data_count = 0;                        // Counter for data storage
 Uint16 reg_enabled = 0;                         // Logic variable used to start output
@@ -144,7 +160,6 @@ float32 pom1, pom2;
 long int dma_count = 0;                         // Counter to check dmach1_isr
 //long int adc_count_a = 0;                     // Counter to check adca1_isr
 
-float32 Ia_DS, Ib_DS, Ibeta_DS, Id_DS, Iq_DS;
 
 void main(void)
 {
@@ -554,18 +569,28 @@ void PrintData()
 {
     if(canPrint)
     {
-        dataOut_1[data_count] =  Id_DS; //AdcaResultRegs.ADCRESULT0; //theta[0];
-        dataOut_2[data_count] =  Iq_DS; //AdcbResultRegs.ADCRESULT0; //PWM_CMP_a; //AdcbResultRegs.ADCRESULT0;
-        dataOut_3[data_count] =  n_seg;
-        //dataOut_4[data_count] =  Iq;
-        //dataOut_5[data_count] =  Id;
-        //dataOut_6[data_count] =  Ud[0];
+        #if exportDMA
+            int i_for;
+            for(i_for=0; i_for<NOS_UR; i_for++)
+               {
+                dataOut_1[data_count*NOS_UR+i_for] = Ia_buf[i_for];
+                dataOut_2[data_count*NOS_UR+i_for] = Ib_buf[i_for];
+               }
+        #else
+            dataOut_1[data_count] =  Id; //AdcaResultRegs.ADCRESULT0; //theta[0];
+            dataOut_2[data_count] =  Iq; //AdcbResultRegs.ADCRESULT0; //PWM_CMP_a; //AdcbResultRegs.ADCRESULT0;
+            dataOut_3[data_count] =  n_seg;
+            //dataOut_4[data_count] =  Iq;
+            //dataOut_5[data_count] =  Id;
+            //dataOut_6[data_count] =  Ud[0];
+        #endif
 
         data_count++;
 
         if(data_count == DATACNT_REF)
         {
             Iq_ref = 0.0f;
+            GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
         }
 
         if (data_count >= MAX_data_count)
@@ -599,7 +624,6 @@ __interrupt void dmach1_isr(void)
     GpioDataRegs.GPCSET.bit.GPIO66 = 1;                       // Notify dmach1_isr start
 
     theta_enc[0] = ((float32)EQep2Regs.QPOSCNT)*ANG_CNV;        // Capture position
-    GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
 
     int i_for = 0;
 
@@ -650,15 +674,24 @@ __interrupt void dmach1_isr(void)
             {
                 Ia_sum_Ts+=DMAbuffer1[i_for];
                 Ib_sum_Ts+=DMAbuffer1[i_for+NOS_UR];
+            #if exportDMA
+                Ia_buf[i_for] = DMAbuffer1[i_for];
+                Ib_buf[i_for] = DMAbuffer1[i_for+NOS_UR];
+            #endif
             }
         #else
             // Take last measurement
             Ia_sum_Ts = DMAbuffer1[NOS_UR-1];
             Ib_sum_Ts = DMAbuffer1[NOS_UR-1+NOS_UR];
+            #if exportDMA
+                for (i_for=0;i_for<NOS_UR;i_for++)
+                {
+                    Ia_buf[i_for] = DMAbuffer1[i_for];
+                    Ib_buf[i_for] = DMAbuffer1[i_for+NOS_UR];
+                }
+            #endif
         #endif
 
-        Ia_DS = (float32)DMAbuffer1[NOS_UR-1];
-        Ib_DS = (float32)DMAbuffer1[NOS_UR-1+NOS_UR];
     }
     else if (dma_sgn==-1)
     {
@@ -674,15 +707,24 @@ __interrupt void dmach1_isr(void)
             {
                 Ia_sum_Ts+=DMAbuffer2[i_for];
                 Ib_sum_Ts+=DMAbuffer2[i_for+NOS_UR];
+                #if exportDMA
+                    Ia_buf[i_for] = DMAbuffer2[i_for];
+                    Ib_buf[i_for] = DMAbuffer2[i_for+NOS_UR];
+                #endif
             }
         #else
             // Take last measurement
             Ia_sum_Ts = DMAbuffer2[NOS_UR-1];
             Ib_sum_Ts = DMAbuffer2[NOS_UR-1+NOS_UR];
+            #if exportDMA
+                for (i_for=0;i_for<NOS_UR;i_for++)
+                {
+                    Ia_buf[i_for] = DMAbuffer2[i_for];
+                    Ib_buf[i_for] = DMAbuffer2[i_for+NOS_UR];
+                }
+            #endif
         #endif
 
-        Ia_DS = (float32)DMAbuffer2[NOS_UR-1];
-        Ib_DS = (float32)DMAbuffer2[NOS_UR-1+NOS_UR];
     }
 
     #if (OVERSAMPLING)
@@ -694,9 +736,6 @@ __interrupt void dmach1_isr(void)
         Ia_avg_Ts = ((float32)(Ia_sum_Ts)*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
         Ib_avg_Ts = ((float32)(Ib_sum_Ts)*ADC_SCALE - ISENSE_OFFSET_B)*ISENSE_SCALE;
     #endif
-
-        Ia_DS = (Ia_DS*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
-        Ib_DS = (Ib_DS*ADC_SCALE - ISENSE_OFFSET_B)*ISENSE_SCALE;
 
     Ic_avg_Ts = - Ia_avg_Ts - Ib_avg_Ts;        // Calculate current in phase C
 
@@ -766,11 +805,6 @@ __interrupt void dmach1_isr(void)
                         Iq = Ibeta_avg_Ts * _cos[1] - Ialpha_avg_Ts * _sin[1];
 
                     #endif
-
-                        Ibeta_DS =  0.57735f * Ia_DS + 1.1547f * Ib_DS;         // Ibeta=1/sqrt(3)*Ia+2/sqrt(3)*Ib
-
-                        Id_DS = Ia_DS * _cos[1] + Ibeta_DS * _sin[1];
-                        Iq_DS = Ibeta_DS * _cos[1] - Ia_DS * _sin[1];
 
                     // Current error (- added for active low logic)
                     dId[0] = - (Id_ref - Id);

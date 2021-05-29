@@ -1,14 +1,10 @@
 figure();
-ur = 2;
-OVERSAMPLING = 0;
-MAX_data_count = 650;
+ur = 8;
+MAX_data_count = 650*16/ur;
 data = zeros(MAX_data_count,3);
-%tpom = 0:Ts:(MAX_data_count-1)*Ts;
 
-for i=1:1:3
+for i=1:1:2
 s=num2str(i);
-s1=num2str(OVERSAMPLING);
-s2=num2str(ur);
 f=strcat('E:\GIT\DSP_project1\MATLAB\dataOut_',s,'.dat');
 filename = f;
 delimiter = ' ';
@@ -23,11 +19,17 @@ clearvars filename delimiter startRox formatSpec fileID dataArray ans;
 hold all; stairs(data(:,i));
 end
 
-% figure();
-% plot(data(:,2));
-% 
-% figure();
-% plot(data(:,1));
+%% averaging
+data1 = data(:,1);
+data_avg = zeros(MAX_data_count);
+for i=8:1:MAX_data_count
+    data_avg(i) = sum(data1(i-7:1:i+8));
+end
+
+figure();
+stairs(data1); 
+hold all;
+stairs(data_avg);
 
 %% check for vertical crossings
 load('saw.mat');
