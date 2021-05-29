@@ -134,7 +134,7 @@ Uint16 MS_CMPB_a, MS_CMPB_b, MS_CMPB_c;         // CMPB value for the multisampl
 #if exportDMA
 Uint16 dataOut_1[MAX_data_count*NOS_UR] = {}; //int16
 Uint16 dataOut_2[MAX_data_count*NOS_UR] = {}; //int32
-Uint16 dataOut_3[MAX_data_count*NOS_UR] = {};
+float32 dataOut_3[MAX_data_count*NOS_UR] = {};
 Uint16 Ia_buf[NOS_UR] = {};
 Uint16 Ib_buf[NOS_UR] = {};
 #else
@@ -575,6 +575,7 @@ void PrintData()
                {
                 dataOut_1[data_count*NOS_UR+i_for] = Ia_buf[i_for];
                 dataOut_2[data_count*NOS_UR+i_for] = Ib_buf[i_for];
+                dataOut_3[data_count*NOS_UR+i_for] = theta[0];
                }
         #else
             dataOut_1[data_count] =  Id; //AdcaResultRegs.ADCRESULT0; //theta[0];
