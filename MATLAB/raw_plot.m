@@ -1,11 +1,14 @@
 figure();
-ur = 8;
-MAX_data_count = 650*16/ur;
+NOS = 16;
+UR = 8;
+NOS_UR = NOS/UR;
+MAX_data_count = 650*NOS_UR;
 data = zeros(MAX_data_count,3);
 
 for i=1:1:3
 s=num2str(i);
-f=strcat('E:\GIT\DSP_project1\MATLAB\dataOut_',s,'.dat');
+%f=strcat('E:\GIT\DSP_project1\MATLAB\dataOut_',s,'.dat');
+f=strcat('D:\struka\DSP\project1\MATLAB\dataOut_',s,'.dat');
 filename = f;
 delimiter = ' ';
 startRox = 2;
@@ -79,7 +82,7 @@ Iqref = [7*ones(1,400),zeros(1,250)];
 hold all; stairs(Iqref);
 %%
 tdsp = 1:1:650;
-tdsp = tdsp - 400*ones(1,650);
+tdsp = tdsp - 401*ones(1,650);
 tdsp= tdsp*100e-6/8;
 figure();
 stairs(tdsp,Id);
@@ -93,6 +96,47 @@ den = [4 -4 alpha 0 0 0 2*alpha 0 0 0 alpha];
 Wcl= tf(num,den,100e-6/8);
 opt = stepDataOptions('InputOffset',7,'StepAmplitude',-7);
 step(tdsp,Wcl,opt)
+
+%%
+
+ADC_SCALE = 0.0007326;
+LSB_offset_a = 2062;
+ISENSE_OFFSET_A = LSB_offset_a*ADC_SCALE;
+ISENSE_SCALE = 10;
+
+Id = zeros(MAX_data_count,1);
+Iq = zeros(MAX_data_count,1);
+Ia = zeros(MAX_data_count,1);
+Ib = zeros(MAX_data_count,1);
+for i=NOS/2+1:NOS_UR:MAX_data_count-NOS/2
+    for i2=1:1:UR
+        is = i - (NOS/2-1) + NOS_UR*(i2-1);
+        ie = is + (NOS_UR-1);
+        Ia(i) = sum(data(is:ie,1))/NOS_UR;
+        Ib(i) = sum(data(is:ie,2))/NOS_UR;
+        isth = is-1;
+        ieth = isth + NOS_UR;
+        theta = (data(isth,3)+data(ieth,3))/2;
+        
+        Ia(i) = (Ia(i)*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
+        Ib(i) = (Ib(i)*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
+        Ialpha = Ia(i);
+        Ibeta = 0.57735*Ia(i) + 1.1547*Ib(i);
+
+        sinth = sin(theta);
+        costh = cos(theta);
+
+        Id(i) = Id(i) +Ialpha.*costh + Ibeta.*sinth;
+        Iq(i) = Iq(i) + Ibeta.*costh - Ialpha.*sinth;
+    end
+    Id(i) = Id(i)/UR;
+    Iq(i) = Iq(i)/UR;
+end
+
+figure();
+stairs(Id(1:2:end));
+hold all
+stairs(Iq(1:2:end));
 
 %% check for vertical crossings
 load('saw.mat');
