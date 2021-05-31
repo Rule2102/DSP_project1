@@ -10,8 +10,8 @@ data = zeros(MAX_data_count,3);
 
 for i=1:1:3
 s=num2str(i);
-f=strcat('E:\GIT\DSP_project1\MATLAB\dataOut_',s,'.dat');
-%f=strcat('D:\struka\DSP\project1\MATLAB\dataOut_',s,'.dat');
+% f=strcat('E:\GIT\DSP_project1\MATLAB\dataOut_',s,'.dat');
+f=strcat('D:\struka\DSP\project1\results\31.5\MSMUMAF\dataOut_',s,'.dat');
 filename = f;
 delimiter = ' ';
 startRox = 2;
@@ -72,10 +72,10 @@ Id = Id(1:NOS_UR:end);
 Iq = Iq(1:NOS_UR:end);
 
 tdsp = 1:1:Ndat;
-tdsp = tdsp - Nref*ones(1,Ndat);
+tdsp = tdsp - (Nref+1)*ones(1,Ndat);
 tdsp= tdsp*100e-6/UR;
 t1 = -2*100e-6;
-t2 = 100e-6*20;
+t2 = 100e-6*10;
 
 Iqref = [7*ones(1,Nref),2*ones(1,Ndat-Nref)];
 
@@ -86,31 +86,34 @@ stairs(tdsp,Iq);
 stairs(tdsp,Iqref);
 
 % MS-MU-MAF
-% alpha = 0.0636;
-% num = [4*alpha 0 0 0 0 0 0 0 0];
-% den = [4 -4 alpha 0 0 0 2*alpha 0 0 0 alpha];
-% Wcl= tf(num,den,100e-6/UR);
-% title('MS-MU-MAF \alpha=%f',alpha);
+alpha = 0.0636;
+num = [4*alpha 0 0 0 0 0 0 0 0];
+den = [4 -4 alpha 0 0 0 2*alpha 0 0 0 alpha];
+Wcl= tf(num,den,100e-6/UR);
+tit='MS-MU-MAF \alpha=0.0636';
 
 % DS-DU
 % alpha = 0.23;
 % Wcl = alpha*tf([1],[1 -1 alpha],100e-6/UR);
+% tit='DS-DU \alpha=0.23';
 
 % MS-DU
 % alpha = 0.14;
 % Wcl = tf([4*alpha 0 0],[4 -4 alpha 2*alpha alpha],100e-6/UR);
-% title('MS-DU \alpha=%f','alpha');
+% tit='MS-DU \alpha=0.14';
 
 % MS-MU
-alpha = 0.04;
-Wcl = alpha*tf([1],[1 -1 alpha],100e-6/UR);
+% alpha = 0.04;
+% Wcl = alpha*tf([1],[1 -1 alpha],100e-6/UR);
+% tit='MS-MU \alpha=0.04';
 
 
 opt = stepDataOptions('InputOffset',7,'StepAmplitude',-5);
 step(tdsp,Wcl,opt);
-xlim([t1 t2]);
+% xlim([t1 t2]);
 legend('I_d^{HIL}','I_q^{HIL}','I_q^{ref}','I_q^{an}');
 ylim([-1 8]);
+title(tit);
 %% averaging old
 data1(:,1) = data(:,1);
 data_avg = zeros(MAX_data_count);
