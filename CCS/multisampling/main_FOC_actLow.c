@@ -3,7 +3,7 @@
 #include "C28x_FPU_FastRTS.h"
 #include <string.h>
 
-#define UR 8                                        // Update rate (UR>2 -> multisampling algorithm)
+#define UR 2                                        // Update rate (UR>2 -> multisampling algorithm)
 #define OVERSAMPLING 1                              // Logic variable to differentiate between case with and without oversampling
 #define NOS 16                                      // Number of samples to be measured on PWM period (if oversampling==1 NOS is oversampling factor)
 #define NOS_UR (NOS/UR)                             // Ratio between NOS and UR
@@ -98,7 +98,7 @@ float32 Iq_ref = 0.0f;                          // Reference q current
 float32 IMAX = 35.0f;                           // Limit for over-current protection
 
 // IREG
-float32 alpha = 0.0636f; //25f; //0.0636f; //0.2f; //0.12038f; //0.0636f; //0.087f;                            // Gain for IREG
+float32 alpha = 0.14f; //0.0636f; //25f; //0.0636f; //0.2f; //0.12038f; //0.0636f; //0.087f;                            // Gain for IREG
 float32 d = 0.0f; //2.1948f;                               // Derivative gain
 float32 K1, K2;                                  // Constants used for IREG
 
@@ -590,7 +590,7 @@ void PrintData()
 
         if(data_count == DATACNT_REF)
         {
-            Iq_ref = 0.0f;
+            Iq_ref = 2.0f;
             GpioDataRegs.GPCSET.bit.GPIO67 = 1;         // Indicate setting reference (used for osciloscope measurements)
         }
 

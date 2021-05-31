@@ -1,14 +1,17 @@
 figure();
+clear all
 NOS = 16;
-UR = 8;
+UR = 2;
 NOS_UR = NOS/UR;
-MAX_data_count = 650*NOS_UR;
+Ndat = 650;
+Nref = 401;
+MAX_data_count =Ndat*NOS_UR;
 data = zeros(MAX_data_count,3);
 
 for i=1:1:3
 s=num2str(i);
-%f=strcat('E:\GIT\DSP_project1\MATLAB\dataOut_',s,'.dat');
-f=strcat('D:\struka\DSP\project1\MATLAB\dataOut_',s,'.dat');
+f=strcat('E:\GIT\DSP_project1\MATLAB\dataOut_',s,'.dat');
+%f=strcat('D:\struka\DSP\project1\MATLAB\dataOut_',s,'.dat');
 filename = f;
 delimiter = ' ';
 startRox = 2;
@@ -22,7 +25,89 @@ clearvars filename delimiter startRox formatSpec fileID dataArray ans;
 hold all; stairs(data(:,i));
 end
 
-%% averaging
+%% export step (averaging on Tpwm)
+
+ADC_SCALE = 0.0007326;
+LSB_offset_a = 2062;
+LSB_offset_b = 2064;
+ISENSE_OFFSET_A = LSB_offset_a*ADC_SCALE;
+ISENSE_OFFSET_B = LSB_offset_b*ADC_SCALE;
+ISENSE_SCALE = 10;
+
+Id = zeros(MAX_data_count,1);
+Iq = zeros(MAX_data_count,1);
+Ia = zeros(MAX_data_count,1);
+Ib = zeros(MAX_data_count,1);
+for i=NOS/2+1:NOS_UR:MAX_data_count-NOS/2
+    for i2=1:1:UR
+        is = i - (NOS/2-1) + NOS_UR*(i2-1);
+        ie = is + (NOS_UR-1);
+        Ia(i) = sum(data(is:ie,1))/NOS_UR;
+        Ib(i) = sum(data(is:ie,2))/NOS_UR;
+        isth = is-1;
+        ieth = isth + NOS_UR;
+%         if(data(isth,3)-data(ieth,3))>=-2*pi
+%             theta = (data(isth,3)+data(ieth,3)-2*pi)/2;
+%         else
+%         theta = (data(isth,3)+data(ieth,3))/2;
+%         end
+        theta = (data(isth,3)+data(ieth,3))/2;
+        
+        Ia(i) = (Ia(i)*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
+        Ib(i) = (Ib(i)*ADC_SCALE - ISENSE_OFFSET_B)*ISENSE_SCALE;
+        Ialpha = Ia(i);
+        Ibeta = 0.57735*Ia(i) + 1.1547*Ib(i);
+
+        sinth = sin(theta);
+        costh = cos(theta);
+
+        Id(i) = Id(i) +Ialpha.*costh + Ibeta.*sinth;
+        Iq(i) = Iq(i) + Ibeta.*costh - Ialpha.*sinth;
+    end
+    Id(i) = Id(i)/UR;
+    Iq(i) = Iq(i)/UR;
+end
+
+Id = Id(1:NOS_UR:end);
+Iq = Iq(1:NOS_UR:end);
+
+tdsp = 1:1:Ndat;
+tdsp = tdsp - Nref*ones(1,Ndat);
+tdsp= tdsp*100e-6/UR;
+t1 = -2*100e-6;
+t2 = 100e-6*10;
+
+Iqref = [7*ones(1,Nref),2*ones(1,Ndat-Nref)];
+
+figure();
+stairs(tdsp,Id);
+hold all
+stairs(tdsp,Iq);
+stairs(tdsp,Iqref);
+
+% MS-MU-MAF
+% alpha = 0.0636;
+% num = [4*alpha 0 0 0 0 0 0 0 0];
+% den = [4 -4 alpha 0 0 0 2*alpha 0 0 0 alpha];
+% Wcl= tf(num,den,100e-6/UR);
+% title('MS-MU-MAF \alpha=%f',alpha);
+
+% DS-DU
+% alpha = 0.23;
+% Wcl = alpha*tf([1],[1 -1 alpha],100e-6/UR);
+
+% MS-DU
+alpha = 0.14;
+Wcl = tf([4*alpha 0 0],[4 -4 alpha 2*alpha alpha],100e-6/UR);
+title('MS-DU \alpha=%f','alpha');
+
+
+opt = stepDataOptions('InputOffset',7,'StepAmplitude',-5);
+step(tdsp,Wcl,opt);
+xlim([t1 t2]);
+legend('I_d^{HIL}','I_q^{HIL}','I_q^{ref}','I_q^{an}');
+ylim([-1 8]);
+%% averaging old
 data1(:,1) = data(:,1);
 data_avg = zeros(MAX_data_count);
 for i=8:1:MAX_data_count-8
@@ -97,46 +182,8 @@ Wcl= tf(num,den,100e-6/8);
 opt = stepDataOptions('InputOffset',7,'StepAmplitude',-7);
 step(tdsp,Wcl,opt)
 
-%%
 
-ADC_SCALE = 0.0007326;
-LSB_offset_a = 2062;
-ISENSE_OFFSET_A = LSB_offset_a*ADC_SCALE;
-ISENSE_SCALE = 10;
 
-Id = zeros(MAX_data_count,1);
-Iq = zeros(MAX_data_count,1);
-Ia = zeros(MAX_data_count,1);
-Ib = zeros(MAX_data_count,1);
-for i=NOS/2+1:NOS_UR:MAX_data_count-NOS/2
-    for i2=1:1:UR
-        is = i - (NOS/2-1) + NOS_UR*(i2-1);
-        ie = is + (NOS_UR-1);
-        Ia(i) = sum(data(is:ie,1))/NOS_UR;
-        Ib(i) = sum(data(is:ie,2))/NOS_UR;
-        isth = is-1;
-        ieth = isth + NOS_UR;
-        theta = (data(isth,3)+data(ieth,3))/2;
-        
-        Ia(i) = (Ia(i)*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
-        Ib(i) = (Ib(i)*ADC_SCALE - ISENSE_OFFSET_A)*ISENSE_SCALE;
-        Ialpha = Ia(i);
-        Ibeta = 0.57735*Ia(i) + 1.1547*Ib(i);
-
-        sinth = sin(theta);
-        costh = cos(theta);
-
-        Id(i) = Id(i) +Ialpha.*costh + Ibeta.*sinth;
-        Iq(i) = Iq(i) + Ibeta.*costh - Ialpha.*sinth;
-    end
-    Id(i) = Id(i)/UR;
-    Iq(i) = Iq(i)/UR;
-end
-
-figure();
-stairs(Id(1:2:end));
-hold all
-stairs(Iq(1:2:end));
 
 %% check for vertical crossings
 load('saw.mat');
