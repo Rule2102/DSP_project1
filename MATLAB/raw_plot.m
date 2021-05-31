@@ -1,7 +1,7 @@
 figure();
 clear all
 NOS = 16;
-UR = 2;
+UR = 8;
 NOS_UR = NOS/UR;
 Ndat = 650;
 Nref = 401;
@@ -75,7 +75,7 @@ tdsp = 1:1:Ndat;
 tdsp = tdsp - Nref*ones(1,Ndat);
 tdsp= tdsp*100e-6/UR;
 t1 = -2*100e-6;
-t2 = 100e-6*10;
+t2 = 100e-6*20;
 
 Iqref = [7*ones(1,Nref),2*ones(1,Ndat-Nref)];
 
@@ -97,9 +97,13 @@ stairs(tdsp,Iqref);
 % Wcl = alpha*tf([1],[1 -1 alpha],100e-6/UR);
 
 % MS-DU
-alpha = 0.14;
-Wcl = tf([4*alpha 0 0],[4 -4 alpha 2*alpha alpha],100e-6/UR);
-title('MS-DU \alpha=%f','alpha');
+% alpha = 0.14;
+% Wcl = tf([4*alpha 0 0],[4 -4 alpha 2*alpha alpha],100e-6/UR);
+% title('MS-DU \alpha=%f','alpha');
+
+% MS-MU
+alpha = 0.04;
+Wcl = alpha*tf([1],[1 -1 alpha],100e-6/UR);
 
 
 opt = stepDataOptions('InputOffset',7,'StepAmplitude',-5);
