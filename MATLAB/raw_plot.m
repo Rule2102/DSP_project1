@@ -1,7 +1,7 @@
 figure();
 clear all
 NOS = 16;
-UR = 8;
+UR = 2;
 NOS_UR = NOS/UR;
 Ndat = 650;
 Nref = 401;
@@ -11,7 +11,7 @@ data = zeros(MAX_data_count,3);
 for i=1:1:3
 s=num2str(i);
 % f=strcat('E:\GIT\DSP_project1\MATLAB\dataOut_',s,'.dat');
-f=strcat('D:\struka\DSP\project1\results\31.5\MSMUMAF\dataOut_',s,'.dat');
+f=strcat('D:\struka\DSP\project1\results\31.5\MSDU\dataOut_',s,'.dat');
 filename = f;
 delimiter = ' ';
 startRox = 2;
@@ -68,29 +68,29 @@ for i=NOS/2+1:NOS_UR:MAX_data_count-NOS/2
     Iq(i) = Iq(i)/UR;
 end
 
-Id = Id(1:NOS_UR:end);
-Iq = Iq(1:NOS_UR:end);
+Id = Id(1:NOS_UR:end)';
+Iq = Iq(1:NOS_UR:end)';
 
 tdsp = 1:1:Ndat;
 tdsp = tdsp - (Nref+1)*ones(1,Ndat);
 tdsp= tdsp*100e-6/UR;
-t1 = -2*100e-6;
+t1 = -100e-6;
 t2 = 100e-6*10;
 
 Iqref = [7*ones(1,Nref),2*ones(1,Ndat-Nref)];
 
 figure();
-stairs(tdsp,Id);
+plot(tdsp*1e3,Id);
 hold all
-stairs(tdsp,Iq);
-stairs(tdsp,Iqref);
+plot(tdsp*1e3,Iq);
+stairs(tdsp*1e3,Iqref);
 
 % MS-MU-MAF
-alpha = 0.0636;
-num = [4*alpha 0 0 0 0 0 0 0 0];
-den = [4 -4 alpha 0 0 0 2*alpha 0 0 0 alpha];
-Wcl= tf(num,den,100e-6/UR);
-tit='MS-MU-MAF \alpha=0.0636';
+% alpha = 0.0636;
+% num = [4*alpha 0 0 0 0 0 0 0 0];
+% den = [4 -4 alpha 0 0 0 2*alpha 0 0 0 alpha];
+% Wcl= tf(num,den,100e-6/UR);
+% tit='MS-MU-MAF \alpha=0.0636';
 
 % DS-DU
 % alpha = 0.23;
@@ -98,9 +98,9 @@ tit='MS-MU-MAF \alpha=0.0636';
 % tit='DS-DU \alpha=0.23';
 
 % MS-DU
-% alpha = 0.14;
-% Wcl = tf([4*alpha 0 0],[4 -4 alpha 2*alpha alpha],100e-6/UR);
-% tit='MS-DU \alpha=0.14';
+alpha = 0.14;
+Wcl = tf([4*alpha 0 0],[4 -4 alpha 2*alpha alpha],100e-6/UR);
+tit='MS-DU \alpha=0.14';
 
 % MS-MU
 % alpha = 0.04;
@@ -109,11 +109,37 @@ tit='MS-MU-MAF \alpha=0.0636';
 
 
 opt = stepDataOptions('InputOffset',7,'StepAmplitude',-5);
-step(tdsp,Wcl,opt);
-% xlim([t1 t2]);
+ystep=step(tdsp,Wcl,opt);
+Iqan = [7*ones(1,Nref),ystep'];
+stairs(tdsp*1e3,Iqan);
+xlim([t1*1e3 t2*1e3]);
 legend('I_d^{HIL}','I_q^{HIL}','I_q^{ref}','I_q^{an}');
 ylim([-1 8]);
-title(tit);
+%title(tit);
+ylabel('Current [A]');
+xlabel('Time [ms]');
+grid on
+
+% save data to .mat file
+% N1 = Nref+t1/(100e-6/UR)+1;
+% N2 = Nref + t2/(100e-6/UR)+1;
+% t = tdsp(N1:N2);
+% Id = Id(N1:N2);
+% Iq = Iq(N1:N2);
+% Iqref = Iqref(N1:N2);
+% Iqan= Iqan(N1:N2);
+% 
+% save('MSDUstepHIL','t','Id','Iq','Iqref','Iqan');
+
+%%
+clear all
+load('MSDUstepHIL')
+figure(); plot(t,Id)
+hold all; plot(t,Iq);
+stairs(t,Iqref);
+stairs(t,Iqan);
+grid on
+ylim([-1 8]);
 %% averaging old
 data1(:,1) = data(:,1);
 data_avg = zeros(MAX_data_count);

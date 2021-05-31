@@ -29,8 +29,8 @@ Tsim = gcd(gcd(Ttbclk*1e9,Tadc*1e9),Ts*1e9)/1e9;
 
 % scheduling
 Ts_cmp = Ts;
-Ts_exe = Ts; %[Ts Ts-1000*Tsim]; %[Ts Ts-1230*Tsim];
-Tadc_exe = Tadc; %[Tadc mod(Ts-1000*Tsim,Tadc)]; %[Tadc mod(Ts-1230*Tsim,Tadc)];
+Ts_exe = Ts; %[Ts Ts-1230*Tsim];
+Tadc_exe = Tadc; %[Tadc mod(Ts-1230*Tsim,Tadc)];
 
 % inverter parameters
 E = 520;                   % available voltage
@@ -40,7 +40,7 @@ DEADTIME = 100;            % deadtime in multiples of Tpwm
 R = 0.47;                   % phase resistance
 L = 3.4e-3;                 % phase inductance
 taus = L/R;                 % phase time constant
-f_ref = 270;                % electrical frequency
+f_ref = 50;                % electrical frequency
 we = 2*pi*f_ref;            % angular frequency
 p = 3;                      % number of machine pole pairs
 wm = we/p;                  % rotor mechanical speed
@@ -50,7 +50,7 @@ ph = pi;                    % phase of the load when modeled with 3phase sine so
 
 % IREG parameters
 % will be automatically adjusted if ur=8 (below)
-alpha = 0.25; %0.17; %0.38; %0.350;                % gain
+alpha = 0.25; %0.38; %0.350;                % gain
 K1 = alpha*L/Ts;            % constant for IREG
 K2 = exp(-Ts/taus);         % parameter that desxcribes system dynamics
 Udq_max = E/2;              % saturation level in dq (for IREG)
@@ -96,11 +96,11 @@ end
 
 % frequency response analysis settings
 fmax = 1/Tpwm/2;
-f_test = 400:50:fmax;
+f_test = 400:200:fmax;
 z=tf('z',Ts);
 W1 = alpha/(z^2-z+alpha);
-tfra = 0.33; % required experiment length based on f_test (see FRA block)
-%tend = tref + tfra;
+tfra = 1.5; %0.33; % required experiment length based on f_test (see FRA block)
+tend = tref + tfra;
 
 % tuning PI IREG
 wc = ur/2*3.01e3;
