@@ -100,7 +100,7 @@ The target is to show that the MS-MU-PWM control with feedback averaging can off
 
 \begin{figure*}[t!]
     \centerline{\includegraphics[width=0.8\linewidth]{figures/schematic.eps}}
-    \caption{Multisampled control loop of a three-phase inverter.}
+    \caption{Multisampled control loop of a three-phase current-controlled inverter. The feedback acquisition and filtering is explained in subsection III A.}
     \label{fig:MSControl}
 \end{figure*}
 
@@ -239,7 +239,7 @@ Fig. \ref{fig:timings} is given for $N_c = 4$ and $N_s = 16$. At instant $kT_c$,
 
 \begin{figure}[t!]
     \centerline{\includegraphics[width=0.95\linewidth]{figures/timing_diagram.eps}}
-    \caption{nothing yet}
+    \caption{Timing illustration for signal acquisition, filtering, and modulating waveform update. The position of the selector $MAF?$ determines whether the feedback currents are obtained without filtering or using one switching period averaging. The figure is given for $N_s = 16$ and $N_c = 4$.}
     \label{fig:timings}
 \end{figure}
 
@@ -247,6 +247,7 @@ As shown in Fig. \ref{fig:timings}, the selector $MAF?$ chooses whether the feed
 
 In cases when the MAF is used, the goal is to obtain a true average value of $dq$ currents over one switching period. The $\alpha \beta$ currents are first averaged over $T_c$, using $\frac{N_s}{N_c}$ latest current samples, to obtain $i_{\alpha \beta}^{T_c} (kT_c)$. This average current is then transformed to $dq$ frame to obtain $i_{dq}^{T_c} [k]$. The transformation is performed using the angle $\Theta_{dq}^{T_c}(kT_c)$, calculated as an average of two latest angle values. If $N_c\geq 2$, currents are further averaged using $N_c$ values of $i_{dq}^{T_c}$ to obtain the average value during the previous switching period $i_{dq}^{T_{pwm}}[k]$.
 For this filtering strategy, in cases when $N_s>N_c = 2$, we obtain MS-DU control, where the filtering is used to obtain a true-average value at the expense of reduced system dynamics []. In cases when $N_s \geq N_c > 2$, we obtain MS-MU-PWM control with switching ripple being filtered from the feedback signal. The factor $N_s$ is chosen to be as high as allowed by the maximal ADC sampling rate.
+Note that independently of whether the MAF is used or not, transformation of the reference voltage from $dq$ to $\alpha \beta$ frame, shown in Fig. \ref{fig:MSControl}, is always performed with the latest value of the angle $\Theta_{dq}(kT_c)$.
 
 \subsection{Total time delay in DSP application}
 
@@ -348,23 +349,14 @@ For each of the tested control strategies, simulations in MATLAB/Simulink were p
 The sweep frequency response analysis (SFRA) is performed to verify open-loop models from \eqref{eq:OpenLoop} and \eqref{eq:OpenLoop_MAF}.
 The current controller is modeled in discrete domain whereas all relevant delays are taken into account. A detailed model of DPWM, which resembles the action qualifier module realization within the DSP TI f28379d EPWM peripheral, is implemented. The load is modeled in continuous time domain using the Simulink $abc$ frame machine model. The simulations are performed for the BLDC motor described in Table X. For the proposed MS-MU controller, the multi-update factor $N_c$ is set to eight, which was limited by the total execution time of the FOC algorithm, implemented in the DSP TI f28379d for later experimental validation. The multisampling factor $N_s$ is set equal to $16$. Additionally, anti-aliasing analog low-pass filter with time-constant of $\tau_{fil} = 5 \mu s$) is used. Dead-time is set to $1 \%$ of the switching period. The motor speed is set to $xxx$ rpm, which results in the output frequency $f_o = xxx$ Hz.
 
-For the measured axis response, the perturbation magnitude is set to $0.1 A$, while for the other axis the controller input is set to 0. The perturbation frequencies are an arithmetic sequence from $400 Hz$ to $5000 Hz$, with a step of $50 Hz$. The q-axis open loop SFRA results for the three tested methods are shown in Fig. \ref{fig:MSMUmaf_olfra}-\ref{fig:MSDU_olfra}. The simulated results are compared to the analytics and it can be seen that a very good match is achieved for all compared strategies.
+For the measured axis response, the perturbation magnitude is set to $0.1 A$, while for the other axis the controller input is set to 0. The perturbation frequencies are an arithmetic sequence from $400 Hz$ to $5000 Hz$, with a step of $50 Hz$. The q-axis open loop SFRA results for the three tested methods are shown in Fig. \ref{fig:MSMUmaf_olfra}-\ref{fig:MSDU_olfra}. The simulated results are compared to the analytics and it can be seen that a very good match is achieved.
 
 \begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/MSMUmaf_olfra.eps}}
-    \caption{Simulated open loop FRA results for MS-MU + MAF controller.}
+    \centerline{\includegraphics[width=1\linewidth]{figures/ivan figs/MSMU_OL_SFRA.png}}
+    \caption{Simulated open loop SFRA results for MS-MU control strategy with $\alpha = 0.0636$ and the MAF in the feedback. The results are compared with the analytical frequency response of $W_{ol,2}(z)$ }
     \label{fig:MSMUmaf_olfra} 
 \end{figure}
-\begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/DSDU_olfra.eps}}
-    \caption{Simulated open loop FRA results for DS-DU controller.}
-    \label{fig:DSDU_olfra} 
-\end{figure}
-\begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/MSDU_olfra.eps}}
-    \caption{Simulated open loop FRA results for MS-DU controller.}
-    \label{fig:MSDU_olfra} 
-\end{figure}
+
 
 \section{Experimental verification}
 
@@ -375,21 +367,20 @@ For each of the control strategies analyzed in Section IV, HIL simulations were 
 
 
 
-
 \begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/MSMUmaf_step.eps}}
-    \caption{Simulated step response for MS-MU + MAF controller.}
-    \label{fig:MSMUmaf_step} 
-\end{figure}
-\begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/DSDU_step.eps}}
-    \caption{Simulated step response for DS-DU controller.}
+    \centerline{\includegraphics[width=1\linewidth]{figures/ivan figs/DSDUstepHIL.png}}
+    \caption{Verification of a $q$-axis step response for MS-MU control strategy with $\alpha = 0.23$ and the MAF in the feedback. The results are compared with the analytical step response of $W_{cl,2}(z)$. The $d$-axis current is shown to demonstrate decoupling capabilities.}
     \label{fig:DSDU_step} 
 \end{figure}
 \begin{figure}[t!]
-    \centerline{\includegraphics[width=0.95\linewidth]{figures/MSDU_step.eps}}
-    \caption{Simulated step response for MS-DU controller.}
+    \centerline{\includegraphics[width=1\linewidth]{figures/ivan figs/MSDUstepHIL.png}}
+    \caption{Verification of a $q$-axis step response for MS-MU control strategy with $\alpha = 0.14$ and the MAF in the feedback. The results are compared with the analytical step response of $W_{cl,2}(z)$. The $d$-axis current is shown to demonstrate decoupling capabilities.}
     \label{fig:MSDU_step} 
+\end{figure}
+\begin{figure}[t!]
+    \centerline{\includegraphics[width=1\linewidth]{figures/ivan figs/MSMUstepHIL.png}}
+    \caption{Verification of a $q$-axis step response for MS-MU control strategy with $\alpha = 0.0636$ and the MAF in the feedback. The results are compared with the analytical step response of $W_{cl,2}(z)$. The $d$-axis current is shown to demonstrate decoupling capabilities.}
+    \label{fig:MSMUmaf_step} 
 \end{figure}
 
 

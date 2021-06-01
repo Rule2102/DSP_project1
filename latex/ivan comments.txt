@@ -1,0 +1,3 @@
+1.) Dodati u exp. section sta je analiticki odziv - znaci Wcl = Direct_path / (1+L)
+2.) Dovoljno je prikazati FRA za MS-MU slucaj, jer to je ono sto mi doprinosimo, ovo prethodno je poznata stvar. To ce nam taman
+skratiti rad jer je limit za konferencije 6 strana.
