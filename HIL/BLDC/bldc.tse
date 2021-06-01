@@ -2,7 +2,7 @@ version = 4.2
 
 //
 // Saved by sw version: 2021.2
-// Save timestamp: 28-May-2021 @ 05:42:45 PM
+// Save timestamp: 01-Jun-2021 @ 08:42:19 AM
 //
 
 model "bldc" {
@@ -120,6 +120,41 @@ model "bldc" {
             size = 64, 32
         ]
 
+        component src_constant Constant1 {
+            execution_rate = "Tsp"
+            value = "wm_max/10"
+        }
+        [
+            position = 8888, 8568
+        ]
+
+        component gen_integrator Integrator1 {
+            limit_lower = "0"
+            limit_output = "True"
+            limit_upper = "wm_max"
+        }
+        [
+            position = 9128, 8528
+        ]
+
+        component src_scada_input "SCADA Input1" {
+            execution_rate = "Tsp"
+            format = "uint"
+            max = "1"
+            min = "0"
+            signal_type = "uint"
+            unit = ""
+        }
+        [
+            position = 8768, 8520
+        ]
+
+        component gen_logic_op "Logical operator1" {
+        }
+        [
+            position = 9040, 8528
+        ]
+
         connect Vs1.p_node "Three Phase Inverter1.pos_out" as Connection37
         connect Vs1.n_node "Three Phase Inverter1.neg_out" as Connection38
         connect "Three Phase Inverter1.a_in" Ia1.p_node as Connection39
@@ -131,9 +166,61 @@ model "bldc" {
             breakpoints = 8848, 8912; 8848, 8880
         ]
         connect Ia3.n_node BLDC.c_in as Connection44
+        connect "SCADA Input1.out" "Logical operator1.in" as Connection47
+        connect Constant1.out "Logical operator1.in1" as Connection48
+        connect "Logical operator1.out" Integrator1.in as Connection49
+    }
+
+    logically_deleted {
+        "Constant1"
+        "Integrator1"
+        "SCADA Input1"
+        "Logical operator1"
+        "Connection47"
+        "Connection48"
+        "Connection49"
     }
 
     default {
+        gen_integrator {
+            show_reset = "none"
+            reset_type = "asynchronous"
+            show_init_condition = "internal"
+            init_value = "0"
+            limit_output = "False"
+            limit_upper = "inf"
+            limit_lower = "-inf"
+            show_state = "False"
+            state_port_type = "inherit"
+            execution_rate = "inherit"
+        }
+
+        gen_logic_op {
+            operator = "AND"
+            inputs = "2"
+            execution_rate = "inherit"
+        }
+
+        src_constant {
+            value = "1"
+            signal_type = "real"
+            execution_rate = "100e-6"
+            _tunable = "False"
+        }
+
+        src_scada_input {
+            addr = "0"
+            format = "real"
+            override_signal_name = "False"
+            signal_name = ""
+            signal_type = "real"
+            min = "-1e6"
+            max = "1e6"
+            def_value = "0"
+            unit = " "
+            execution_rate = "100e-6"
+        }
+
         src_voltage {
             sig_input = "False"
             type = "signal generator"
@@ -5501,6 +5588,7 @@ model "bldc" {
         import math
         pi = 3.141592653589793;
         p = 3;
+        wm_max = 2*pi*900/3;
         
     ENDCODE
 }

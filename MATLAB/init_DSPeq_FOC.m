@@ -2,7 +2,7 @@
 clear all
 clc
 
-ur = 8;             % update rate
+ur = 2;             % update rate
 OVERSAMPLING = 1;   % logic variable to determine with/without oversampling
 
 Id_ref = 0;                 % reference current in d axis 
@@ -40,7 +40,7 @@ DEADTIME = 100;            % deadtime in multiples of Tpwm
 R = 0.47;                   % phase resistance
 L = 3.4e-3;                 % phase inductance
 taus = L/R;                 % phase time constant
-f_ref = 50;                % electrical frequency
+f_ref = 270;                % electrical frequency
 we = 2*pi*f_ref;            % angular frequency
 p = 3;                      % number of machine pole pairs
 wm = we/p;                  % rotor mechanical speed
@@ -50,7 +50,7 @@ ph = pi;                    % phase of the load when modeled with 3phase sine so
 
 % IREG parameters
 % will be automatically adjusted if ur=8 (below)
-alpha = 0.25; %0.38; %0.350;                % gain
+alpha = 0.14; %0.38; %0.350;                % gain
 K1 = alpha*L/Ts;            % constant for IREG
 K2 = exp(-Ts/taus);         % parameter that desxcribes system dynamics
 Udq_max = E/2;              % saturation level in dq (for IREG)
@@ -96,7 +96,7 @@ end
 
 % frequency response analysis settings
 fmax = 1/Tpwm/2;
-f_test = 400:200:fmax;
+f_test = 400:230:fmax;
 z=tf('z',Ts);
 W1 = alpha/(z^2-z+alpha);
 tfra = 1.5; %0.33; % required experiment length based on f_test (see FRA block)

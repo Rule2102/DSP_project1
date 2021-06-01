@@ -41,7 +41,7 @@
                 <constant_torque>0.0</constant_torque>
                 <linear_torque>0.0</linear_torque>
                 <square_torque>0.0</square_torque>
-                <constant_torque_type>0</constant_torque_type>
+                <constant_torque_type>1</constant_torque_type>
                 <external_torque_type>0</external_torque_type>
                 <load_source>0</load_source>
                 <load_type>1</load_type>
