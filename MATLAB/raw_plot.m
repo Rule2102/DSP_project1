@@ -419,6 +419,27 @@ w = logspace(-2,3,101);
 sysestim = frd(H,w);
 save('test.mat','sysestim');
 
+%%
+
+data = HIL2;
+t = data(:,1);
+iq = data(:,2);
+w = data(:,3);
+N = length(data1);
+iq_avg=zeros(N,1);
+Nmaf = 100;
+for i=Nmaf:1:N-Nmaf
+iq_avg(i,1) = sum(iq(i-Nmaf+1:1:i+Nmaf,1))/(2*Nmaf);
+%iq_avg2(i,1) = sum(iq(i-2*Nmaf:1:i))/(2*Nmaf);
+end
+figure(); stairs(t,iq)
+hold all; stairs(t,iq_avg)
+stairs(t,w/100);
+
+legend('I_q','I_q^{maf}','wm/100')
+title('MS-MU-MAF')
+
+
 
 
 

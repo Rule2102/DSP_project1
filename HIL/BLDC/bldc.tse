@@ -2,7 +2,7 @@ version = 4.2
 
 //
 // Saved by sw version: 2021.2
-// Save timestamp: 01-Jun-2021 @ 08:42:19 AM
+// Save timestamp: 02-Jun-2021 @ 12:06:22 PM
 //
 
 model "bldc" {
@@ -53,14 +53,15 @@ model "bldc" {
             Psi_pm = "0.132213"
             Rs = "0.47"
             enc_ppr = "1000"
-            execution_rate = "0.5e-6"
+            execution_rate = "Tsp"
             ext_mdl_load_type = "speed"
+            load_src = "Model"
             pms = "p"
             theta_ab = "0"
         }
         [
             position = 9144, 8784
-            size = 160, 152
+            size = 160, 160
         ]
 
         component src_voltage Vs1 {
@@ -122,16 +123,19 @@ model "bldc" {
 
         component src_constant Constant1 {
             execution_rate = "Tsp"
-            value = "wm_max/10"
+            signal_type = "uint"
+            value = "wm_max/800e-3"
         }
         [
-            position = 8888, 8568
+            position = 8600, 8456
         ]
 
         component gen_integrator Integrator1 {
+            execution_rate = "Tsp"
             limit_lower = "0"
             limit_output = "True"
             limit_upper = "wm_max"
+            show_reset = "falling"
         }
         [
             position = 9128, 8528
@@ -146,13 +150,36 @@ model "bldc" {
             unit = ""
         }
         [
-            position = 8768, 8520
+            position = 8440, 8448
         ]
 
-        component gen_logic_op "Logical operator1" {
+        component gen_digital_probe "Digital Probe1" {
         }
         [
-            position = 9040, 8528
+            position = 8576, 8360
+        ]
+
+        component sys_signal_switch "Signal switch1" {
+            criterion = "ctrl != threshold"
+            execution_rate = "Tsp"
+        }
+        [
+            position = 8840, 8472
+        ]
+
+        junction Junction2 sp
+        [
+            position = 8520, 8440
+        ]
+
+        junction Junction3 sp
+        [
+            position = 8528, 8440
+        ]
+
+        junction Junction4 sp
+        [
+            position = 8736, 8432
         ]
 
         connect Vs1.p_node "Three Phase Inverter1.pos_out" as Connection37
@@ -166,22 +193,31 @@ model "bldc" {
             breakpoints = 8848, 8912; 8848, 8880
         ]
         connect Ia3.n_node BLDC.c_in as Connection44
-        connect "SCADA Input1.out" "Logical operator1.in" as Connection47
-        connect Constant1.out "Logical operator1.in1" as Connection48
-        connect "Logical operator1.out" Integrator1.in as Connection49
-    }
-
-    logically_deleted {
-        "Constant1"
-        "Integrator1"
-        "SCADA Input1"
-        "Logical operator1"
-        "Connection47"
-        "Connection48"
-        "Connection49"
+        connect Integrator1.out BLDC.load_in as Connection50
+        connect Integrator1.reset Junction2 as Connection54
+        connect "Digital Probe1.in" Junction2 as Connection56
+        connect Junction2 Junction3 as Connection59
+        connect Junction3 "SCADA Input1.out" as Connection60
+        [
+            breakpoints = 8520, 8440; 8520, 8448
+        ]
+        connect Constant1.out "Signal switch1.in" as Connection62
+        connect "Signal switch1.in2" Junction4 as Connection63
+        connect Junction4 Junction3 as Connection64
+        connect "Signal switch1.in1" Junction4 as Connection65
+        connect "Signal switch1.out" Integrator1.in as Connection66
     }
 
     default {
+        gen_digital_probe {
+            override_signal_name = "False"
+            signal_name = ""
+            streaming_en = "False"
+            addr = "0"
+            streaming_er_idx = "0"
+            execution_rate = "inherit"
+        }
+
         gen_integrator {
             show_reset = "none"
             reset_type = "asynchronous"
@@ -192,12 +228,6 @@ model "bldc" {
             limit_lower = "-inf"
             show_state = "False"
             state_port_type = "inherit"
-            execution_rate = "inherit"
-        }
-
-        gen_logic_op {
-            operator = "AND"
-            inputs = "2"
             execution_rate = "inherit"
         }
 
@@ -241,6 +271,12 @@ model "bldc" {
             init_rms_value = "0.0"
             init_frequency = "50.0"
             init_phase = "0.0"
+        }
+
+        sys_signal_switch {
+            criterion = "ctrl >= threshold"
+            threshold = "0"
+            execution_rate = "inherit"
         }
 
         "core/Current Measurement" {
@@ -5588,7 +5624,7 @@ model "bldc" {
         import math
         pi = 3.141592653589793;
         p = 3;
-        wm_max = 2*pi*900/3;
-        
+        wm_max = 2*pi*270/3;
+        Tsp = 2e-6;
     ENDCODE
 }

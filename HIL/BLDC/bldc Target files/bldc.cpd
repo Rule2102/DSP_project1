@@ -649,7 +649,7 @@
     <machines>
         <cell>
             <name>BLDC</name>
-            <load_ctrl>True</load_ctrl>
+            <load_ctrl>False</load_ctrl>
             <ext_mdl_load_type>speed</ext_mdl_load_type>
             <site>0</site>
             <init>
@@ -703,13 +703,47 @@
 <!-- ******* SP DATA ******** -->
 
     <model_properties>
-        <execution_rates>[None]</execution_rates>
+        <execution_rates>[[[2e-06]]]</execution_rates>
     </model_properties>
 
 
+    <do_var_list>
+        <cell>
+            <name>Digital Probe1</name>
+            <address>2048</address>
+        </cell>
+
+    </do_var_list>
+
+    <tunable_params>
+        <tunable_param>
+            <name>SCADA Input1</name>
+            <addr>[1426063616]</addr>
+            <min>0.0</min>
+            <max>1.0</max>
+            <def_value>0.0</def_value>
+            <unit></unit>
+            <widget_type>int</widget_type>
+            <format>unsigned_int</format>
+            <size>1</size>
+            <param_type>scada input</param_type>
+            <cpu_type>user_sp_cpu</cpu_type>
+            <cpu_idx>0</cpu_idx>
+        </tunable_param>
+    </tunable_params>
 
 
+    <dsp_monitors>
+        <monitor>
+            <type>user</type>
+            <cpu_idx>0</cpu_idx>
+            <execution_rates>[2e-06]</execution_rates>
+            <execution_rate_labels>['ER0 (2e-06)']</execution_rate_labels>
+            <timer_counters>[319]</timer_counters>
 
+            
+        </monitor>
+    </dsp_monitors>
 
     <streaming>
 

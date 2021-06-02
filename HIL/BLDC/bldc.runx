@@ -34,7 +34,7 @@
             <machine>
                 <name>BLDC</name>
                 <device>0</device>
-                <control_enabled>True</control_enabled>
+                <control_enabled>False</control_enabled>
                 <ext_model_load_type>1</ext_model_load_type>
                 <site>0</site>
                 <init_values>[(61, 0.132213)]</init_values>
@@ -45,7 +45,7 @@
                 <external_torque_type>0</external_torque_type>
                 <load_source>0</load_source>
                 <load_type>1</load_type>
-                <machine_speed>565.4867</machine_speed>
+                <machine_speed>0.0</machine_speed>
                 <initial_speed>0.0</initial_speed>
                 <initial_angle>0.0</initial_angle>
                 <initial_encoder_offset>0.0</initial_encoder_offset>
@@ -736,6 +736,11 @@
         <batteries>
         </batteries>
         <scada_inputs>
+            <scada_input>
+                <name>SCADA Input1</name>
+                <device>0</device>
+                <value>1</value>
+            </scada_input>
         </scada_inputs>
         <tunable_parameters>
         </tunable_parameters>

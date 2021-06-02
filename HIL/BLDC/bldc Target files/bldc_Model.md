@@ -53,7 +53,7 @@ rtds_write 0x00800012 0.3333333333333333
 rtds_write 0x00800005 0x00000000
 rtds_write 0x00800020 0x00000000
 rtds_write 0x0080001E 0.0
-rtds_write 0x0080001F 3.0
+rtds_write 0x0080001F 1.0
 rtds_write 0x00800013 0.006283185307179587
 rtds_write 0x00800014 1000.0
 rtds_write 0x00800015 0x000003E8
@@ -469,10 +469,10 @@ REM Setting the capture sample step...
 REM post SP Init calculation...
 rtds_write  
 rtds_write 0x00000041 0x000011C1
-rtds_write 0x00000005 0x00000000
+rtds_write 0x00000005 0x00000002
 rtds_write 0x00000043 0x00002710
 rtds_write 0x00000042 0x000001F3
-rtds_write 0x0000000A 0x00000000
+rtds_write 0x0000000A 0x00000001
 
 
 REM CoProcessors uBlaze_1, uBlaze_2 and uBlaze_3 configuration
@@ -493,6 +493,9 @@ glbl_write 0xFFFFFF1C 0xe1a0f002
 glbl_write 0x00000000 0xe3e0f0ff
 glbl_write 0xf8000244 0x2
 glbl_write 0xf8000244 0x22
+glbl_write 0xf8000244 0x20
+glbl_write 0xf8000244 0x0
+glbl_file_write 0xfffc0000 user_sp_cpu_0_imem.bin
 
 
 REM special case for HIL402 for eth ve and SV
@@ -513,6 +516,7 @@ sys_command 0x1
 REM enable ETH0 Intr on Core0 CPU
 glbl_write 0xF8F01834 0x01010101
 glbl_write 0x40800000 0x7
+glbl_write 0xfffffff0 0xfffc0000
 
 
 REM Restart counter for collected Linux OS communication apps
