@@ -221,4 +221,50 @@
   doi     = {10.1109/TIE.2020.2988234},
 }
 
+@Article{Restrepo2019,
+  author  = {C. {Restrepo} and T. {Konjedic} and F. {Flores-Bahamonde} and E. {Vidal-Idiarte} and J. {Calvente} and R. {Giral}},
+  journal = {IEEE Journal of Emerging and Selected Topics in Power Electronics},
+  title   = {Multisampled Digital Average Current Controls of the Versatile Buck–Boost Converter},
+  year    = {2019},
+  number  = {2},
+  pages   = {879-890},
+  volume  = {7},
+  doi     = {10.1109/JESTPE.2018.2888980},
+}
+
+@InProceedings{Ito2021,
+  author    = {K. {Ito} and R. {Suzuki} and K. {Yoshimoto} and T. {Yokoyama}},
+  booktitle = {2021 IEEE International Conference on Mechatronics (ICM)},
+  title     = {A Study of Multisampling Deadbeat Control for Low Carrier Frequency PMSM Drive System Used in EVs and HEVs},
+  year      = {2021},
+  pages     = {1-6},
+  doi       = {10.1109/ICM46511.2021.9385637},
+}
+
+@Article{He2021,
+  author  = {S. {He} and D. {Zhou} and X. {Wang} and F. {Blaabjerg}},
+  journal = {IEEE Journal of Emerging and Selected Topics in Power Electronics},
+  title   = {Aliasing Suppression of Multi-sampled Current Controlled LCL-Filtered Inverters},
+  year    = {2021},
+  pages   = {1-1},
+  doi     = {10.1109/JESTPE.2021.3050886},
+}
+
+@Article{Buso2015,
+  author  = {Buso , Simone and Mattavelli , Paolo},
+  journal = {Synthesis Lectures on Power Electronics},
+  title   = {Digital Control in Power Electronics, 2nd Edition},
+  year    = {Morgan \& Claypool Publishers, USA, 2015},
+}
+
+@Article{Buso2016,
+  author  = {S. {Buso} and T. {Caldognetto} and D. I. {Brandao}},
+  journal = {IEEE Transactions on Industry Applications},
+  title   = {Dead-Beat Current Controller for Voltage-Source Converters With Improved Large-Signal Response},
+  year    = {2016},
+  number  = {2},
+  pages   = {1588-1596},
+  volume  = {52},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}

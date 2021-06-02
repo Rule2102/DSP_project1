@@ -1,4 +1,4 @@
-\documentclass[journal]{IEEEtran}
+\documentclass[conference]{IEEEtran}
 \interdisplaylinepenalty=2500
 
 \usepackage{array}
@@ -64,37 +64,36 @@
 
 \title{Analysis and DSP Implementation of Multisampled Three-Phase Current Controllers}
 
-
 % make the title area
 \maketitle
 
 \begin{abstract}
-nothing yet
+This paper presents a method for current control of three-phase systems, realized using the multisampled pulse-width modulator (MS-PWM). The feedback signal is highly oversampled and filtered to obtain its average value with high noise suppression. Independently, the control update rate is chosen to be higher than double the switching frequency, which reduces delays due to calculation and digital modulation. In this way, the proposed strategy offers improved dynamic response compared to standard double-update PWM, while in the same it offers a high quality feedback signal, robust to noise sampling and aliasing.
+The analysis is verified using a standard digital signal processor TI f28379d and a Typhoon HIL 402 hardware-in-the-loop system that emulates an electric drive with a high-speed BLDC motor.
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-nothing yet
+Current control, Digital pulse-width modulators (DPWM), Multisampled pulse-width modulators (MS-PWM)
 \end{IEEEkeywords}
 
 
 \IEEEpeerreviewmaketitle
 
 \section{Introduction}
-\IEEEPARstart{F}{ield} oriented control (FOC) in electrical drives and voltage oriented control (VOC) in grid-connected converters is a well-established strategy for the control of high performance three-phase electrical systems \cite{holmes2012}. An essential part of this concept is the inner current control loop, which regulates the synchronous rotating frame (SRF) currents \cite{holmes2009}. A prerequisite for the proper operation of the outer control loops is a precise and rapid current controller ~\cite{yepes2014,choi1998}. The SRF controller must provide a decoupling function between d and q axis currents []. This is particularly challenging for high-speed or high pole-pair electrical drives, which require robustness at very high output frequencies ~\cite{choi1998,hoffmann2016,yim2009}. 
+\IEEEPARstart{F}{ield} oriented control (FOC) in electrical drives and voltage oriented control (VOC) in grid-connected converters is a well-established strategy for the control of high performance three-phase electrical systems \cite{holmes2012}. An essential part of this concept is the inner current control loop, which regulates the synchronous rotating frame (SRF) currents \cite{holmes2012}. The SRF controller must provide a decoupling function between d and q axis currents. This is particularly challenging for high-speed or high pole-pair electrical drives, which operate at very high output frequencies ~\cite{yim2009,Petric2021a}. 
+Regarding controller structures, SRF proportional-integral (PI) controllers are most frequently used due to their simplicity and satisfactory performance for the majority of the industrial requirements ~\cite{yim2009,yepes2014}. However, their transient decoupling capability is rather limited, especially at high output frequencies \cite{lorenz2010}. Achieving a robust high-frequency operation and high bandwidths has driven the design of current controllers directly in discrete-time domain ~\cite{lorenz2010,vuksa2016,commentsHoffmann}. Belonging to this group are the dead-beat current controllers that offer a very fast transient response but at the cost of considerable performance degradation in the presence of variable parameters and measurement errors, which is often the case in control of electric drives ~\cite{rovere2018,xu2019,Ito2021}. A more robust operation is achieved with the use of the discrete internal model controller (IMC) design ~\cite{lorenz2010,vuksa2016,commentsHoffmann}. This strategy has proven to offer high closed loop bandwidths at very high output frequencies ~\cite{commentsHoffmann,vuksa2016,Petric2021a}.
 
-Due to simplicity and added flexibility, current controllers are nowadays mostly realized in digital form [Buso Matta]. The demerit of digital control systems is the introduction of delays due to the analog-to-digital conversion (ADC), algorithm execution time, and digital pulse width modulation (DPWM) [Buso Matta]. These delays limit the achievable bandwidths and impair the decoupling function of SRF current controllers. 
-In most state-of-the-art applications, double-sampled double-update (DS-DU-PWM) control strategy is used, where the inductor currents are sampled twice per PWM period, with acquisition instants being synchronized so that average current values are obtained []. In industrial applications, feedback signal is often strongly corrupted by various noise sources, which requires additional filtering []. This is well-achieved by oversampling the signal and then averaging it over the PWM period. In this way, true-average is obtained with additional high noise suppression. The filtered signal is then decimated so that the control action is executed with double-update rate. This kind of strategy, implemented in \cite{vuksa2016}, is labeled as multi-sampled double-update (MS-DU-PWM) control. The MS-DU-PWM strategy results in a high quality feedback signal, but with a highly negative impact on the system dynamics. Achieving high bandwidths, with the additional delay due to the averaging, requires modification of the controller structure to compensate the phase lag[].
+The demerit of digital control systems is the introduction of delays due to the analog-to-digital conversion (ADC), algorithm execution time, and digital pulse width modulation (DPWM) \cite{Buso2015}. These delays limit the achievable bandwidths and impair the decoupling function of SRF current controllers. 
+In most state-of-the-art applications, double-sampled double-update (DS-DU-PWM) control strategy is used, where the feedback is sampled twice per PWM period, with acquisition instants being synchronized so that the average value is obtained \cite{Buso2015}. In industrial applications, the feedback signal is often strongly corrupted by various noise sources, which requires additional filtering \cite{vuksa2016}. Furthermore, sampling of the average value is compromised by system delays, which causes aliasing problems \cite{Buso2015}.
+Improved error-free feedback acquisition is achieved by oversampling the signal and then averaging it over the PWM period. In this way, the average value is obtained with additional high noise suppression \cite{vuksa2016,Petric2020}. The filtered signal is then decimated so that the control action is executed with the double-update rate. This kind of strategy, implemented in \cite{vuksa2016}, is here labeled as multi-sampled double-update (MS-DU-PWM) control. The MS-DU-PWM strategy results in a high quality feedback signal, however, it yields a negative impact on the system dynamics. Achieving high bandwidths with the one switching period averaging requires modification of the controller structure, to compensate the introduced phase lag \cite{vuksa2016}.
+The delay-related limitations of digital control have inspired investigation of the multisampled PWM (MS-PWM) control, with purpose of enabling analog-like control bandwidths in digital systems. The multisampled multi-update (MS-MU-PWM) approach relies on acquiring the control variables and updating the modulating waveform multiple times per switching period ~\cite{corradini2018,corradini_analysis,rovere2018,Restrepo2019,Petric2020,Petric2021,Ito2021,He2021}. The concept of MS-MU-PWM digital control offers a significant delay reduction and is therefore a promising solution for breaking the bandwidth limitations of digital control systems \cite{Buso2016}. Besides the small-signal improvement, MS-MU-PWM also provides a nonlinear advantage as the modulating waveform can be updated multiple times per switching period. This yields a lower response delay to large-signal perturbations \cite{corradini_analysis}. On the other hand, MS-MU-PWM introduces a set of nonlinearities, mainly due to the modulating waveform discontinuity as the switching ripple is introduced in the feedback ~\cite{corradini2018,Petric2021}. For this reason, most of the reported MS-MU-PWM methods include digital filtering, such as moving average filters (MAFs), to completely remove the switching ripple ~\cite{Restrepo2019,He2021}.
 
-The delay-related limitations have inspired investigating multisampled PWM control, with purpose of enabling analog-like control bandwidths in digital systems. The multisampled multi-update (MS-MU-PWM) approach relies on acquiring the control variables and updating the modulating waveform multiple times per switching period \cite{corradini_analysis}. The concept of MS-MU-PWM digital control offers significant reduction of digital delays and is therefore a promising solution for breaking the bandwidth limitations \cite{corradini2018} [MS in electric drives]. Besides small-signal improvement, MS-MU-PWM also provides a nonlinear advantage as the modulating waveform can be updated multiple times per switching period. This yields a lower response delay to large-signal perturbations [active filtering]. On the other hand, MS-MU-PWM introduces a set of nonlinearities due to sampling of the switching ripple, which is why some digital filtering should always be implemented ~\cite{petric2020,petric2021}. The impact of nonlinearities is strongly reduced by completely filtering the switching ripple, for example using moving average filters (MAFs).
-
-Regarding controller structures, SRF PI controllers are the most frequently encountered current control strategies for three-phase $RL$ loads due to their simplicity and satisfactory performance for the majority of the industry requirements ~\cite{rowan1986,bae2003,yepes2014}. With a proper parameter setting procedure, high bandwidths can be achieved ~\cite{yepes2014,holmes2009}. Nevertheless, their transient decoupling capability is rather limited, especially at high output frequencies \cite{lorenz2000}. Achieving robust operation with high bandwidths has driven the design of high-performance current controllers directly in discrete-time domain \cite{bae2003} \cite{lorenz2010}. The dead-beat current controllers offer very fast transient response but at the cost of considerable performance degradation in the presence of measurement errors and parameter mismatch, which is often the case in control of electric drives ~\cite{malesani1999,xu2019,rovere2018}. More robust operation is achieved with the use of the discrete internal model controller (IMC) design \cite{lorenz2010}. This strategy has proven to offer high closed loop bandwidths at very high output frequencies ~\cite{commentsHoffmann,vuksa2016,petric2021a}.
-
-This paper analyzes the use of the discrete IMC based current controller with MS-MU-PWM, suitable for implementation on standard DSP platforms. The main goal of the paper is to analyze the performance of MS-MU-PWM in standard industrial applications, and to compare it with standardly used DS-DU-PWM and MS-DU-PWM methods. 
+This paper analyzes the use of the digital MS-MU-PWM IMC-based current controller, suitable for implementation on standard DSP platforms. The main goal of the paper is to analyze the performance of MS-MU-PWM with one switching period averaging and to compare it with standardly used DS-DU-PWM and MS-DU-PWM methods. 
 %The MS-PWM control strategy is analyzed for three different control loop organizations. The first one uses discrete IMC controller from \cite{vuksa2016}, with a moving average filter (MAF) in the feedback. This case is found to offer slightly improved dynamics compared to standard use of double-update with the same discrete IMC (without filter in feedback) ~\cite{lorenz2010,vuksa2016}, with significant improvement in jitter suppression. Due to added delays introduced by the MAF, the second case adds a derivative action to the controller structure, as in \cite{vuksa2016}. This case is given to demonstrate that MS-PWM can offer even better dynamics than reported in \cite{vuksa2016}. The final case implements MS-PWM based discrete IMC, without any filters in feedback. This case is expected to provide the best dynamics, using discrete IMC without derivative gain. The feedback quality is expected to worsen compared to cases with MAFs, hower, it still retains higher quality compared to double-update \cite{petric2020}. 
-The target is to show that the MS-MU-PWM control with feedback averaging can offer high quality feedback signal as in MS-DU-PWM, while also providing improved dynamic performance compared to DS-DU-PWM. This gives potential of implementing MS-MU-PWM with feedback averaging as standard industrial procedure for current control.
+The target is to show that the MS-MU-PWM control with feedback averaging provides an improved dynamic performance compared to DS-DU-PWM, while offering a high quality feedback signal in the same manner as MS-DU-PWM.
 
-%This paper is organized as follows. Section II addresses discrete time machine model, controller structure and analyzes delays introduced by feedback averaging, calculation and DPWM. The multisampling PWM approach, with an outline of its merits and demerits, is explained in Section III. A DSP implementation of the multisampling algorithm is also presented. Exact controller structures and parameter setting procedures for the three aforementioned cases of interest are derived in Section IV. Effectiveness of the derived analytical model is illustrated via simulated current loop step responses and frequency response analyses. Comparison between performance of the proposed methodology and benchmark controllers is also provided. Experimental results are shown in section V. Conclusions are drawn in section VI, along with a proposal for further studies on the presented topic.
+This paper is organized as follows. Section II explains the multi-rate control structure and emphasizes benefits of MS-MU-PWM control. Subsequently, the discrete-time model of a three-phase $RL$ load is derived and used to obtain a model-based controller structure. Section III focuses on the implementation of multisampled feedback acquisition, filtering, and choice of the control update rate. In section IV, the controller gains are chosen for a suitable comparison between DS-DU, MS-DU, and MS-MU methods. The discrete-time modeling is verified using the sweep frequency response analysis. Section V provides experimental verification on the TI DSP f28379d and a hardware-in-the-loop emulation of a BLDC electric drive. The conclusions of the study are drawn in Section VI.
  
 \section{Multi-rate control system}
 
@@ -104,13 +103,13 @@ The target is to show that the MS-MU-PWM control with feedback averaging can off
     \label{fig:MSControl}
 \end{figure*}
 
-The multi-rate control system of a three-phase $RL$ load in $dq$ frame is shown in Fig. 1. The system can be separated into digital and continuous-time domain. An ADC is used to transform feedback signal from analog to digital domain. This action is performed with a sampling frequency $f_s = N_s f_{pwm}$, where $N_s$ is the multisampling (oversampling) factor and $f_{pwm}$ is the switching frequency of the inverter. The digital domain operates with frequency $f_c = N_c f_{pwm}$, where $N_c$ is the multi-update factor that determines the update rate of the controller output. The choice of this frequency is independent of the sampling frequency, as the feedback signal can be oversampled with frequency $f_s$ and then filtered and decimated to control frequency $f_c$. The digital domain is comprised of feedback filter $G_{fb}(z)$, controller $G_c(z)$, coordinate frame transformation block, and space vector modulation (SVM) block. The controller $G_c(z)$ outputs reference voltage in $dq$ frame, $\underline{u_{dq}}^*[k]$, which is then transformed to $\alpha \beta$ frame. This reference voltage is used to obtain digital modulating waveform for each inverter phase, $m_{s,abc}[k]$. Conversion from digital to analog domain is performed by MS-PWM. Its inherent zero-order hold function transforms the digital impulse train $m_{s,abc}[k]$ into the continuous-time modulating waveform $m_{abc}(t)$. MS-PWM with the triangular carrier is used due to its favorable characteristics in MS-MU-PWM control []. The PWM output is used as a gate signal $x_{abc}(t)$. The three-phase inverter is used to supply a generic $RL$ load, which can model either an AC electrical machine or the electrical grid. The sensed feedback includes line currents $i_{\alpha \beta}(t)$ and the angle of the $dq$ coordinate frame $\Theta_{dq}$. 
+The multi-rate control system of a three-phase $RL$ load in $dq$ frame is shown in Fig. 1. The system can be separated into digital and continuous-time domain. An ADC is used to transform feedback signal from analog to digital domain. This action is performed with a sampling frequency $f_s = N_s f_{pwm}$, where $N_s$ is the multisampling (oversampling) factor and $f_{pwm}$ is the switching frequency of the inverter. The digital domain operates with frequency $f_c = N_c f_{pwm}$, where $N_c$ is the multi-update factor that determines the update rate of the controller output. The choice of this frequency is independent of the sampling frequency, as the feedback signal can be oversampled with frequency $f_s$ and then filtered and decimated to control frequency $f_c$. The digital domain is comprised of feedback filter $G_{fb}(z)$, controller $G_c(z)$, coordinate frame transformation block, and space vector modulation (SVM) block. The controller $G_c(z)$ outputs reference voltage in $dq$ frame, $\underline{u_{dq}}^*[k]$, which is then transformed to $\alpha \beta$ frame. This reference voltage is used to obtain digital modulating waveform for each inverter phase, $m_{s,abc}[k]$. Conversion from digital to analog domain is performed by MS-PWM. Its inherent zero-order hold function transforms the digital impulse train $m_{s,abc}[k]$ into the continuous-time modulating waveform $m_{abc}(t)$. MS-PWM with the triangular carrier is used due to its favorable characteristics in MS-MU-PWM control \cite{corradini2018}. The PWM output is used as a gate signal $x_{abc}(t)$. The three-phase inverter is used to supply a generic $RL$ load, which can model either an AC electrical machine or the electrical grid. The sensed feedback includes line currents $i_{\alpha \beta}(t)$ and the angle of the $dq$ coordinate frame $\Theta_{dq}$. 
 
 \subsection{Motivation behind MS-MU-PWM control}
 
-Modern processors feature high computational power, which enables short execution times for control routines. However, switching frequencies of power converters are hardware limited, and do not go over several tens of kHz for medium power applications. This hardware based limitation directly affects the realizable bandwidths of the current control loop, which subsequently limits the outer control loops. Therefore, pushing for highest possible bandwidths relative to the switching frequency is often a design criterion. One way of achieving that is the implementation of MS-MU-PWM [].
+Modern processors feature high computational power, which enables short execution times for control routines. However, switching frequencies of power converters are hardware limited, and do not go over several tens of kHz for medium power applications. This hardware based limitation directly affects the realizable bandwidths of the current control loop, which subsequently limits the outer control loops. Therefore, pushing for highest possible bandwidths relative to the switching frequency is often a design criterion. One way of achieving that is the implementation of MS-MU-PWM.
 
-Using describing function approach, small-signal model of the multisampled PWM with triangular carrier is found to be almost equal to a pure delay of $\frac{T_c}{2}$, where $T_c$ is the modulating waveform update period []:
+Using describing function approach, small-signal model of the multisampled PWM with triangular carrier is found to be almost equal to a pure delay of $\frac{T_c}{2}$, where $T_c$ is the modulating waveform update period \cite{corradini2018}
 
 \begin{equation}
 \begin{aligned}
@@ -118,8 +117,8 @@ G_{DPWM} (s) = \frac{d(s)}{m(s)} = A(\omega,D,N_c) e^{-s\frac{T_c}{2}},
 \label{eq:DPWM} 
 \end{aligned}    
 \end{equation}
-where $s$ is the complex variable of the Laplace transform, $d$ is the continuous-time duty cycle used for averaged modeling [], $\omega$ is the angular frequency, and $D$ is the steady-state duty cycle. The gain $A$ can be approximated with unity gain with negligible losses in modeling accuracy [].
-In DSP applications, update of the modulating waveform is usually delayed by one control period $T_c$, due to the non-negligible computational time []. This update delay can be represented in s-domain as:
+where $s$ is the complex variable of the Laplace transform, $d$ is the continuous-time duty cycle used for averaged modeling, $\omega$ is the angular frequency, and $D$ is the steady-state duty cycle. The gain $A$ can be approximated with unity gain with negligible losses in modeling accuracy \cite{corradini2018}.
+In DSP applications, update of the modulating waveform is usually delayed by one control period $T_c$, due to the non-negligible computational time \cite{Buso2015}. This update delay can be represented in s-domain as:
 
 \begin{equation}
 \begin{aligned}
@@ -138,22 +137,21 @@ Combining delays due to modulation \eqref{eq:DPWM} and algorithm computation \eq
 \end{equation}
 
 From \eqref{eq:tauD}, it can be seen that multi-update control reduces digital delays inversely to the multi-update factor $N_c$. Traditionally, double-update is the most often used method, which results in twice decreased delays compared to single-update.
-The term multisampled (multi-update) control is most often used when $N_c$ is increased above 2. This kind of control is a promising way of bringing the digital control close to analog regarding achievable bandwidths []. However, care must be taken as significant nonlinearities are also introduced in the control system, mainly due to the discontinuity of the modulating waveform, which now features switching ripple component as well. For this reason, multi-update control is most often followed by feedback filtering, which entirely removes the switching ripple from the feedback signal []. 
+The term multisampled (multi-update) control is most often used when $N_c$ is increased above 2. This kind of control is a promising way of bringing the digital control close to analog regarding achievable bandwidths. However, care must be taken as significant nonlinearities are also introduced in the control system, mainly due to the discontinuity of the modulating waveform, which now features switching ripple component as well. For this reason, multi-update control is most often followed by feedback filtering, which entirely removes the switching ripple from the feedback signal. Note that the discontinuity problems are strongly suppressed at high values of multi-update rate \cite{corradini2018}.
 
 \subsection{Discrete-time model of a three-phase RL load}
 
-Given the simplicity of the inverter topology with a $RL$ load, its model can be easily derived directly in discrete-time domain, without the use of Tustin's method and transport delay approximations []. This kind of modeling is important for design of digital controllers, as it enables highest achievable bandwidths with inherent decoupling of $dq$ axes []. 
-Note that for direct-discrete modeling, the action of the PWM is assumed to be equal to a zero-order hold in stationary $\alpha \beta$ frame []:
+Given the simplicity of the inverter topology with a $RL$ load, its model can be easily derived directly in discrete-time domain, which is suitable for the design of digital controllers. Note that for direct-discrete modeling, the action of the PWM is assumed to be equal to a zero-order hold in stationary $\alpha \beta$ frame:
 \begin{equation}
 \begin{aligned}
 G_{DPWM,\alpha \beta} \approx \frac{1-e^{-sT_c}}{s}.
 \label{eq:DPWMAlphaBeta} 
 \end{aligned}    
 \end{equation}
- This is true for the case of single- and double-update PWM, however, for $N_c>2$, the exact model is shown in \eqref{eq:DPWM}. For the very specific case of triangular carrier, MS-PWM can still be well-approximated with a ZOH with update rate equal to $f_c$, specially regarding its phase response [].
+While the exact model is shown in \eqref{eq:DPWM}, for the very specific case of triangular carrier, MS-PWM can still be well-approximated with a ZOH with the update rate equal to $f_c$.
 
-The direct discrete-time modeling can be found in \cite{lorenz2010,vuksa2016,commentsHoffmann}. This paper follows the procedure from \cite{commentsHoffmann}.
-In order to analyze the three-phase $RL$ load as single-input single-output (SISO) system, complex variables are used []. 
+The direct discrete-time modeling can be found in ~\cite{lorenz2010,vuksa2016,commentsHoffmann}. This paper follows the procedure from \cite{commentsHoffmann}.
+In order to analyze the three-phase $RL$ load as single-input single-output (SISO) system, complex variables are used. 
 Starting from the $\alpha \beta$ frame, the differential equations necessary for modeling are:
 
 \begin{equation}
@@ -162,7 +160,7 @@ Starting from the $\alpha \beta$ frame, the differential equations necessary for
 \label{eq:alphaBetaVoltage} 
 \end{aligned}    
 \end{equation}
-where $R$ and $L$ are the line resistance and the line inductance, respectively. The machine back-emf or the grid voltage is neglected in this analysis, as the paper focuses purely on enhancing the current-loop response, without taking into account disturbance rejection.
+where $R$ and $L$ are the line resistance and the line inductance, respectively. The machine back-emf or the grid voltage is neglected in this analysis, as the paper does not take into account the disturbance rejection.
 The s-domain transfer function from applied voltage to the line current, corresponding to \eqref{eq:alphaBetaVoltage} is:
 
 \begin{equation}
@@ -171,7 +169,6 @@ G_{i,\alpha \beta} = \frac{1}{R} \frac{1}{1 + s \frac{L}{R}}.
 \label{eq:sDomainAlphaBeta} 
 \end{aligned}    
 \end{equation}
-
 
 Multiplication of \eqref{eq:updateDelay}, \eqref{eq:DPWMAlphaBeta} and \eqref{eq:sDomainAlphaBeta} yields the plant model in $\alpha \beta$ frame.
 The transformation from $\alpha \beta$ to $dq$ frame is obtained using the substitution $s \rightarrow s + j \omega_o$, where $\omega_o$ is the $dq$ frame rotating frequency.
@@ -205,7 +202,7 @@ The model obtained in \eqref{eq:modelZdomain} is used for the subsequent derivat
     \label{fig:SmallSignal}
 \end{figure}
 
-The $dq$ frame discrete-time small signal block diagram of the control system in Fig. \ref{fig:MSControl} is shown in Fig. \ref{fig:SmallSignal}. In this paper, IMC method is used to obtain the controller structure []. The goal of the method is to invert the plant model with addition of an integrator with gain $\alpha$ that determines the crossover frequency []. For the sake of causality, due to digital delays, additional factor of $\frac{1}{z^2}$ is added to the controller structure, which results in the following transfer function:
+The $dq$ frame discrete-time small signal block diagram of the control system in Fig. \ref{fig:MSControl} is shown in Fig. \ref{fig:SmallSignal}. The IMC controller is derived by inverting the plant model and adding an integrator with gain $\alpha$ that determines the crossover frequency \cite{vuksa2016}. For the sake of causality, due to digital delays, additional factor of $\frac{1}{z^2}$ is added to the controller structure, which results in the following transfer function:
 
 \begin{equation}
 \begin{aligned}
@@ -214,7 +211,7 @@ G_{c}(z) =  \frac{\alpha \cdot z}{z-1} \frac{1}{z^2} G^{-1}_{p,dq}(z)  =   \frac
 \end{aligned}    
 \end{equation}
 
-By implementing controller from \eqref{eq:Controller}, without any feedback filters, open-loop transfer function is obtained:
+By implementing the controller from \eqref{eq:Controller} without any feedback filters, the following open-loop transfer function is obtained:
 
 \begin{equation}
 \begin{aligned}
@@ -223,19 +220,18 @@ W_{ol,1}(z) = G_c(z) G_p(z) =  \frac{\alpha}{z(z-1)}
 \end{aligned}    
 \end{equation}
 
-In \cite{vuksa2016} it is shown that relying on two samples per $T_{pwm}$ often results in unacceptable feedback signal deterioration in industrial applications. This is due to the unalignement between the voltage impulse and sampling instants due to limited current sensor bandwidths, analog feedback filters, delays in driver circuits, and similar. Furthermore, feedback signal often comprises oscillations due to the $LC$ parasitics of long cables that are present in industrial drives. This is a motivation behind the implementation of MS-DU-PWM in[] and MS-MU-PWM in this paper, where the signal is highly oversampled and then averaged over $T_{pwm}$.
+In \cite{vuksa2016} it is shown that relying on two samples per $T_{pwm}$ often results in unacceptable feedback signal deterioration in industrial applications. This is due to the unalignement between the voltage impulse and sampling instants due to limited current sensor bandwidths, analog feedback filters, delays in driver circuits, and similar. Furthermore, the feedback signal often comprises oscillations due to the $LC$ parasitics of long cables that are present in industrial drives. This is a motivation behind the implementation of MS-DU-PWM in \cite{vuksa2016} and MS-MU-PWM in this paper, where the signal is highly oversampled and then averaged over the switching period.
 
 \section{Feedback acquisition, coordinate frame transformation, and filtering}
 
 \subsection{Feedback acquisition and $\alpha \beta - dq$ transformation}
 
 The timing diagram of feedback acquisition, coordinate frame transformation and controller update is shown in Fig. \ref{fig:timings}. The modulating waveform is illustrated for one phase, $m_a(t)$.
-The digital system analyzed in this paper features two independent frequencies. First one is the control frequency, which defines the controller execution rate and update of the modulating waveform. It is defined by the multi-update factor $f_c = N_c f_{pwm}$. Control interrupts over the switching period are synchronized with the carrier $w(t)$ such that the first one is occurs when the carrier is equal to $0$ while other $N_c-1$ are delayed by $T_c$ each. 
-The second frequency is the sampling frequency, which is defined by the multisampling factor $f_s = N_s f_{pwm}$. This factor allows the DSP to acquire the signal with much higher rate than it can calculate the control algorithm, by employing the standardly available DMA module. High sampling rates allow the use of digital filters, for example MAFs, and subsequent decimation to provide the feedback $i_{dq,f}[k]$ at the control execution rate.
-Again, sampling instants are synchronized with the carrier such that the first one occurs when the carrier is equal to $0$. Note that it is sometimes useful to offset the sampling instants in order to compensate system delays for aliasing suppression [].
+The digital system analyzed in this paper features two independent frequencies. First one is the control frequency, which defines the controller execution rate and update of the modulating waveform. It is defined by the multi-update factor $N_c$. Control interrupts over the switching period are synchronized with the carrier $w(t)$ such that the first one is occurs when the carrier is equal to $0$ while other $N_c-1$ are delayed by $T_c$ each. 
+The second frequency is the sampling frequency, which is defined by the multisampling factor $N_s$. This allows the DSP to acquire the signal with much higher rate than it can calculate the control algorithm, by employing the standardly available DMA module. High sampling rates allow the use of digital filters, for example MAFs, and subsequent decimation to provide the feedback $i_{dq,f}[k]$ at the control execution rate.
+Again, sampling instants are synchronized with the carrier such that the first one occurs when the carrier is equal to $0$. 
 
-
-Fig. \ref{fig:timings} is given for $N_c = 4$ and $N_s = 16$. At instant $kT_c$, $dq$ frame feedback current $i_{dq,f}[k]$ is obtained and used to calculate the voltage reference $u^*_{dq}[k]$, which is used to calculate the segment of the modulating waveform that is applied at the beginning of the following control interrupt. The synchronous frame signal $\Theta_{dq}$ is obtained each $T_c$ by implementing a PLL or using resolver/encoder sensors. 
+Fig. \ref{fig:timings} is given for $N_c = 4$ and $N_s = 16$. At instant $kT_c$, $dq$ frame feedback current $\underline{i_{dq,f}}[k]$ is obtained and used to calculate the voltage reference $\underline{u^*_{dq}}[k]$, which is used to calculate the segment of the modulating waveform that is applied at the beginning of the following control interrupt. The synchronous frame signal $\Theta_{dq}$ is obtained each $T_c$ by implementing a PLL or using resolver/encoder sensors. 
 
 \begin{figure}[t!]
     \centerline{\includegraphics[width=0.95\linewidth]{figures/timing_diagram.eps}}
@@ -243,10 +239,10 @@ Fig. \ref{fig:timings} is given for $N_c = 4$ and $N_s = 16$. At instant $kT_c$,
     \label{fig:timings}
 \end{figure}
 
-As shown in Fig. \ref{fig:timings}, the selector $MAF?$ chooses whether the feedback is provided without any filtering, or using a MAF over the switching period. In the first case, the latest samples of $i_{\alpha \beta}(kT_c)$ and $\Theta_{dq}(kT_c)$ are used to obtain the $dq$ frame current $i_{dq}[k]$, which is used as the feedback signal. In case when $N_c = N_s = 2$, we obtain the standardly used DS-DU control. In cases when $N_c = N_s > 2$, we obtain the MS-MU-PWM with switching ripple in the feedback signal []. Due to the presence of switching ripple, this control method introduces nonlinearities caused by the discontinuity of the modulating waveform, which is more emphasized for lower values of $N_c$ [].
+As shown in Fig. \ref{fig:timings}, the selector $MAF?$ chooses whether the feedback is provided without any filtering, or using a MAF over the switching period. In the first case, the latest samples of $\underline{i_{\alpha \beta}}(kT_c)$ and $\Theta_{dq}(kT_c)$ are used to obtain the $dq$ frame current $\underline{i_{dq}}[k]$, which is used as the feedback signal. In case when $N_c = N_s = 2$, we obtain the standardly used DS-DU control. In cases when $N_c = N_s > 2$, we obtain the MS-MU-PWM with switching ripple in the feedback signal \cite{Petric2020}.
 
-In cases when the MAF is used, the goal is to obtain a true average value of $dq$ currents over one switching period. The $\alpha \beta$ currents are first averaged over $T_c$, using $\frac{N_s}{N_c}$ latest current samples, to obtain $i_{\alpha \beta}^{T_c} (kT_c)$. This average current is then transformed to $dq$ frame to obtain $i_{dq}^{T_c} [k]$. The transformation is performed using the angle $\Theta_{dq}^{T_c}(kT_c)$, calculated as an average of two latest angle values. If $N_c\geq 2$, currents are further averaged using $N_c$ values of $i_{dq}^{T_c}$ to obtain the average value during the previous switching period $i_{dq}^{T_{pwm}}[k]$.
-For this filtering strategy, in cases when $N_s>N_c = 2$, we obtain MS-DU control, where the filtering is used to obtain a true-average value at the expense of reduced system dynamics []. In cases when $N_s \geq N_c > 2$, we obtain MS-MU-PWM control with switching ripple being filtered from the feedback signal. The factor $N_s$ is chosen to be as high as allowed by the maximal ADC sampling rate.
+In cases when the MAF is used, the goal is to obtain a true average value of $dq$ currents over one switching period. The $\alpha \beta$ currents are first averaged over $T_c$, using $\frac{N_s}{N_c}$ latest current samples, to obtain $\underline{i_{\alpha \beta}}^{T_c} (kT_c)$. This average current is then transformed to $dq$ frame to obtain $\underline{i_{dq}}^{T_c} [k]$. The transformation is performed using the angle $\Theta_{dq}^{T_c}(kT_c)$, calculated as an average of two latest angle values. If $N_c\geq 2$, currents are further averaged using $N_c$ values of $\underline{i_{dq}}^{T_c}$ to obtain the average value during the previous switching period $\underline{i_{dq}}^{T_{pwm}}[k]$.
+For this filtering strategy, in cases when $N_s>N_c = 2$, we obtain MS-DU control, where the filtering is used to obtain a true-average value at the expense of reduced system dynamics \cite{vuksa2016}. In cases when $N_s \geq N_c > 2$, we obtain MS-MU-PWM control with switching ripple being filtered from the feedback signal. The factor $N_s$ is chosen to be as high as allowed by the maximal ADC sampling rate.
 Note that independently of whether the MAF is used or not, transformation of the reference voltage from $dq$ to $\alpha \beta$ frame, shown in Fig. \ref{fig:MSControl}, is always performed with the latest value of the angle $\Theta_{dq}(kT_c)$.
 
 \subsection{Total time delay in DSP application}
@@ -262,7 +258,7 @@ The equivalent time delay of the algorithm calculation and the DPWM modulation i
 \end{aligned}    
 \end{equation}
 
-For MS-DU-PWM, MAF is most often used [] to filter out the switching frequency component. The phase lag of the MAF over $T_{pwm}$ can be closely approximated by a pure delay equal to $\frac{T_{pwm}}{2}$ []. This results in the equivalent time-delay:
+For MS-DU-PWM, the MAF is most often used to filter out the switching frequency component. The phase lag of the MAF over $T_{pwm}$ can be closely approximated by a pure delay equal to $\frac{T_{pwm}}{2}$. This results in the equivalent time-delay:
 
 \begin{equation}
 \begin{aligned}
@@ -280,8 +276,8 @@ Finally, for MS-MU-PWM with MAF, equivalent time-delay is:
 \end{aligned}    
 \end{equation}
 
-The MS-DU-PWM features significant time-delay due to MAF and high modulating and control delays. This kind of feedback acquisition is indeed often necessary due to high deterioration of the signal quality in industrial drives []. However, for high dynamic performance, MS-DU-PWM controller structure needs to include additional derivative gain compared to \eqref{eq:Controller}, to compensate for the high delays []. Regarding dynamics, best case is represented by the MS-MU-PWM without MAF. With high multi-update factors $N_c \geq 8$ [], control delays are practically removed and dynamic capabilities become equal to the ones of analog controllers [].
-Finally, from \eqref{eq:tauMSMUMAF} it can be seen that for MS-MU-PWM with a MAF, starting from $N_c>6$, equivalent time delay is lower than for the DS-DU-PWM. This is important as it states that the same kind of filtering as in MS-DU-PWM can be used to obtain a high quality feedback signal, while the dynamics is improved instead of deteriorated compared to standardly used DS-DU-PWM. Furthermore, this method removes the switching ripple, which is favorable regarding the MS-PWM nonlinearities related to the discontinuity of the modulating waveform []. 
+The MS-DU-PWM features significant time-delay due to MAF and high modulating and control delays. For high dynamic performance, MS-DU-PWM controller structure needs to include additional derivative gain compared to \eqref{eq:Controller}, to compensate for the high delays \cite{vuksa2016}. Regarding dynamics, best case is represented by the MS-MU-PWM without MAF. For multi-update factors $N_c \geq 8$, control delays are practically removed and dynamic capabilities become equal to the ones of analog controllers.
+Finally, from \eqref{eq:tauMSMUMAF} it can be seen that for MS-MU-PWM with a MAF, starting from $N_c>6$, equivalent time delay is lower than for the DS-DU-PWM. This is important as it states that the same kind of filtering as in MS-DU-PWM can be used to obtain a high quality feedback signal, while the dynamics is improved instead of deteriorated compared to standardly used DS-DU-PWM.
 
 \section{Controller parameter design}
 For the purpose of controller tuning, the analysis is performed in discrete-time domain, with a rate equal to $f_c$. For this purpose, even if $N_s > N_c$, the MAF is approximated as a filter at frequency $f_c$ using the following transfer function \cite{vuksa2016}:
@@ -314,11 +310,11 @@ In this paper, the verification is performed on a BLDC motor, with parameters sh
         BLDC motor & value   & unit\\
         \midrule               
                   Number of poles	& $2p$ & 6 & /\\
-                  Rated torque  & $T_{nom}$ & 6 &  $Nm$  \\
-                  Rated current  & $I_{nom}$ & 7.3 &  $A_{rms}$  \\
-                  Torque constant  & $k_{t}$ & 0.821 & $Nm/(A_{rms})$   \\
-                  Back-EMF constant  & $k_{e}$ & 1.2534 & $V_{peak}/(rad/s)$   \\
-                  Stator resistance  & $R_{s}$ & 0.47 & $\Omega$   \\
+                  Rated torque  & $T_{nom}$ & 6 &  $\mathrm{Nm}$  \\
+                  Rated current  & $I_{nom}$ & 7.3 &  $\mathrm{A_{rms}}$  \\
+                  Torque constant  & $k_{t}$ & 0.821 & $\mathrm{Nm/(A_{rms})}$   \\
+                  Back-EMF constant  & $k_{e}$ & 1.2534 & $\mathrm{V_{peak}/(rad/s)}$   \\
+                  Stator resistance  & $R_{s}$ & 0.47 & $\mathrm{\Omega}$   \\
                   Stator inductance  & $L_{s}$ & 3.4 & mH   \\
                   \midrule\midrule
 
@@ -326,19 +322,19 @@ In this paper, the verification is performed on a BLDC motor, with parameters sh
         \midrule               
                   DC link voltage	& $U_{dc}$ & 520 & V \\  
                   Switching frequency  & $f_{pwm}$ & 10 & kHz   \\
-                  Dead time  & $t_{dt}$ & 1 &  $\mu s$  \\
+                  Dead time  & $t_{dt}$ & 1 &  $\mathrm{\mu s}$  \\
                   \midrule\midrule
                                                         
               \end{tabular}
 \end{table}
 
 
-The first tested strategy is the standardly used DS-DU approach. For a $70^o$ phase margin, the value of $\alpha$ is equal to $0.23$ and the achieved crossover frequency is equal to $0.0735 f_{pwm}$. Even though the DS-DU strategy provides a satisfactory dynamic performance, it may exhibit poor behavior in presence of various noise sources, which is often the case in industrial applications [].
-The second tested strategy is the MS-DU control, which presents a modification of the DS-DU obtained with an addition of the oversampled MAF in the feedback path. This strategy provides a more robust feedback signal in the presence of high noise, however, it negatively impacts  the dynamic performance. The controller gain $\alpha$ is equal to $0.14$, which sets the crossover frequency to $0.0445 f_{pwm}$.
-The proposed MS-MU method with a MAF based feedback acquisition is considered next. 
-The controller gain $\alpha$ is equal to $0.0636$, which set the crossover frequency to $0.0799  f_{pwm}$.
+The first tested strategy is the standardly used DS-DU approach. For a $70^o$ phase margin, the value of $\alpha$ is equal to $0.23$ and the achieved crossover frequency is equal to $7.3 \% f_{pwm}$.
+The second tested strategy is the MS-DU control with the oversampled MAF in the feedback path. The controller gain $\alpha$ is equal to $0.14$, which sets the crossover frequency to $4.4 \% f_{pwm}$.
+Finally, the gain $\alpha$ of the proposed MS-MU method with a MAF based feedback acquisition is equal to $0.0636$, which set the crossover frequency to $8 \%  f_{pwm}$. The MS-MU-PWM without ripple filtering is not implemented, as the discontinuity impact in three-phase applications is still not properly investigated.
+For both MS-DU and MS-MU, the multisampling ratio is set to $N_s = 16$. For MS-MU, the multi-update ratio is chosen as $N_c = 8$, which was limited by the algorithm execution time on the used DSP.
 
-The summary of achieved crossover frequencies and phase margins are shown in Table \ref{tab:an_param} for all tested methods. 
+The closed-loop $-3$ dB bandwidth is calculated using $W_{cl,1}(z) = \frac{W_{ol,1}(z)}{1+W_{ol,1}(z)}$ for the case of DS-DU and $W_{cl,2}(z) = \frac{G_c(z) G_p(z)}{1+W_{ol,2}(z)}$ for the case of MS-DU and MS-MU. The summary of control loop parameters are shown in Table \ref{tab:an_param}. It can be seen that the MS-MU with the MAF achieves better dynamics than the DS-DU.
 
 \begin{table}[h!]
 			  \caption{Control loop parameters}
@@ -349,87 +345,70 @@ The summary of achieved crossover frequencies and phase margins are shown in Tab
         DS-DU & label & value   & unit\\
         \midrule               
                   IMC gain	& $\alpha$ & 0.23 & /\\  
-                  Cross-over frequency  & $f_{c}$ & 734.9179 & Hz   \\
-                  Phase margin  & $pm$ & 70.189 &  $^\circ$  \\
-                  Closed-loop bandwidth  & $f_{bw}$ & 1.2534 & kHz   \\
+                  Cross-over frequency  & $f_{c}$ & 735 & Hz   \\
+                  Phase margin  & $pm$ & 70.2 &  $^\circ$  \\
+                  Closed-loop bandwidth  & $f_{bw}$ & 1253 & Hz   \\
                   \midrule\midrule
 
-        MS-DU & label & value   & unit\\
+        MS-DU with MAF, $N_s = 16$ & label & value   & unit\\
         \midrule               
                   IMC gain	& $\alpha$ & 0.14 & /\\  
-                  Cross-over frequency  & $f_{c}$ & 444.6095 & Hz   \\
-                  Phase margin  & $pm$ & 70.0246 &  $^\circ$  \\
-                  Closed-loop bandwidth  & $f_{bw}$ & 0.7661 & kHz   \\
+                  Cross-over frequency  & $f_{c}$ & 445 & Hz   \\
+                  Phase margin  & $pm$ & 70 &  $^\circ$  \\
+                  Closed-loop bandwidth  & $f_{bw}$ & 766 & Hz   \\
                   \midrule\midrule
-      MS-MU+MAF & label & value   & unit\\
+      MS-MU with MAF, $N_s = 16$ , $N_c =  8$ & label & value   & unit\\
         \midrule               
                   IMC gain	& $\alpha$ & 0.0636 & /\\  
-                  Cross-over frequency  & $f_{c}$ & 798.5845 & Hz   \\
-                  Phase margin  & $pm$ & 70.2667 &  $^\circ$  \\
-                  Closed-loop bandwidth  & $f_{bw}$ & 1.3871 & kHz   \\
+                  Cross-over frequency  & $f_{c}$ & 799 & Hz   \\
+                  Phase margin  & $pm$ & 70.3 &  $^\circ$  \\
+                  Closed-loop bandwidth  & $f_{bw}$ & 1387 & kHz   \\
                   \midrule\midrule
                                                         
               \end{tabular}
 \end{table}
 
 \subsection{Verification of discrete-time modelling}
-For each of the tested control strategies, simulations in MATLAB/Simulink were performed in order to verify the discrete-time modeling. 
-The sweep frequency response analysis (SFRA) is performed to verify open-loop models from \eqref{eq:OpenLoop} and \eqref{eq:OpenLoop_MAF}.
-The current controller is modeled in discrete domain whereas all relevant delays are taken into account. A detailed model of DPWM, which resembles the action qualifier module realization within the DSP TI F28379D EPWM peripheral, is implemented. The load is modeled in continuous time domain using the Simulink $abc$ frame machine model. The simulations are performed for the BLDC motor described in Table X. For the proposed MS-MU controller, the multi-update factor $N_c$ is set to eight, which was limited by the total execution time of the FOC algorithm, implemented in the DSP TI F28379D for later experimental validation. The multisampling factor $N_s$ is set equal to $16$. Dead-time is set to $1 \%$ of the switching period. The motor speed is set to $565$ rpm, which results in the output frequency $f_o = 270$ Hz.
-
-<<<<<<< HEAD
-Pretpostavljam da si ovaj tekst dodao samo zbog formatiranja
-For the measured axis response, the perturbation magnitude is set to $0.1 A$, while for the other axis the controller input is set to 0. The perturbation frequencies are an arithmetic sequence from $400 Hz$ to $5000 Hz$, with a step of $50 Hz$. The q-axis open loop SFRA results for the three tested methods are shown in Fig. \ref{fig:MSMUmaf_olfra}-\ref{fig:MSDU_olfra}. The simulated results are compared to the analytics and it can be seen that a very good match is achieved.
-=======
-For the measured axis response, the perturbation magnitude is set to $0.1 A$, while for the other axis the controller input is set to 0. The perturbation frequencies are an arithmetic sequence from $400 Hz$ to $5000 Hz$, with a step of $230 Hz$. The q-axis open loop SFRA results for the three tested methods are shown in Fig. \ref{fig:MSMUmaf_olfra}-\ref{fig:MSDU_olfra}. The simulated results are compared to the analytics and it can be seen that a very good match is achieved for all compared strategies.
->>>>>>> 2bad2445a4954d508704c88ec1c8cecaf89492aa
+For proposed MS-MU with MAF, simulations in MATLAB/Simulink were performed in order to verify the discrete-time modeling. 
+The sweep frequency response analysis (SFRA) is performed to verify the open-loop transfer function \eqref{eq:OpenLoop_MAF} for parameters in Table \ref{tab:motor_param} Table \ref{tab:an_param}. In simulations, a detailed model of the DPWM, which resembles the action qualifier module realization within the DSP TI f28379d EPWM peripheral, is implemented. The motor is modeled in the continuous-time domain using the Simulink $abc$ frame machine model. The motor speed is set to $565$ rpm, which results in the output frequency $f_o = 270$ Hz.
+For the measured axis response, the perturbation magnitude is set to $0.1$ A, while for the other axis the controller input is set to $0$. The perturbation frequencies are an arithmetic sequence from $400$ Hz to $5000$ Hz, with a step of $230$ Hz. The q-axis open loop SFRA result is shown in Fig. \ref{fig:MSMUmaf_olfra}. The simulated results are compared to the analytics and it can be seen that a very good match is achieved.
 
 \begin{figure}[t!]
     \centerline{\includegraphics[width=1\linewidth]{figures/ivan figs/MSMU_OL_SFRA.png}}
-    \caption{Simulated open loop SFRA results for MS-MU control strategy with $\alpha = 0.0636$ and the MAF in the feedback. The results are compared with the analytical frequency response of $W_{ol,2}(z)$ }
+    \caption{Simulated SFRA results for open-loop system with the MS-MU control strategy. The drive parameters are shown in Table \ref{tab:motor_param} and the controller parameters are shown in Table \ref{tab:an_param}. The results are compared with the analytic frequency response of $W_{ol,2}(z)$ }
     \label{fig:MSMUmaf_olfra} 
 \end{figure}
 
 
 \section{Experimental verification}
+This section provides the experimental validation of the previously discussed controllers using the Typhoon HIL 402 platform and DSP TI f28379d. Power stage is implemented within hardware-in-the-loop (HIL) simulation model and comprises DC voltage source, IGBT inverter and BLDC motor with parameters from Table \ref{tab:motor_param}. The motor line currents are obtained via HIL’s analog outputs and are routed to DSP's ADC inputs. The motor angle information is obtained using the encoder signals, which are sent from HIL’s digital outputs to the DSP's QEP inputs. These current and position feedback signals are used to perform the FOC algorithm in the DSP in the same way as described in Section III. The resulting gate signals are sent from DSP’s EPWM outputs to HIL's digital inputs. 
+Note that a particular logic had to be implemented in the DSP algorithm, in order to allow the implementation of MS-PWM without the occurrence of pulse-skipping. Namely, the used DSP from TI modifies the PWM output when the modulating waveform is strictly equal to the carrier's counter value. This prevents the detection of vertical crossings \cite{corradini2018}, which results in full or zero duty cycle. The situation comprising a vertical crossing is illustrated in Fig. \ref{fig:timings} at the instant $kT_c$.
+This prolongs the execution time, but still allows the complete $FOC$ algorithm to run at $N_c=8$ and $f_{pwm} = 10$ kHz.
 
-This section provides the experimental validation of the previously discussed controllers using Typhoon HIL 402 platform and DSP TI F28379D. Power stage is implemented within Hardware-In-the-Loop simulation model and comprises DC voltage source, IGBT inverter and BLDC motor with parameters from Table \ref{tab:motor_param}. Two motor currents are displayed on HIL’s analog outputs and routed to DSP's ADC inputs. Encoder signals from HIL’s digital outputs are driven to the DSP's QEP inputs. These current and position feedback signals are used to perform FOC algorithm in the DSP in the same way as described in Section III. The resulting control signals are applied as gate signals by connecting DSP’s EPWM outputs and HIL's digital inputs.
-
-For each of the control strategies analyzed in Section IV, HIL simulations were performed to obtain $q$-axis current step responses and compare them to the step response of the closed loop transfer functions obtained via modelling approach described in Sections II and III. For the proposed MS-MU controller, the multi-update factor $N_c$ is set to $8$, which was limited by the total execution time. Note that in order for the DSP implementation of the MS-PWM to be immune to the pulse skipping due to the vertical crossings (Fig. 3), an adequate logic needs to be implemented in code. This prolongs the execution time, but still results in the execution time which allows use of $N_c=8$. Dead-time is set to $1\%$ of the switching period. The motor speed is set to $565rpm$, which results in the output frequency $f_o=270Hz$.
-
-Step responses are shown in Fig. \ref{fig:MSMUmaf_step}-\ref{fig:MSDU_step}. Note that the presented HIL results are obtained by post-processing of the signals exported from DSP’s RAM. The abc domain currents are acquired at $T_s$ and angle is acquired on $T_c$. Post-processing assumes transformation and averaging in the similar manner as described in Section III, with the only difference that non-causal MAF is used to remove switching ripple without introducing additional delay, so that the results are comparable to the ones obtained from analytics. According to the presented results there is a very good match between experimental and analytical results for all compared control strategies. DC error which is visible in case of DSDU controller (Fig. \ref{fig:DSDU_step}) is due to the aliasing present as a consequence of the delay introduced by HIL. This delay prevents the sampling instant to coincide with the middle of the current ripple. This emphasizes the shortcoming of the feedback acquisition which relies only on one sample. 
-
-
-
+For each of the control strategies analyzed in Section IV, HIL simulations were performed to obtain $q$-axis current step responses and compare them to the step response of the corresponding closed loop transfer functions $W_{cl,1}$ and $W_{cl,2}$. The motor speed is set to $565$ rpm, which results in the output frequency $f_o=270$ Hz. 
+Step responses are shown in Fig. \ref{fig:MSMUmaf_step}-\ref{fig:MSDU_step}. Note that the presented HIL results are obtained by post-processing of the signals exported from DSP’s RAM. The abc domain currents are acquired each $T_s$ and the angle is acquired each $T_c$. 
+For visualization and comparison with the analytics, the switching ripple is removed using the same filtering approach as in Fig. \ref{fig:timings}, however in a non-causal manner so that delays are not added.
+According to the presented results there is a very good match between experimental and analytical results for all compared control strategies. DC error which is visible in case of DS-DU controller (Fig. \ref{fig:DSDU_step}) is due to the aliasing present as a consequence of the delay introduced by HIL (approximately $2.5$ us). This delay prevents the sampling instant to coincide with the middle of the current ripple. Note that this error can be compensated by offsetting the sampling instant, however, it was of interest to emphasize this drawback of the control methods that rely only on two samples per switching period. 
 
 \begin{figure}[t!]
     \centerline{\includegraphics[width=1\linewidth]{figures/ivan figs/DSDUstepHIL.png}}
-    \caption{Verification of a $q$-axis step response for DS-DU control strategy with $\alpha = 0.23$ and the MAF in the feedback. The results are compared with the analytical step response of $W_{cl,2}(z)$. The $d$-axis current is shown to demonstrate decoupling capabilities.}
+    \caption{Verification of a $q$-axis step response for DS-DU control strategy. The drive parameters are shown in Table \ref{tab:motor_param} and the controller parameters are shown in Table \ref{tab:an_param}. The results are compared with the analytical step response of $W_{cl,2}(z)$. The $d$-axis current is shown to demonstrate decoupling capabilities.}
     \label{fig:DSDU_step} 
 \end{figure}
 \begin{figure}[t!]
     \centerline{\includegraphics[width=1\linewidth]{figures/ivan figs/MSDUstepHIL.png}}
-    \caption{Verification of a $q$-axis step response for MS-DU control strategy with $\alpha = 0.14$ and the MAF in the feedback. The results are compared with the analytical step response of $W_{cl,2}(z)$. The $d$-axis current is shown to demonstrate decoupling capabilities.}
+    \caption{Verification of a $q$-axis step response for MS-DU control strategy. The drive parameters are shown in Table \ref{tab:motor_param} and the controller parameters are shown in Table \ref{tab:an_param}. The results are compared with the analytical step response of $W_{cl,2}(z)$. The $d$-axis current is shown to demonstrate decoupling capabilities.}
     \label{fig:MSDU_step} 
 \end{figure}
 \begin{figure}[t!]
     \centerline{\includegraphics[width=1\linewidth]{figures/ivan figs/MSMUstepHIL.png}}
-    \caption{Verification of a $q$-axis step response for MS-MU control strategy with $\alpha = 0.0636$ and the MAF in the feedback. The results are compared with the analytical step response of $W_{cl,2}(z)$. The $d$-axis current is shown to demonstrate decoupling capabilities.}
+    \caption{Verification of a $q$-axis step response for MS-MU control strategy. The drive parameters are shown in Table \ref{tab:motor_param} and the controller parameters are shown in Table \ref{tab:an_param}. The results are compared with the analytical step response of $W_{cl,2}(z)$. The $d$-axis current is shown to demonstrate decoupling capabilities.}
     \label{fig:MSMUmaf_step} 
 \end{figure}
 
 
-\section{Further steps before publication}
-The steps are sorted from most important to less important.
-\begin{itemize}
-\item{Experimental verification for all regimes tested in simulations, on f28379d DSP platform. It is important to obtain results on a standard, industrial DSP. f28335 is also an option, however it has lower CPU frequency, so I am not sure we would be able to get entire FOC with N =8. The entire code for f28379d is already made, and tested in HIL simulations, so we are sure that the method works properly.}
-\item{Experimental veryfication of improvement obtained regarding jittering suppression. Motor currents should have much lower noise floor in multisampled case!}
-\item{Also, from experimental setup, it will be possible to see how does controller behave with multisampled control, without MAFs (perhaps just with some weaker digital filters). In simulations, it was working very well, but there we do not have switching noise due to high dV/dT.}
-\item{Perhaps, add part where phase lag due to MAF is compensated using proportional-derivative action, as in [10.1109/JESTPE.2018.2888980].}
-\end{itemize}
-
-\section{Conclusion}
-Nothing yet.
+\section{Conclusions}
+This paper has presented a multisampled multi-update (MS-MU-PWM) current control strategy applied to a high-speed three-phase electric drive. The independent choice of sampling and control-update frequencies allows the high-quality feedback acquisition with improved dynamic capabilities compared to the standard double-update method. The analysis is verified using a DSP TI f28379d and a Typhoon HIL 402 hardware-in-the-loop system.
 
 \ifCLASSOPTIONcaptionsoff
   \newpage
