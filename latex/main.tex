@@ -231,7 +231,7 @@ The digital system analyzed in this paper features two independent frequencies. 
 The second frequency is the sampling frequency, which is defined by the multisampling factor $N_s$. This allows the DSP to acquire the signal with much higher rate than it can calculate the control algorithm, by employing the standardly available DMA module. High sampling rates allow the use of digital filters, for example MAFs, and subsequent decimation to provide the feedback $i_{dq,f}[k]$ at the control execution rate.
 Again, sampling instants are synchronized with the carrier such that the first one occurs when the carrier is equal to $0$. 
 
-Fig. \ref{fig:timings} is given for $N_c = 4$ and $N_s = 16$. At instant $kT_c$, $dq$ frame feedback current $\underline{i_{dq,f}}[k]$ is obtained and used to calculate the voltage reference $\underline{u^*_{dq}}[k]$, which is used to calculate the segment of the modulating waveform that is applied at the beginning of the following control interrupt. The synchronous frame signal $\Theta_{dq}$ is obtained each $T_c$ by implementing a PLL or using resolver/encoder sensors. 
+Fig. \ref{fig:timings} is given for $N_c = 4$ and $N_s = 16$. At instant $kT_c$, $dq$ frame feedback current $\underline{i_{dq,f}}[k]$ is obtained and used to calculate the voltage reference $\underline{u^*_{dq}}[k]$, which is used to calculate the segment of the modulating waveform that is applied at the beginning of the following control interrupt. The synchronous frame angle $\Theta_{dq}$ is obtained each $T_c$ by implementing a PLL or using resolver/encoder sensors. 
 
 \begin{figure}[t!]
     \centerline{\includegraphics[width=0.95\linewidth]{figures/timing_diagram.eps}}
@@ -307,7 +307,7 @@ In this paper, the verification is performed on a BLDC motor, with parameters sh
               \centering
               \begin{tabular}{llll}
                            \midrule\midrule
-        BLDC motor & value   & unit\\
+        BLDC motor & label & value   & unit\\
         \midrule               
                   Number of poles	& $2p$ & 6 & /\\
                   Rated torque  & $T_{nom}$ & 6 &  $\mathrm{Nm}$  \\
@@ -318,7 +318,7 @@ In this paper, the verification is performed on a BLDC motor, with parameters sh
                   Stator inductance  & $L_{s}$ & 3.4 & mH   \\
                   \midrule\midrule
 
-        Inverter & value   & unit\\
+        Inverter & label & value   & unit\\
         \midrule               
                   DC link voltage	& $U_{dc}$ & 520 & V \\  
                   Switching frequency  & $f_{pwm}$ & 10 & kHz   \\
@@ -333,7 +333,6 @@ The first tested strategy is the standardly used DS-DU approach. For a $70^o$ ph
 The second tested strategy is the MS-DU control with the oversampled MAF in the feedback path. The controller gain $\alpha$ is equal to $0.14$, which sets the crossover frequency to $4.4 \% f_{pwm}$.
 Finally, the gain $\alpha$ of the proposed MS-MU method with a MAF based feedback acquisition is equal to $0.0636$, which sets the crossover frequency to $8 \%  f_{pwm}$. The MS-MU-PWM without ripple filtering is not implemented, as the discontinuity impact in three-phase applications is still not properly investigated.
 For both MS-DU and MS-MU, the multisampling ratio is set to $N_s = 16$. For MS-MU, the multi-update ratio is chosen as $N_c = 8$, which was limited by the algorithm execution time on the used DSP.
-
 The closed-loop $-3$ dB bandwidth is calculated using $W_{cl,1}(z) = \frac{W_{ol,1}(z)}{1+W_{ol,1}(z)}$ for the case of DS-DU and $W_{cl,2}(z) = \frac{G_c(z) G_p(z)}{1+W_{ol,2}(z)}$ for the case of MS-DU and MS-MU. The summary of control loop parameters are shown in Table \ref{tab:an_param}. It can be seen that the MS-MU with the MAF achieves better dynamics than the DS-DU.
 
 \begin{table}[h!]
@@ -370,7 +369,7 @@ The closed-loop $-3$ dB bandwidth is calculated using $W_{cl,1}(z) = \frac{W_{ol
 
 \subsection{Verification of discrete-time modelling}
 For proposed MS-MU with MAF, simulations in MATLAB/Simulink were performed in order to verify the discrete-time modeling. 
-The sweep frequency response analysis (SFRA) is performed to verify the open-loop transfer function \eqref{eq:OpenLoop_MAF} for parameters in Table \ref{tab:motor_param} Table \ref{tab:an_param}. In simulations, a detailed model of the DPWM, which resembles the action qualifier module realization within the DSP TI f28379d EPWM peripheral, is implemented. The motor is modeled in the continuous-time domain using the Simulink $abc$ frame machine model. The motor speed is set to $565$ rpm, which results in the output frequency $f_o = 270$ Hz.
+The sweep frequency response analysis (SFRA) is performed to verify the open-loop transfer function \eqref{eq:OpenLoop_MAF} for parameters in Table \ref{tab:motor_param} and Table \ref{tab:an_param}. In simulations, a detailed model of the DPWM, which resembles the action qualifier module realization within the DSP TI f28379d EPWM peripheral, is implemented. The motor is modeled in the continuous-time domain using the Simulink $abc$ frame machine model. The motor speed is set to $565$ rpm, which results in the output frequency $f_o = 270$ Hz.
 For the measured axis response, the perturbation magnitude is set to $0.1$ A, while for the other axis the controller input is set to $0$. The perturbation frequencies are an arithmetic sequence from $400$ Hz to $5000$ Hz, with a step of $230$ Hz. The $q-axis$ open loop SFRA result is shown in Fig. \ref{fig:MSMUmaf_olfra}. The simulated results are compared to the analytics and it can be seen that a very good match is achieved.
 
 \begin{figure}[t!]
