@@ -245,7 +245,7 @@ In cases when the MAF is used, the goal is to obtain a true average value of $dq
 For this filtering strategy, in cases when $N_s>N_c = 2$, we obtain MS-DU control, where the filtering is used to obtain a true-average value at the expense of reduced system dynamics \cite{vuksa2016}. In cases when $N_s \geq N_c > 2$, we obtain MS-MU-PWM control with switching ripple being filtered from the feedback signal. The factor $N_s$ is chosen to be as high as allowed by the maximum ADC sampling rate.
 Note that independently of whether the MAF is used or not, transformation of the reference voltage from $dq$ to $\alpha \beta$ frame, shown in Fig. \ref{fig:MSControl}, is always performed with the latest value of the angle $\Theta_{dq}(kT_c)$.
 
-\subsection{Total time delay in DSP application}
+\subsection{Total time delay in DSP applications}
 
 For control loop analysis and comparison between DS-DU-PWM, MS-DU-PWM, and MS-MU-PWM based on the crossover frequency and phase margin it is of interest to analyze the loop delays in continuous-time domain.
 
