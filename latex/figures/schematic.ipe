@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70215" creator="Ipe 7.2.15">
-<info created="D:20200501134231" modified="D:20210530135805"/>
+<info created="D:20200501134231" modified="D:20210603184755"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
 0 0 m
 -1 0.333 l
 -1 -0.333 l
+0 0 l
 0 0 l
 0 0 l
 0 0 l
@@ -47,6 +48,7 @@ h
 0 0 m
 -1 0.333 l
 -1 -0.333 l
+0 0 l
 0 0 l
 0 0 l
 0 0 l
@@ -118,6 +120,7 @@ h
 0 0 l
 0 0 l
 0 0 l
+0 0 l
 h
 </path>
 </symbol>
@@ -127,6 +130,7 @@ h
 -1 0.333 l
 -0.8 0 l
 -1 -0.333 l
+0 0 l
 0 0 l
 0 0 l
 0 0 l
@@ -220,11 +224,13 @@ h
 -0.6 -0.6 l
 -0.6 -0.6 l
 -0.6 -0.6 l
+-0.6 -0.6 l
 h
 -0.4 -0.4 m
 0.4 -0.4 l
 0.4 0.4 l
 -0.4 0.4 l
+-0.4 -0.4 l
 -0.4 -0.4 l
 -0.4 -0.4 l
 -0.4 -0.4 l
@@ -265,6 +271,7 @@ h
 0.6 -0.6 l
 0.6 0.6 l
 -0.6 0.6 l
+-0.6 -0.6 l
 -0.6 -0.6 l
 -0.6 -0.6 l
 -0.6 -0.6 l
@@ -337,6 +344,7 @@ h
 -0.5 -0.5 l
 -0.5 -0.5 l
 -0.5 -0.5 l
+-0.5 -0.5 l
 h
 </path>
 <path fill="sym-stroke" fillrule="eofill">
@@ -375,11 +383,13 @@ h
 -0.6 -0.6 l
 -0.6 -0.6 l
 -0.6 -0.6 l
+-0.6 -0.6 l
 h
 -0.4 -0.4 m
 0.4 -0.4 l
 0.4 0.4 l
 -0.4 0.4 l
+-0.4 -0.4 l
 -0.4 -0.4 l
 -0.4 -0.4 l
 -0.4 -0.4 l
@@ -453,6 +463,7 @@ h
 -0.43 -0.57 l
 -0.43 -0.57 l
 -0.43 -0.57 l
+-0.43 -0.57 l
 h
 </path>
 <path fill="sym-stroke">
@@ -460,6 +471,7 @@ h
 0.57 -0.43 l
 0.43 -0.57 l
 -0.57 0.43 l
+-0.43 0.57 l
 -0.43 0.57 l
 -0.43 0.57 l
 -0.43 0.57 l
@@ -531,6 +543,7 @@ h
 0 0 l
 0 0 l
 0 0 l
+0 0 l
 h
 </path>
 </symbol>
@@ -571,6 +584,7 @@ h
 0 0 l
 0 0 l
 0 0 l
+0 0 l
 h
 </path>
 </symbol>
@@ -580,6 +594,7 @@ h
 -1 0.333 l
 -0.8 0 l
 -1 -0.333 l
+0 0 l
 0 0 l
 0 0 l
 0 0 l
@@ -657,10 +672,12 @@ h
 0 0 l
 0 0 l
 0 0 l
+0 0 l
 h
 -1 0 m
 -2 0.333 l
 -2 -0.333 l
+-1 0 l
 -1 0 l
 -1 0 l
 -1 0 l
@@ -731,10 +748,12 @@ h
 0 0 l
 0 0 l
 0 0 l
+0 0 l
 h
 -1 0 m
 -2 0.333 l
 -2 -0.333 l
+-1 0 l
 -1 0 l
 -1 0 l
 -1 0 l
@@ -844,12 +863,11 @@ h
 <layer name="alpha"/>
 <layer name="beta"/>
 <view layers="alpha beta" active="alpha"/>
-<group layer="alpha" clip="48.4481 768.002 m
-48.4481 604.741 l
-528 604.741 l
-528 768.002 l
-48.4481 768.002 l
-48.4481 768.002 l
+<group layer="alpha" clip="48 768 m
+48 604.042 l
+523.591 604.042 l
+523.591 768 l
+48 768 l
 h
 ">
 <path matrix="1.3048 0 0 -0.508304 -132.604 1067.68" stroke="black" pen="heavier" arrow="normal/small">
@@ -863,6 +881,7 @@ h
 208 724 l
 272 724 l
 272 748 l
+208 748 l
 208 748 l
 208 748 l
 208 748 l
@@ -958,11 +977,13 @@ h
 206.818 740.077 l
 206.818 740.077 l
 206.818 740.077 l
+206.818 740.077 l
 h
 </path>
 <text matrix="0.362827 0 0 1 75.8386 -98.6019" transformations="translations" pos="168 716" stroke="black" type="label" width="43.725" height="8.888" depth="4.04" halign="center" valign="center" size="small" style="math">T_c = \frac{T_{pwm}}{N_c} </text>
 <path matrix="1 0 0 1 -52.7953 0" stroke="black">
 123.093 634.088 m
+123.093 634.088 l
 123.093 634.088 l
 123.093 634.088 l
 123.093 634.088 l
@@ -993,6 +1014,7 @@ h
 206.818 738.923 l
 204.793 738.923 l
 204.793 740.077 l
+206.818 740.077 l
 206.818 740.077 l
 206.818 740.077 l
 206.818 740.077 l
@@ -1052,6 +1074,7 @@ h
 208 724 l
 272 724 l
 272 748 l
+208 748 l
 208 748 l
 208 748 l
 208 748 l
@@ -1153,18 +1176,8 @@ h
 449.476 631.359 l
 </path>
 <text matrix="1 0 0 1 274.629 -56.2047" transformations="translations" pos="168 716" stroke="black" type="label" width="27.642" height="7.472" depth="2.85" halign="right" valign="baseline" style="math">\Theta_{dq}(t)</text>
-<text matrix="1 0 0 1 273.167 -71.7663" transformations="translations" pos="168 716" stroke="black" type="label" width="25.332" height="7.472" depth="2.85" halign="right" valign="baseline" style="math">i_{\alpha \beta} (t)</text>
+<text matrix="1 0 0 1 273.167 -71.7663" transformations="translations" pos="168 716" stroke="black" type="label" width="26.662" height="7.473" depth="2.49" halign="right" valign="baseline" style="math">i_{abc} (t)</text>
 <text matrix="1 0 0 1 109.537 -38.3953" transformations="translations" pos="168 716" stroke="black" type="label" width="27.331" height="7.472" depth="2.85" halign="right" valign="baseline" style="math">\Theta_{dq} [k]</text>
-<group matrix="1 0 0 1 44.3006 0.324587">
-<path matrix="1 0 0 1 180.274 8.67751" stroke="black">
-281.641 716.813 m
-287.754 722.926 l
-</path>
-<path matrix="1 0 0 1 182.117 8.67773" stroke="black">
-281.641 716.813 m
-287.754 722.926 l
-</path>
-</group>
 <path matrix="0.538497 0 0 0.883478 81.8387 82.2225" stroke="black" arrow="normal/small">
 383.56 656.207 m
 383.56 668.499 l
@@ -1219,6 +1232,7 @@ h
 208 724 l
 272 724 l
 272 748 l
+208 748 l
 208 748 l
 208 748 l
 208 748 l
@@ -1315,6 +1329,7 @@ h
 208 748 l
 208 748 l
 208 748 l
+208 748 l
 h
 </path>
 </group>
@@ -1327,6 +1342,7 @@ h
 208 724 l
 272 724 l
 272 748 l
+208 748 l
 208 748 l
 208 748 l
 208 748 l
@@ -1387,6 +1403,7 @@ h
 426.607 752.086 l
 426.607 752.086 l
 426.607 752.086 l
+426.607 752.086 l
 h
 </path>
 <group>
@@ -1435,8 +1452,24 @@ h
 208 748 l
 208 748 l
 208 748 l
+208 748 l
 h
 </path>
+<group matrix="1 0 0 1 222.88 8.85203">
+<path stroke="black">
+281.641 716.813 m
+287.754 722.926 l
+</path>
+<path matrix="1 0 0 1 1.84238 0.00021953" stroke="black">
+281.641 716.813 m
+287.754 722.926 l
+</path>
+<path matrix="1 0 0 1 3.64337 -0.00005891" stroke="black">
+281.641 716.813 m
+287.754 722.926 l
+</path>
+</group>
+<text matrix="1 0 0 1 138.167 4.00041" transformations="translations" pos="168 716" stroke="black" type="label" width="25.46" height="6.808" depth="0" halign="center" valign="center" style="math">SVM</text>
 </group>
 </page>
 </ipe>
