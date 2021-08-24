@@ -1,17 +1,32 @@
 <hil_settings>
-    <format_version>2.6</format_version>
+    <format_version>2.5</format_version>
     <number_of_devices>1</number_of_devices>
     <ao_limiting_forced>False</ao_limiting_forced>
     <hw_properties>
         <product_id>402</product_id>
         <hardware_id>3</hardware_id>
-        <configuration_id>1</configuration_id>
-        <fw_release_date>132449282</fw_release_date>
+        <configuration_id>4</configuration_id>
+        <fw_release_date>132385281</fw_release_date>
     </hw_properties>
     <components>
         <inputs>
             <input>
                 <name>Vs1</name>
+                <device>0</device>
+                <input_address>2</input_address>
+                <child_input_address>[0, 1, 2]</child_input_address>
+                <device>0</device>
+            	<input_type>ThreePhaseInput</input_type>
+                <waveform_type>Sine</waveform_type>
+                <rms>231.0</rms>
+                <frequency>50.0</frequency>
+                <phase>90.0</phase>
+                <use_harmonics>True</use_harmonics>
+                <harmonics>[(2, 0.0012, 83.0), (3, 0.007, 66.0), (5, 0.021, 170.4), (7, 0.012, 33.6), (2, 0.0, 0.0), (2, 0.0, 0.0), (2, 0.0, 0.0), (2, 0.0, 0.0), (2, 0.0, 0.0), (2, 0.0, 0.0)]</harmonics>
+                <harmonics_type>per_rms_unit_harmonics</harmonics_type>
+            </input>
+            <input>
+                <name>Vs2</name>
                 <device>0</device>
             	<input_type>OnePhaseInput</input_type>
                 <waveform_type>Constant</waveform_type>
@@ -31,40 +46,19 @@
         <dtsm_contactors>
         </dtsm_contactors>
         <machines>
-            <machine>
-                <name>BLDC</name>
-                <device>0</device>
-                <control_enabled>False</control_enabled>
-                <ext_model_load_type>1</ext_model_load_type>
-                <site>0</site>
-                <init_values>[(61, 0.132213)]</init_values>
-                <constant_torque>0.0</constant_torque>
-                <linear_torque>0.0</linear_torque>
-                <square_torque>0.0</square_torque>
-                <constant_torque_type>1</constant_torque_type>
-                <external_torque_type>0</external_torque_type>
-                <load_source>0</load_source>
-                <load_type>1</load_type>
-                <machine_speed>0.0</machine_speed>
-                <initial_speed>0.0</initial_speed>
-                <initial_angle>0.0</initial_angle>
-                <initial_encoder_offset>0.0</initial_encoder_offset>
-                <initial_resolver_offset>0.0</initial_resolver_offset>
-                <machine_gauge>{}</machine_gauge>
-            </machine>
         </machines>
         <analog_channels>
             <analog_channel>
                 <number>1</number>
                 <device>0</device>
-                <scale>100.0</scale>
-                <offset>0.0</offset>
+                <scale>300.0</scale>
+                <offset>1.5</offset>
                 <locked>False</locked>
                 <ao_limiting_enabled>False</ao_limiting_enabled>
                 <ao_lower_limit>-1.0</ao_lower_limit>
                 <ao_upper_limit>1.0</ao_upper_limit>
                 <analog_signal>
-                	<name>const_0V</name>
+                	<name>Va7</name>
                 	<show>True</show>
                 	<device>0</device>
                 </analog_signal>
@@ -72,14 +66,14 @@
             <analog_channel>
                 <number>2</number>
                 <device>0</device>
-                <scale>100.0</scale>
-                <offset>0.0</offset>
+                <scale>300.0</scale>
+                <offset>1.5</offset>
                 <locked>False</locked>
                 <ao_limiting_enabled>False</ao_limiting_enabled>
                 <ao_lower_limit>-1.0</ao_lower_limit>
                 <ao_upper_limit>1.0</ao_upper_limit>
                 <analog_signal>
-                	<name>const_0V</name>
+                	<name>Va8</name>
                 	<show>True</show>
                 	<device>0</device>
                 </analog_signal>
@@ -87,14 +81,14 @@
             <analog_channel>
                 <number>3</number>
                 <device>0</device>
-                <scale>100.0</scale>
-                <offset>0.0</offset>
+                <scale>300.0</scale>
+                <offset>1.5</offset>
                 <locked>False</locked>
                 <ao_limiting_enabled>False</ao_limiting_enabled>
                 <ao_lower_limit>-1.0</ao_lower_limit>
                 <ao_upper_limit>1.0</ao_upper_limit>
                 <analog_signal>
-                	<name>const_0V</name>
+                	<name>Va9</name>
                 	<show>True</show>
                 	<device>0</device>
                 </analog_signal>
@@ -102,37 +96,7 @@
             <analog_channel>
                 <number>4</number>
                 <device>0</device>
-                <scale>100.0</scale>
-                <offset>0.0</offset>
-                <locked>False</locked>
-                <ao_limiting_enabled>False</ao_limiting_enabled>
-                <ao_lower_limit>-1.0</ao_lower_limit>
-                <ao_upper_limit>1.0</ao_upper_limit>
-                <analog_signal>
-                	<name>const_0V</name>
-                	<show>True</show>
-                	<device>0</device>
-                </analog_signal>
-            </analog_channel>
-            <analog_channel>
-                <number>5</number>
-                <device>0</device>
-                <scale>100.0</scale>
-                <offset>0.0</offset>
-                <locked>False</locked>
-                <ao_limiting_enabled>False</ao_limiting_enabled>
-                <ao_lower_limit>-1.0</ao_lower_limit>
-                <ao_upper_limit>1.0</ao_upper_limit>
-                <analog_signal>
-                	<name>const_0V</name>
-                	<show>True</show>
-                	<device>0</device>
-                </analog_signal>
-            </analog_channel>
-            <analog_channel>
-                <number>6</number>
-                <device>0</device>
-                <scale>10.0</scale>
+                <scale>1.0</scale>
                 <offset>1.5</offset>
                 <locked>False</locked>
                 <ao_limiting_enabled>False</ao_limiting_enabled>
@@ -145,9 +109,9 @@
                 </analog_signal>
             </analog_channel>
             <analog_channel>
-                <number>7</number>
+                <number>5</number>
                 <device>0</device>
-                <scale>10.0</scale>
+                <scale>1.0</scale>
                 <offset>1.5</offset>
                 <locked>False</locked>
                 <ao_limiting_enabled>False</ao_limiting_enabled>
@@ -155,6 +119,36 @@
                 <ao_upper_limit>1.0</ao_upper_limit>
                 <analog_signal>
                 	<name>Ia2</name>
+                	<show>True</show>
+                	<device>0</device>
+                </analog_signal>
+            </analog_channel>
+            <analog_channel>
+                <number>6</number>
+                <device>0</device>
+                <scale>1.0</scale>
+                <offset>1.5</offset>
+                <locked>False</locked>
+                <ao_limiting_enabled>False</ao_limiting_enabled>
+                <ao_lower_limit>-1.0</ao_lower_limit>
+                <ao_upper_limit>1.0</ao_upper_limit>
+                <analog_signal>
+                	<name>Ia3</name>
+                	<show>True</show>
+                	<device>0</device>
+                </analog_signal>
+            </analog_channel>
+            <analog_channel>
+                <number>7</number>
+                <device>0</device>
+                <scale>100.0</scale>
+                <offset>0.0</offset>
+                <locked>False</locked>
+                <ao_limiting_enabled>False</ao_limiting_enabled>
+                <ao_lower_limit>-1.0</ao_lower_limit>
+                <ao_upper_limit>1.0</ao_upper_limit>
+                <analog_signal>
+                	<name>const_0V</name>
                 	<show>True</show>
                 	<device>0</device>
                 </analog_signal>
@@ -300,11 +294,11 @@
                 <number>1</number>
                 <device>0</device>
                 <is_inverted>False</is_inverted>
-                <software_control>False</software_control>
+                <software_control>True</software_control>
                 <software_value>0</software_value>
                 <locked>False</locked>
                 <digital_signal>
-                	<name>machine encoder B</name>
+                	<name>HIL0 AO flag</name>
                 	<device>0</device>
                 </digital_signal>
             </digital_channel>
@@ -312,11 +306,11 @@
                 <number>2</number>
                 <device>0</device>
                 <is_inverted>False</is_inverted>
-                <software_control>False</software_control>
+                <software_control>True</software_control>
                 <software_value>0</software_value>
                 <locked>False</locked>
                 <digital_signal>
-                	<name>machine encoder A</name>
+                	<name>HIL0 Capture/Scope Trigger</name>
                 	<device>0</device>
                 </digital_signal>
             </digital_channel>
@@ -324,11 +318,11 @@
                 <number>3</number>
                 <device>0</device>
                 <is_inverted>False</is_inverted>
-                <software_control>False</software_control>
+                <software_control>True</software_control>
                 <software_value>0</software_value>
                 <locked>False</locked>
                 <digital_signal>
-                	<name>machine encoder Z</name>
+                	<name>HIL0 digital input 1</name>
                 	<device>0</device>
                 </digital_signal>
             </digital_channel>
@@ -736,13 +730,6 @@
         <batteries>
         </batteries>
         <scada_inputs>
-            <scada_input>
-                <name>SCADA Input1</name>
-                <device>0</device>
-                <value>1</value>
-            </scada_input>
         </scada_inputs>
-        <tunable_parameters>
-        </tunable_parameters>
     </components>
 </hil_settings>
