@@ -113,6 +113,11 @@ I.~Z. Petric, P.~Mattavelli, and S.~Buso, ``A jitter amplification phenomenon
   in multisampled digital control of power converters,'' \emph{IEEE
   Transactions on Power Electronics}, vol.~36, no.~8, pp. 8685--8695, 2021.
 
+\bibitem{Petric2021b}
+I.~Petric, P.~Mattavelli, and S.~Buso, ``Investigation of nonlinearities
+  introduced by multi-sampled pulse-width modulators,'' \emph{IEEE Transactions
+  on Power Electronics}, pp. 1--1, 2021.
+
 \bibitem{He2021}
 S.~{He}, D.~{Zhou}, X.~{Wang}, and F.~{Blaabjerg}, ``Aliasing suppression of
   multi-sampled current controlled lcl-filtered inverters,'' \emph{IEEE Journal

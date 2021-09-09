@@ -270,4 +270,14 @@
   doi     = {10.1109/TPEL.2021.3054576},
 }
 
+@Article{Petric2021b,
+  author  = {Petric, Ivan and Mattavelli, Paolo and Buso, Simone},
+  journal = {IEEE Transactions on Power Electronics},
+  title   = {Investigation of Nonlinearities Introduced by Multi-sampled Pulse-Width Modulators},
+  year    = {2021},
+  pages   = {1-1},
+  doi     = {10.1109/TPEL.2021.3110678},
+  groups  = {multisampling},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
