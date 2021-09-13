@@ -1,6 +1,6 @@
 \documentclass[conference]{IEEEtran}
 \interdisplaylinepenalty=2500
-
+\IEEEoverridecommandlockouts
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{epsf}
@@ -60,7 +60,9 @@
 
 \begin{document}
 
-\title{Analysis and DSP Implementation of Multi-sampled Three-Phase Current Controllers}
+\title{Analysis and DSP Implementation of Multi-sampled Three-Phase Current Controllers
+\thanks{978-1-6654-0187-6/21/\$31.00 ©2021 IEEE}
+}
 
 \author{\IEEEauthorblockN{1\textsuperscript{st} Ivan Petric}
 \IEEEauthorblockA{\textit{Dept. of Information Engineering} \\
@@ -167,7 +169,7 @@ Combining delays due to modulation \eqref{eq:DPWM} and algorithm computation \eq
 \end{equation}
 
 From \eqref{eq:tauD}, it can be seen that multi-update control reduces digital delays inversely to the multi-update factor $N_c$. Traditionally, double-update is the most often used method, which results in twice decreased delays compared to single-update.
-The term multi-sampled (multi-update) control is most often used when $N_c$ is increased above 2. This kind of control is a promising way of bringing the digital control close to analog regarding achievable bandwidths. However, care must be taken as significant nonlinearities are also introduced in the control system, mainly due to the discontinuity of the modulating waveform, which now features switching ripple components as well. For this reason, multi-update control is most often followed by feedback filtering, which entirely removes the switching ripple from the feedback signal. Note that the discontinuity problems are strongly suppressed at high values of multi-update rate \cite{corradini2018}.
+The term multi-sampled (multi-update) control is most often used when $N_c$ is increased above 2. This kind of control is a promising way of bringing the digital control close to analog regarding achievable bandwidths. However, care must be taken as significant nonlinearities are also introduced in the control system, mainly due to the discontinuity of the modulating waveform, which now features switching ripple components as well. For this reason, multi-update control is most often followed by feedback filtering, which entirely removes the switching ripple from the feedback signal. Note that the discontinuity problems are strongly suppressed at high values of multi-update rate \cite{Petric2021b}.
 
 \subsection{Discrete-time model of a three-phase RL load}
 
